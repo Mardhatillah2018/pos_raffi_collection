@@ -96,7 +96,7 @@
         </a>
         </li>
         <li class="nav-item">
-        <a class="nav-link text-dark" href="../pages/user.html">
+        <a class="nav-link text-dark" href="/users">
             <i class="material-icons-round opacity-5 me-2">manage_accounts</i>
             <span class="nav-link-text ms-1">User</span>
         </a>

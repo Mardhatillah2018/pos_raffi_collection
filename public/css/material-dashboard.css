@@ -25696,8 +25696,9 @@ hr.horizontal.gray-light {
 }
 
 .sidenav {
-  z-index: 9999;
+  z-index: 1030 !important;
 }
+
 
 .sidenav .navbar-brand,
 .sidenav .navbar-heading {
@@ -29150,6 +29151,10 @@ pre[class*=language-] {
   .ps {
     overflow: auto !important;
   }
+}
+
+table {
+  font-size: 0.875rem;
 }
 
 /*# sourceMappingURL=dashboard-free.css.map */
