@@ -29157,4 +29157,11 @@ table {
   font-size: 0.875rem;
 }
 
+.btn-warning:hover {
+        background-color: #e0a800 !important;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333 !important;
+    }
 /*# sourceMappingURL=dashboard-free.css.map */

@@ -39,7 +39,44 @@ class UserController extends Controller
             'kode_cabang' => $request->kode_cabang,
         ]);
 
-        return redirect()->route('users')->with('success', 'User berhasil didaftarkan');
+        return redirect()->route('users.index')->with('success', 'User berhasil didaftarkan');
+    }
+
+    public function edit($id)
+    {
+        $user = User::findOrFail($id);
+        $cabangs = Cabang::all(); // jika pakai relasi cabang
+        return view('user.edit', compact('user', 'cabangs'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:100',
+            'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required|in:super_admin,admin_cabang',
+            'kode_cabang' => 'nullable|string'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'role' => $request->role,
+            'kode_cabang' => $request->kode_cabang,
+        ]);
+
+        return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui.');
+    }
+
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('users.index')
+                        ->with('success', 'User berhasil dihapus.');
     }
 
 }

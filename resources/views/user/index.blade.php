@@ -1,70 +1,89 @@
 @extends('layouts.main')
 
 @section('content')
-
-<div class="max-w-5xl mx-auto mt-2 bg-white p-6 rounded shadow">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold fs-4">Daftar User</h2>
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalUser">
-            + Tambah User
-        </button>
-    </div>
-
-    @if (session('success'))
-        <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-            {{ session('success') }}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Daftar User</h5>
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalUser">
+                + Tambah User
+            </button>
         </div>
-    @endif
 
-    <table id="datatable" class="w-full border border-gray-300 text-left">
-        <thead class="text-xs text-black-700 uppercase bg-gray-100">
-            <tr>
-                <th class="px-4 py-2 border">No</th>
-                <th class="px-4 py-2 border">Nama</th>
-                <th class="px-4 py-2 border">Email</th>
-                <th class="px-4 py-2 border">Role</th>
-                <th class="px-4 py-2 border">Kode Cabang</th>
-                <th class="px-4 py-2 border">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($users as $index => $user)
-                <tr class="border-t">
-                    <td class="px-4 py-2">{{ $index + 1 }}</td>
-                    <td class="px-4 py-2">{{ $user->nama }}</td>
-                    <td class="px-4 py-2">{{ $user->email }}</td>
-                    <td class="px-4 py-2 capitalize">{{ $user->role }}</td>
-                    <td class="px-4 py-2">{{ $user->kode_cabang ?? '-' }}</td>
-                     <td class="text-center">
-                            <button class="btn btn-sm btn-primary me-1">
-                                <i class="material-icons-round fs-5">edit</i>
-                            </button>
-                            <form action="#" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus user ini?')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="material-icons-round fs-5">delete</i>
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
-                                </button>
-                            </form>
-                        </td>
-                </tr>
-            @empty
-                <tr>
-                    <td class="px-4 py-2">-</td>
-                    <td class="px-4 py-2">-</td>
-                    <td class="px-4 py-2">-</td>
-                    <td class="px-4 py-2">-</td>
-                    <td class="px-4 py-2">-</td>
-                    <td class="px-4 py-2 text-center text-gray-500">Belum ada user</td>
-                </tr>
+            <div class="table-responsive">
+                <table id="datatable" class="table  table-hover align-items-center mb-0">
+                    <thead class="table-light text-center">
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Nama</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Role</th>
+                            <th scope="col">Kode Cabang</th>
+                            <th scope="col">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($users as $index => $user)
+                            <tr>
+                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>
+                                    <h6 class="mb-0 text-sm fw-bold">{{ $user->nama }}</h6>
+                                </td>
+                                <td>{{ $user->email }}</td>
+                                <td class="text-capitalize">{{ $user->role }}</td>
+                                <td>{{ $user->kode_cabang ?? '-' }}</td>
+                                <td class="align-middle text-center">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <button
+                                            class="btn btn-warning btn-sm d-flex align-items-center px-2 py-1"
+                                            title="Edit"
+                                            style="line-height: 1;"
+                                            onclick='openEditModal(@json($user))'>
+                                            <i class="material-icons-round text-white me-1" style="font-size: 16px;">edit</i>
+                                            <span class="text-white fw-semibold small">Edit</span>
+                                        </button>
 
-            @endforelse
-        </tbody>
-    </table>
+                                        <form action="#" method="POST" class="m-0 p-0 d-inline-block"
+                                            onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button
+                                                type="button"
+                                                onclick="openDeleteModal({{ $user->id }})"
+                                                class="btn btn-danger btn-sm d-flex align-items-center px-2 py-1"
+                                                title="Hapus"
+                                                style="line-height: 1;">
+                                                <i class="material-icons-round text-white me-1" style="font-size: 16px;">delete</i>
+                                                <span class="text-white fw-semibold small">Hapus</span>
+                                            </button>
+
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Belum ada user</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
 @push('modals')
-  @include('user.modal-create')
+    @include('user.modal-create')
+    @include('user.modal-edit')
+    @include('user.modal-delete')
 @endpush
