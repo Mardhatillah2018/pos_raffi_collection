@@ -12,7 +12,8 @@ class CabangController extends Controller
      */
     public function index()
     {
-        //
+        $cabangs = Cabang::all();
+        return view('cabang.index', compact('cabangs'));
     }
 
     /**
@@ -20,7 +21,7 @@ class CabangController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -28,7 +29,18 @@ class CabangController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //  dd($request->all());
+        $request->validate([
+            'kode_cabang' => 'required|unique:cabangs,kode_cabang|max:10',
+            'nama_cabang' => 'required|string|max:100',
+            'jam_buka' => 'required|date_format:H:i',
+            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+            'alamat' => 'required|string|max:255',
+        ]);
+
+        Cabang::create($request->all());
+
+        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil ditambahkan.');
     }
 
     /**
@@ -50,16 +62,38 @@ class CabangController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Cabang $cabang)
+    public function update(Request $request, $id)
     {
-        //
+        // dd($request->all());
+        $request->validate([
+            'kode_cabang' => 'required|string|max:10',
+            'nama_cabang' => 'required|string|max:100',
+            'jam_buka' => 'required|date_format:H:i',
+            'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+            'alamat' => 'required|string|max:255',
+        ]);
+
+        $cabang = Cabang::findOrFail($id);
+        $cabang->update([
+            'kode_cabang' => $request->kode_cabang,
+            'nama_cabang' => $request->nama_cabang,
+            'jam_buka' => $request->jam_buka,
+            'jam_tutup' => $request->jam_tutup,
+            'alamat' => $request->alamat,
+        ]);
+
+        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Cabang $cabang)
+    public function destroy($id)
     {
-        //
+        $cabang = Cabang::findOrFail($id);
+        $cabang->delete();
+
+        return redirect()->route('cabang.index')->with('success', 'Cabang berhasil dihapus.');
     }
+
 }

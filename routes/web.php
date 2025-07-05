@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CabangController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,3 +13,4 @@ Route::get('/login', function () {
 });
 
 Route::resource('users', UserController::class);
+Route::resource('cabang', CabangController::class);

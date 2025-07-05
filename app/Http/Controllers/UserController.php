@@ -44,9 +44,9 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
-        $cabangs = Cabang::all(); // jika pakai relasi cabang
-        return view('user.edit', compact('user', 'cabangs'));
+        // $user = User::findOrFail($id);
+        // $cabangs = Cabang::all(); // jika pakai relasi cabang
+        // return view('user.edit', compact('user', 'cabangs'));
     }
 
     public function update(Request $request, $id)
