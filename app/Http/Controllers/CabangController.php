@@ -43,6 +43,14 @@ class CabangController extends Controller
         return redirect()->route('cabang.index')->with('success', 'Cabang berhasil ditambahkan.');
     }
 
+    public function checkKodeCabang(Request $request)
+{
+    $exists = Cabang::where('kode_cabang', $request->kode_cabang)->exists();
+
+    return response()->json(['exists' => $exists]);
+}
+
+
     /**
      * Display the specified resource.
      */

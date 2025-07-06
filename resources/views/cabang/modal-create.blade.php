@@ -47,3 +47,39 @@
     </div>
   </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const kodeInput = document.getElementById('kode_cabang');
+        const kodeErrorDiv = document.createElement('div');
+        kodeErrorDiv.classList.add('invalid-feedback');
+        kodeInput.parentElement.appendChild(kodeErrorDiv);
+
+        kodeInput.addEventListener('blur', function () {
+            const kode = kodeInput.value;
+
+            if (kode.length === 0) return;
+
+            fetch("{{ route('cabang.checkKode') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({ kode_cabang: kode })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.exists) {
+                    kodeInput.classList.add('is-invalid');
+                    kodeErrorDiv.textContent = 'Kode cabang sudah dipakai.';
+                } else {
+                    kodeInput.classList.remove('is-invalid');
+                    kodeErrorDiv.textContent = '';
+                }
+            })
+            .catch(err => {
+                console.error('Error checking kode cabang:', err);
+            });
+        });
+    });
+</script>

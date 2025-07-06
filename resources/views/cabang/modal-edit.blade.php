@@ -13,9 +13,11 @@
 
         <div class="modal-body">
           <div class="row g-3">
+            <!-- Tampilkan kode_cabang (readonly), tapi tetap dikirim via hidden input -->
             <div class="col-md-6">
-              <label for="edit_kode_cabang" class="form-label">Kode Cabang</label>
-              <input type="text" name="kode_cabang" id="edit_kode_cabang" class="form-control" readonly>
+              <label for="edit_kode_cabang_display" class="form-label">Kode Cabang</label>
+              <input type="text" id="edit_kode_cabang_display" class="form-control" readonly>
+              <input type="hidden" name="kode_cabang" id="edit_kode_cabang">
             </div>
 
             <div class="col-md-6">
@@ -51,13 +53,20 @@
 
 <script>
   function openEditCabangModal(cabang) {
-    document.getElementById('edit_kode_cabang').value = cabang.kode_cabang;
-    document.getElementById('edit_nama_cabang').value = cabang.nama_cabang;
-    document.getElementById('edit_jam_buka').value = cabang.jam_buka;
-    document.getElementById('edit_jam_tutup').value = cabang.jam_tutup;
-    document.getElementById('edit_alamat').value = cabang.alamat;
-    document.getElementById('editCabangForm').action = `/cabang/${cabang.id}`;
+  // Format time ke HH:MM (ambil 5 karakter pertama dari jam)
+  const jamBuka = cabang.jam_buka?.slice(0, 5);
+  const jamTutup = cabang.jam_tutup?.slice(0, 5);
 
-    new bootstrap.Modal(document.getElementById('modalEditCabang')).show();
-  }
+  document.getElementById('edit_kode_cabang_display').value = cabang.kode_cabang;
+  document.getElementById('edit_kode_cabang').value = cabang.kode_cabang;
+
+  document.getElementById('edit_nama_cabang').value = cabang.nama_cabang;
+  document.getElementById('edit_jam_buka').value = jamBuka;
+  document.getElementById('edit_jam_tutup').value = jamTutup;
+  document.getElementById('edit_alamat').value = cabang.alamat;
+
+  document.getElementById('editCabangForm').action = `/cabang/${cabang.id}`;
+  new bootstrap.Modal(document.getElementById('modalEditCabang')).show();
+}
+
 </script>

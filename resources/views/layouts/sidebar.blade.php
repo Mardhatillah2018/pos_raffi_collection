@@ -1,4 +1,5 @@
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white" id="sidenav-main">
+{{-- <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white" id="sidenav-main"> --}}
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white" id="sidenav-main" style="overflow-y: hidden;">
     <div class="sidenav-header text-center py-4"
         style="position: sticky; top: 0; z-index: 10; background-color: white;">
         <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -30,12 +31,12 @@
                 <span class="nav-link-text ms-1">Cabang</span>
             </a>
         </li>
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a class="nav-link text-dark" href="../pages/kategori.html">
                 <i class="material-icons-round opacity-5 me-2">category</i>
                 <span class="nav-link-text ms-1">Kategori</span>
             </a>
-        </li>
+        </li> --}}
         <li class="nav-item">
             <a class="nav-link text-dark" href="../pages/produk.html">
                 <i class="material-icons-round opacity-5 me-2">inventory_2</i>
@@ -48,12 +49,12 @@
                 <span class="nav-link-text ms-1">Ukuran Produk</span>
             </a>
         </li>
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a class="nav-link text-dark" href="../pages/varian.html">
                 <i class="material-icons-round opacity-5 me-2">style</i>
                 <span class="nav-link-text ms-1">Produk Varian</span>
             </a>
-        </li>
+        </li> --}}
 
         <!-- Operasional -->
         <li class="nav-item mt-3">
@@ -63,6 +64,12 @@
             <a class="nav-link text-dark" href="../pages/stok.html">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
                 <span class="nav-link-text ms-1">Stok</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" href="../pages/stok.html">
+                <i class="material-icons-round opacity-5 me-2">style</i>
+                <span class="nav-link-text ms-1">Pengurangan Stok</span>
             </a>
         </li>
         <li class="nav-item">
