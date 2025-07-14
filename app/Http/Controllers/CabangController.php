@@ -44,11 +44,11 @@ class CabangController extends Controller
     }
 
     public function checkKodeCabang(Request $request)
-{
-    $exists = Cabang::where('kode_cabang', $request->kode_cabang)->exists();
+    {
+        $exists = Cabang::where('kode_cabang', $request->kode_cabang)->exists();
 
-    return response()->json(['exists' => $exists]);
-}
+        return response()->json(['exists' => $exists]);
+    }
 
 
     /**

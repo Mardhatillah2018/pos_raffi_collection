@@ -11,12 +11,12 @@
         </div>
 
         <div class="card-body">
-            @if (session('success'))
+            {{-- @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            @endif
+            @endif --}}
 
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
@@ -94,4 +94,62 @@
     @include('cabang.modal-edit')
     @include('cabang.modal-delete')
     @include('cabang.modal-detail')
+@endpush
+
+@push('scripts')
+    <script>
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        @elseif (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '{{ session('error') }}',
+                showConfirmButton: true,
+            });
+        @elseif (session('warning'))
+            Swal.fire({
+                icon: 'warning',
+                title: 'Peringatan!',
+                text: '{{ session('warning') }}',
+                showConfirmButton: true,
+            });
+        @elseif (session('info'))
+            Swal.fire({
+                icon: 'info',
+                title: 'Informasi',
+                text: '{{ session('info') }}',
+                showConfirmButton: true,
+            });
+        @endif
+    </script>
+
+    {{-- @if ($errors->any())
+        <script>
+            let errorMessages = '';
+            @foreach ($errors->all() as $error)
+                errorMessages += '• {{ $error }}\n';
+            @endforeach
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal menyimpan!',
+                text: errorMessages,
+                customClass: {
+                    popup: 'text-start'
+                }
+            });
+
+            const modalTambah = new bootstrap.Modal(document.getElementById('modalCabang'));
+            modalTambah.show();
+        </script>
+    @endif --}}
+
 @endpush

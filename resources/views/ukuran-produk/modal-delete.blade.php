@@ -1,16 +1,16 @@
-<!-- Modal Delete Cabang -->
-<div class="modal fade" id="modalDeleteCabang" tabindex="-1" aria-labelledby="modalDeleteCabangLabel" aria-hidden="true">
+<!-- Modal Delete Ukuran Produk -->
+<div class="modal fade" id="modalDeleteUkuran" tabindex="-1" aria-labelledby="modalDeleteUkuranLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold" id="modalDeleteCabangLabel">Konfirmasi Hapus</h5>
+        <h5 class="modal-title fw-bold" id="modalDeleteUkuranLabel">Konfirmasi Hapus</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
       </div>
       <div class="modal-body">
-        <p>Apakah Anda yakin ingin menghapus cabang ini?</p>
+        <p>Apakah Anda yakin ingin menghapus ukuran produk ini?</p>
       </div>
       <div class="modal-footer">
-        <form id="deleteCabangForm" method="POST">
+        <form id="deleteUkuranForm" method="POST">
           @csrf
           @method('DELETE')
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
@@ -22,9 +22,9 @@
 </div>
 
 <script>
-  function openDeleteCabangModal(cabangId) {
-    const form = document.getElementById('deleteCabangForm');
-    form.action = `/cabang/${cabangId}`;
-    new bootstrap.Modal(document.getElementById('modalDeleteCabang')).show();
+  function openDeleteUkuranModal(id) {
+    const form = document.getElementById('deleteUkuranForm');
+    form.action = `/ukuran-produk/${id}`;
+    new bootstrap.Modal(document.getElementById('modalDeleteUkuran')).show();
   }
 </script>

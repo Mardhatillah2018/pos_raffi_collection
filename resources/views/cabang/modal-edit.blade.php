@@ -13,7 +13,6 @@
 
         <div class="modal-body">
           <div class="row g-3">
-            <!-- Tampilkan kode_cabang (readonly), tapi tetap dikirim via hidden input -->
             <div class="col-md-6">
               <label for="edit_kode_cabang_display" class="form-label">Kode Cabang</label>
               <input type="text" id="edit_kode_cabang_display" class="form-control" readonly>
@@ -53,7 +52,6 @@
 
 <script>
   function openEditCabangModal(cabang) {
-  // Format time ke HH:MM (ambil 5 karakter pertama dari jam)
   const jamBuka = cabang.jam_buka?.slice(0, 5);
   const jamTutup = cabang.jam_tutup?.slice(0, 5);
 

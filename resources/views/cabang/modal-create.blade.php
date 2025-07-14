@@ -1,4 +1,3 @@
-<!-- Modal Tambah Cabang -->
 <div class="modal fade" id="modalCabang" tabindex="-1" aria-labelledby="modalCabangLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content p-2">
@@ -48,6 +47,7 @@
   </div>
 </div>
 <script>
+    // cek kode cabang sudah tersedia atau belum
     document.addEventListener('DOMContentLoaded', function () {
         const kodeInput = document.getElementById('kode_cabang');
         const kodeErrorDiv = document.createElement('div');

@@ -16,7 +16,7 @@
         <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Dashboard</h6>
         </li>
         <li class="nav-item">
-            <a class="nav-link {{ Request::is('/') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/">
+            <a class="nav-link {{ Request::is('dashboard*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/dashboard">
                 <i class="material-icons-round opacity-5 me-2">dashboard</i>
                 <span class="nav-link-text ms-1">Dashboard</span>
             </a>
@@ -38,13 +38,13 @@
             </a>
         </li> --}}
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/produk.html">
+            <a class="nav-link {{ Request::is('produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
                 <i class="material-icons-round opacity-5 me-2">inventory_2</i>
                 <span class="nav-link-text ms-1">Produk</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/ukuran.html">
+            <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/ukuran-produk">
                 <i class="material-icons-round opacity-5 me-2">straighten</i>
                 <span class="nav-link-text ms-1">Ukuran Produk</span>
             </a>

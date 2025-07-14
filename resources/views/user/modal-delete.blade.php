@@ -20,10 +20,11 @@
     </div>
   </div>
 </div>
+
 <script>
   function openDeleteModal(userId) {
     const form = document.getElementById('deleteUserForm');
-    form.action = `/users/${userId}`; // Sesuaikan dengan route destroy
+    form.action = `/users/${userId}`;
     new bootstrap.Modal(document.getElementById('modalDeleteUser')).show();
   }
 </script>
