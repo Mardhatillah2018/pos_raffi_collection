@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->enum('role', ['super_admin', 'admin_cabang']);
-            $table->string('kode_cabang')->nullable(); // sementara tanpa foreign key
+            $table->string('kode_cabang')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

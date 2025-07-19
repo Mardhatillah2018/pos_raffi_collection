@@ -31,9 +31,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($users as $index => $user)
+                        @forelse ($users as $user)
                             <tr>
-                                <td class="text-center">{{ $index + 1 }}</td>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>
                                     <h6 class="mb-0 text-sm fw-bold">{{ $user->nama }}</h6>
                                 </td>

@@ -12,7 +12,7 @@
     <hr class="horizontal dark mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">
-        <li class="nav-item mt-3">
+        <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Dashboard</h6>
         </li>
         <li class="nav-item">
@@ -22,7 +22,7 @@
             </a>
         </li>
         <!-- Master Data -->
-        <li class="nav-item mt-3">
+        <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Master Data</h6>
         </li>
         <li class="nav-item">
@@ -57,8 +57,14 @@
         </li> --}}
 
         <!-- Operasional -->
-        <li class="nav-item mt-3">
+        <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Operasional</h6>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" href="../pages/stok.html">
+                <i class="material-icons-round opacity-5 me-2">content_cut</i>
+                <span class="nav-link-text ms-1">Produksi</span>
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" href="../pages/stok.html">
@@ -80,17 +86,17 @@
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" href="../pages/pengeluaran.html">
-                <i class="material-icons-round opacity-5 me-2">money_off</i>
+                <i class="material-icons-round opacity-5 me-2">receipt_long</i>
                 <span class="nav-link-text ms-1">Pengeluaran</span>
             </a>
         </li>
 
         <!-- Kepegawaian & Akses -->
-        <li class="nav-item mt-3">
+        <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Kepegawaian & Akses</h6>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/karyawan.html">
+            <a class="nav-link {{ Request::is('karyawan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/karyawan">
                 <i class="material-icons-round opacity-5 me-2">badge</i>
                 <span class="nav-link-text ms-1">Karyawan</span>
             </a>
