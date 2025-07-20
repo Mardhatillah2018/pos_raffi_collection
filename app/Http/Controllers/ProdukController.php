@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Produk;
+use App\Models\UkuranProduk;
 use Illuminate\Http\Request;
 
 class ProdukController extends Controller
@@ -44,10 +45,14 @@ class ProdukController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Produk $produk)
-    {
-        //
-    }
+    public function show($id)
+{
+    $produk = Produk::with('detailProduks.ukuran')->findOrFail($id);
+    $ukuranList = UkuranProduk::all(); // Ambil semua ukuran
+
+    return view('detail-produk.index', compact('produk', 'ukuranList'));
+}
+
 
     /**
      * Show the form for editing the specified resource.

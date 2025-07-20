@@ -5,32 +5,41 @@
       <p class="text-white fw-bold mb-1" style="font-size: 1rem;">
         Cabang: {{ auth()->user()->cabang->nama_cabang ?? '-' }}
     </p>
-
-      {{-- BREADCRUMB --}}
       <nav aria-label="breadcrumb">
         @php
-          $titles = [
-              'dashboard' => 'Dashboard',
-              'cabang' => 'Cabang',
-              'produk' => 'Produk',
-              'ukuran-produk' => 'Ukuran Produk',
-          ];
+            $titles = [
+                'dashboard' => 'Dashboard',
+                'cabang.index' => 'Cabang',
+                'produk.index' => 'Produk',
+                'ukuran-produk.index' => 'Ukuran Produk',
+                'produk.detail' => 'Detail Produk',
+            ];
 
-          $currentRoute = Route::currentRouteName(); // misal: cabang.index
-          $baseRoute = explode('.', $currentRoute)[0]; // ambil 'cabang'
-          $currentTitle = $titles[$baseRoute] ?? ucfirst($baseRoute);
-        @endphp
+            $currentRoute = Route::currentRouteName();
+            @endphp
 
-        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-3 me-2">
+            <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-3 me-2">
+                @php $parts = explode('.', $currentRoute); @endphp
 
-          <li class="breadcrumb-item text-sm text-white active" aria-current="page">
-            {{ $currentTitle }}
-          </li>
-        </ol>
+                @if(count($parts) > 1 && $currentRoute !== $parts[0] . '.index')
+                    {{-- Breadcrumb utama --}}
+                    <li class="breadcrumb-item text-sm text-white">
+                    {{ $titles[$parts[0] . '.index'] ?? ucfirst($parts[0]) }}
+                    </li>
+                    {{-- Breadcrumb sub --}}
+                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">
+                    {{ $titles[$currentRoute] ?? ucfirst(end($parts)) }}
+                    </li>
+                @else
+                    {{-- Breadcrumb tunggal --}}
+                    <li class="breadcrumb-item text-sm text-white active" aria-current="page">
+                    {{ $titles[$currentRoute] ?? ucfirst($currentRoute) }}
+                    </li>
+                @endif
+            </ol>
       </nav>
     </div>
 
-    {{-- IKON USER --}}
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
         <div class="ms-md-auto pe-md-3 d-flex align-items-center">
             <ul class="navbar-nav d-flex align-items-center justify-content-end flex-row gap-3">
@@ -38,7 +47,7 @@
                 @if(auth()->user()->role == 'super_admin')
                 <li class="nav-item">
                     <a href="{{ route('pilih-cabang') }}" class="btn btn-sm btn-light fw-bold">
-                        Pilih Outlet
+                        Pilih Cabang
                     </a>
                 </li>
                 @endif

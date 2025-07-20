@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProdukController;
@@ -20,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('pilih-cabang');
 
     Route::post('/pilih-cabang', [LoginController::class, 'simpanCabang'])->name('simpan-cabang');
+    Route::get('/pilih-cabang', [LoginController::class, 'showPilihCabangForm'])->name('pilih-cabang')->middleware('auth');
 
     // Dashboard
     Route::get('/dashboard', function () {
@@ -32,6 +34,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('check-kode-cabang', [CabangController::class, 'checkKodeCabang'])->name('cabang.checkKode');
     Route::resource('ukuran-produk', UkuranProdukController::class)->names('ukuran-produk');
     Route::resource('produk', ProdukController::class)->names('produk');
+    Route::get('/produk/{id}/detail', [ProdukController::class, 'show'])->name('produk.detail');
+    Route::resource('detail-produk', DetailProdukController::class)->names('detail-produk');
     Route::resource('karyawan', KaryawanController::class)->names('karyawan');
 });
 

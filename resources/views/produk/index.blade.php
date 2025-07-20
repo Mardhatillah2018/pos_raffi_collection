@@ -27,14 +27,14 @@
                                 <td>{{ $produk->nama_produk }}</td>
                                 <td class="align-middle text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <button
+                                        <a href="{{ route('produk.detail', $produk->id) }}"
                                             class="btn btn-info btn-sm d-flex align-items-center px-2 py-1"
                                             title="Detail"
-                                            style="line-height: 1;"
-                                            onclick='#'>
+                                            style="line-height: 1;">
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
                                             <span class="text-white fw-semibold small">Detail</span>
-                                        </button>
+                                        </a>
+
                                         <button
                                             class="btn btn-warning btn-sm d-flex align-items-center px-2 py-1"
                                             title="Edit"

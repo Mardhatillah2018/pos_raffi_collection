@@ -11,4 +11,10 @@ class Produk extends Model
     protected $fillable = [
         'nama_produk',
     ];
+
+    public function detailProduks()
+    {
+        return $this->hasMany(DetailProduk::class, 'produk_id');
+    }
+
 }

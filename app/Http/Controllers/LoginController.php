@@ -8,7 +8,6 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-    // Tampilkan form login
     public function showLoginForm()
     {
         return view('login');
@@ -28,9 +27,8 @@ class LoginController extends Controller
             $user = Auth::user();
 
             if ($user->role === 'super_admin' && is_null($user->kode_cabang)) {
-    return redirect()->route('pilih-cabang'); // ✅ route GET dengan middleware 'auth'
-}
-
+                return redirect()->route('pilih-cabang');
+            }
 
             return redirect()->intended('/dashboard');
         }
@@ -40,30 +38,49 @@ class LoginController extends Controller
         ])->withInput();
     }
 
-    // Simpan cabang untuk super_admin setelah login
+    public function showPilihCabangForm()
+    {
+        $user = User::find(Auth::id());
+        if ($user->role === 'super_admin') {
+            $user->kode_cabang = null;
+            $user->save();
+        }
+
+        return view('pilih-cabang');
+    }
+
     public function simpanCabang(Request $request)
-{
-    $request->validate([
-        'kode_cabang' => 'required|exists:cabangs,kode_cabang',
-    ]);
+    {
+        $request->validate([
+            'kode_cabang' => 'required|exists:cabangs,kode_cabang',
+        ]);
 
-    // Simpan kode cabang ke session, bukan ke database
-    session(['kode_cabang_superadmin' => $request->kode_cabang]);
+        // Simpan session
+        session(['kode_cabang_superadmin' => $request->kode_cabang]);
 
-    return redirect('/dashboard');
-}
+        $user = User::find(Auth::id());
+        $user->kode_cabang = $request->kode_cabang;
+        $user->save();
 
+        return redirect('/dashboard');
+    }
 
-    // Logout
     public function logout(Request $request)
-{
-    Auth::logout();
-    $request->session()->flush(); // HAPUS SEMUA DATA SESSION
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    {
+        if (Auth::check() && Auth::user()->role === 'super_admin') {
+            $user = User::find(Auth::id());
+            $user->kode_cabang = null;
+            $user->save();
+        }
 
-    return redirect('/login');
-}
+        Auth::logout();
+        $request->session()->flush();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login');
+    }
+
 
 
 }
