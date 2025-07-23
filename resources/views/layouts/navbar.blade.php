@@ -13,6 +13,8 @@
                 'produk.index' => 'Produk',
                 'ukuran-produk.index' => 'Ukuran Produk',
                 'produk.detail' => 'Detail Produk',
+                'karyawan.index' => 'Karyawan',
+                'user.index' => 'User',
             ];
 
             $currentRoute = Route::currentRouteName();

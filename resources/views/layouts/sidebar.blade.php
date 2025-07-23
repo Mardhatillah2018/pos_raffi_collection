@@ -1,5 +1,5 @@
-{{-- <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white" id="sidenav-main"> --}}
-<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white" id="sidenav-main" style="overflow-y: hidden;">
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white" id="sidenav-main">
+{{-- <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white" id="sidenav-main" style="overflow-y: hidden;"> --}}
     <div class="sidenav-header text-center py-4"
         style="position: sticky; top: 0; z-index: 10; background-color: white;">
         <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -85,9 +85,15 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/pengeluaran.html">
+            <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
                 <i class="material-icons-round opacity-5 me-2">receipt_long</i>
                 <span class="nav-link-text ms-1">Pengeluaran</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" href="../pages/pengeluaran.html">
+                <i class="material-icons-round opacity-5 me-2">trending_up</i>
+                <span class="nav-link-text ms-1">Keuntungan</span>
             </a>
         </li>
 

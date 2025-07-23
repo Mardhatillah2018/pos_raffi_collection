@@ -29,14 +29,15 @@
 
             <div class="col-12">
               <label for="kode_cabang" class="form-label">Cabang</label>
-              <select name="kode_cabang" id="kode_cabang" class="form-select" required>
+              <select name="kode_cabang" id="kode_cabang" class="form-select select2" required>
                 <option value="">-- Pilih Cabang --</option>
-                @foreach ($cabangs as $cabang)
-                  <option value="{{ $cabang->kode_cabang }}">
-                    {{ $cabang->nama_cabang }} ({{ $cabang->kode_cabang }})
-                  </option>
-                @endforeach
-              </select>
+                    @foreach ($cabangs as $cabang)
+                        <option value="{{ $cabang->kode_cabang }}">
+                        {{ $cabang->nama_cabang }} ({{ $cabang->kode_cabang }})
+                        </option>
+                    @endforeach
+                </select>
+
             </div>
           </div>
         </div>
@@ -49,3 +50,14 @@
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('#kode_cabang').select2({
+      dropdownParent: $('#modalKaryawan'),
+      placeholder: "-- Pilih Cabang --",
+      width: '100%'
+    });
+  });
+</script>
+
