@@ -46,12 +46,15 @@ class ProdukController extends Controller
      * Display the specified resource.
      */
     public function show($id)
-    {
-        $produk = Produk::with('detailProduks.ukuran')->findOrFail($id);
-        $ukuranList = UkuranProduk::all(); // Ambil semua ukuran
+{
+    $produk = Produk::with('detailProduks.ukuran')->findOrFail($id);
 
-        return view('detail-produk.index', compact('produk', 'ukuranList'));
-    }
+    $usedUkuranIds = $produk->detailProduks->pluck('ukuran_id');
+    $ukuranList = UkuranProduk::whereNotIn('id', $usedUkuranIds)->get();
+
+    return view('detail-produk.index', compact('produk', 'ukuranList'));
+}
+
 
     /**
      * Show the form for editing the specified resource.

@@ -15,9 +15,19 @@ class DetailProduk extends Model
         'harga_jual',
     ];
 
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class, 'produk_id');
+    }
     public function ukuran()
     {
         return $this->belongsTo(UkuranProduk::class, 'ukuran_id');
     }
+
+    public function detailProduksis()
+    {
+        return $this->hasMany(DetailProduksi::class);
+    }
+
 
 }

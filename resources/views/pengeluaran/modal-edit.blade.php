@@ -49,23 +49,23 @@
 </div>
 
 <script>
-  function openEditPengeluaranModal(pengeluaran) {
-    const form = document.getElementById('formEditPengeluaran');
-    form.action = `/pengeluaran/${pengeluaran.id}`;
+    function openEditPengeluaranModal(pengeluaran) {
+        const form = document.getElementById('formEditPengeluaran');
+        form.action = `/pengeluaran/${pengeluaran.id}`;
 
-    document.getElementById('editTanggal').value = pengeluaran.tanggal;
-    document.getElementById('editKategori').value = pengeluaran.kategori_id;
-    document.getElementById('editTotal').value = pengeluaran.total_pengeluaran;
-    document.getElementById('editKeterangan').value = pengeluaran.keterangan || '';
+        document.getElementById('editTanggal').value = pengeluaran.tanggal;
+        document.getElementById('editKategori').value = pengeluaran.kategori_id;
+        document.getElementById('editTotal').value = pengeluaran.total_pengeluaran;
+        document.getElementById('editKeterangan').value = pengeluaran.keterangan || '';
 
-    const modal = new bootstrap.Modal(document.getElementById('modalEditPengeluaran'));
-    modal.show();
-  }
+        const modal = new bootstrap.Modal(document.getElementById('modalEditPengeluaran'));
+        modal.show();
+    }
 
-  $(document).ready(function() {
-    $('#editKategori').select2({
-      dropdownParent: $('#modalEditPengeluaran'),
-      width: '100%'
+    $(document).ready(function() {
+        $('#editKategori').select2({
+        dropdownParent: $('#modalEditPengeluaran'),
+        width: '100%'
+        });
     });
-  });
 </script>

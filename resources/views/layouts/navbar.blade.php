@@ -1,45 +1,49 @@
 <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow border-radius-xl bg-gradient-dark sticky-top " id="navbarBlur" data-scroll="true">
-  <div class="container-fluid py-1 px-3">
+    <div class="container-fluid py-1 px-3">
 
     <div class="d-flex flex-column">
-      <p class="text-white fw-bold mb-1" style="font-size: 1rem;">
-        Cabang: {{ auth()->user()->cabang->nama_cabang ?? '-' }}
-    </p>
-      <nav aria-label="breadcrumb">
-        @php
-            $titles = [
-                'dashboard' => 'Dashboard',
-                'cabang.index' => 'Cabang',
-                'produk.index' => 'Produk',
-                'ukuran-produk.index' => 'Ukuran Produk',
-                'produk.detail' => 'Detail Produk',
-                'karyawan.index' => 'Karyawan',
-                'user.index' => 'User',
-            ];
+        <p class="text-white fw-bold mb-1" style="font-size: 1rem;">
+            Cabang: {{ auth()->user()->cabang->nama_cabang ?? '-' }}
+        </p>
 
-            $currentRoute = Route::currentRouteName();
+        <nav aria-label="breadcrumb">
+            @php
+                $titles = [
+                    'dashboard' => 'Dashboard',
+                    'cabang.index' => 'Cabang',
+                    'produk.index' => 'Produk',
+                    'produk.detail' => 'Detail Produk',
+                    'ukuran-produk.index' => 'Ukuran Produk',
+                    'detail-produk.index' => 'Detail Produk',
+                    'produksi.index' => 'Produksi',
+                    'pengeluaran.index' => 'Pengeluaran',
+                    'kategori-pengeluaran.index' => 'Kategori Pengeluaran',
+                    'karyawan.index' => 'Karyawan',
+                    'user.index' => 'User',
+                ];
+
+                $currentRoute = Route::currentRouteName();
+                $parts = explode('.', $currentRoute);
             @endphp
 
             <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-3 me-2">
-                @php $parts = explode('.', $currentRoute); @endphp
-
                 @if(count($parts) > 1 && $currentRoute !== $parts[0] . '.index')
                     {{-- Breadcrumb utama --}}
                     <li class="breadcrumb-item text-sm text-white">
-                    {{ $titles[$parts[0] . '.index'] ?? ucfirst($parts[0]) }}
+                        {{ $titles[$parts[0] . '.index'] ?? ucfirst(str_replace('-', ' ', $parts[0])) }}
                     </li>
                     {{-- Breadcrumb sub --}}
                     <li class="breadcrumb-item text-sm text-white active" aria-current="page">
-                    {{ $titles[$currentRoute] ?? ucfirst(end($parts)) }}
+                        {{ $titles[$currentRoute] ?? ucfirst(str_replace('-', ' ', end($parts))) }}
                     </li>
                 @else
                     {{-- Breadcrumb tunggal --}}
                     <li class="breadcrumb-item text-sm text-white active" aria-current="page">
-                    {{ $titles[$currentRoute] ?? ucfirst($currentRoute) }}
+                        {{ $titles[$currentRoute] ?? ucfirst(str_replace('-', ' ', $currentRoute)) }}
                     </li>
                 @endif
             </ol>
-      </nav>
+        </nav>
     </div>
 
     <div class="collapse navbar-collapse mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
@@ -78,7 +82,6 @@
     </div>
   </div>
 </nav>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

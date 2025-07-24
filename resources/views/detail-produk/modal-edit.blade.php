@@ -16,16 +16,11 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="ukuran_id{{ $detail->id }}" class="form-label">Ukuran</label>
-              <select name="ukuran_id" id="ukuran_id{{ $detail->id }}" class="form-select select2" required>
-                <option value="">-- Pilih Ukuran --</option>
-                @foreach ($ukuranList as $ukuran)
-                  <option value="{{ $ukuran->id }}" {{ $ukuran->id == $detail->ukuran_id ? 'selected' : '' }}>
-                    {{ $ukuran->kode_ukuran }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
+  <label class="form-label">Ukuran</label>
+  <input type="hidden" name="ukuran_id" value="{{ $detail->ukuran_id }}">
+  <input type="text" class="form-control" value="{{ $detail->ukuran->kode_ukuran }}" disabled>
+</div>
+
 
             <div class="col-md-6">
               <label for="harga_modal{{ $detail->id }}" class="form-label">Harga Modal</label>

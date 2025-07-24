@@ -38,7 +38,7 @@
             </a>
         </li> --}}
         <li class="nav-item">
-            <a class="nav-link {{ Request::is('produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
+            <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
                 <i class="material-icons-round opacity-5 me-2">inventory_2</i>
                 <span class="nav-link-text ms-1">Produk</span>
             </a>
@@ -61,7 +61,7 @@
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Operasional</h6>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/stok.html">
+            <a class="nav-link {{ Request::is('produksi*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produksi">
                 <i class="material-icons-round opacity-5 me-2">content_cut</i>
                 <span class="nav-link-text ms-1">Produksi</span>
             </a>
@@ -119,7 +119,6 @@
                 <span class="nav-link-text ms-1">User</span>
             </a>
         </li>
-
       </ul>
     </div>
   </aside>
