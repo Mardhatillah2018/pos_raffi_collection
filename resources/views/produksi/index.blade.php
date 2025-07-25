@@ -34,25 +34,22 @@
 
                                 <td class="align-middle text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <a href="#"
+                                        <a href="{{ route('produksi.detail', $produksi->id) }}"
                                             class="btn btn-info btn-sm d-flex align-items-center px-2 py-1"
                                             title="Detail"
                                             style="line-height: 1;">
-                                            <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
-                                            <span class="text-white fw-semibold small">Detail</span>
+                                                <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
+                                                <span class="text-white fw-semibold small">Detail</span>
                                         </a>
-                                        <!-- Tombol Edit -->
-<button
-    class="btn btn-warning btn-sm d-flex align-items-center gap-1 px-2 py-1"
-    title="Edit"
-    data-bs-toggle="modal"
-    data-bs-target="#modalEditProduksi{{ $produksi->id }}">
-    <i class="material-icons-round text-white" style="font-size: 16px;">edit</i>
-    <span class="text-white fw-semibold small">Edit</span>
-</button>
 
-
-
+                                        <button
+                                            class="btn btn-warning btn-sm d-flex align-items-center gap-1 px-2 py-1"
+                                            title="Edit"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditProduksi{{ $produksi->id }}">
+                                            <i class="material-icons-round text-white" style="font-size: 16px;">edit</i>
+                                            <span class="text-white fw-semibold small">Edit</span>
+                                        </button>
                                         <button
                                             class="btn btn-danger btn-sm d-flex align-items-center px-2 py-1"
                                             title="Hapus"
@@ -83,7 +80,9 @@
 
 @push('modals')
     @include('produksi.modal-create')
-    @include('produksi.modal-edit')
+    @foreach ($produksis as $produksi)
+        @include('produksi.modal-edit', ['produksi' => $produksi])
+    @endforeach
     @include('produksi.modal-delete')
 @endpush
 

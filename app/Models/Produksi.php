@@ -22,7 +22,10 @@ class Produksi extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
-    } 
-
+    }
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, 'kode_cabang', 'kode_cabang');
+    }
 
 }

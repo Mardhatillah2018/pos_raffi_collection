@@ -78,9 +78,11 @@ class ProduksiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Produksi $produksi)
+    public function show($id)
     {
-        //
+        $produksi = Produksi::with(['detailProduksis.detailProduk.produk', 'detailProduksis.detailProduk.ukuran', 'user', 'cabang'])->findOrFail($id);
+
+    return view('detail-produksi.index', compact('produksi'));
     }
 
     /**
@@ -95,14 +97,20 @@ class ProduksiController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, Produksi $produksi)
-    {
-        $request->validate([
-            'kode_cabang' => 'required|string|max:10',
-            'tanggal_produksi' => 'required|date',
-            'total_biaya' => 'required|numeric',
-            'keterangan' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'kode_cabang' => 'required|string|max:10',
+        'tanggal_produksi' => 'required|date',
+        'total_biaya' => 'required|numeric',
+        'keterangan' => 'nullable|string',
+        'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
+        'qty.*' => 'required|integer|min:1',
+    ]);
 
+    DB::beginTransaction();
+
+    try {
+        // Update data utama produksi
         $produksi->update([
             'kode_cabang' => $request->kode_cabang,
             'tanggal_produksi' => $request->tanggal_produksi,
@@ -110,8 +118,27 @@ class ProduksiController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
+        // Hapus detail produksi lama
+        $produksi->detailProduksis()->delete();
+
+        // Simpan ulang data detail produksi
+        foreach ($request->detail_produk_id as $i => $detailId) {
+            DetailProduksi::create([
+                'produksi_id' => $produksi->id,
+                'detail_produk_id' => $detailId,
+                'qty' => $request->qty[$i],
+            ]);
+        }
+
+        DB::commit();
         return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil diperbarui.');
+
+    } catch (\Throwable $e) {
+        DB::rollBack();
+        return back()->withErrors('Gagal memperbarui data produksi: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Remove the specified resource from storage.

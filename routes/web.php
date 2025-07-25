@@ -40,6 +40,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/produk/{id}/detail', [ProdukController::class, 'show'])->name('produk.detail');
     Route::resource('detail-produk', DetailProdukController::class)->names('detail-produk');
     Route::resource('produksi', ProduksiController::class)->names('produksi');
+    Route::get('/produksi/{id}/detail', [ProduksiController::class, 'show'])->name('produksi.detail');
     Route::resource('pengeluaran', PengeluaranController::class)->names(names: 'pengeluaran');
     Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');
     Route::resource('karyawan', KaryawanController::class)->names('karyawan');

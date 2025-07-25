@@ -23,6 +23,6 @@ class DetailProduksi extends Model
     }
     public function detailProduk()
     {
-        return $this->belongsTo(DetailProduk::class);
+        return $this->belongsTo(DetailProduk::class)->withTrashed();
     }
 }
