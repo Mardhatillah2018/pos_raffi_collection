@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cabang;
 use App\Models\DetailProduk;
 use App\Models\DetailProduksi;
+use App\Models\Pengeluaran;
 use App\Models\Produksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,10 +18,15 @@ class ProduksiController extends Controller
      */
     public function index()
     {
-        $produksis = Produksi::with(['detailProduksis', 'user'])->orderBy('tanggal_produksi', 'desc')->get();
-        $cabangs = Cabang::all();
-        $detailProduks = DetailProduk::with(['produk', 'ukuran'])->get();
+        $produksis = Produksi::with([
+            'detailProduksis.detailProduk.produk',
+            'detailProduksis.detailProduk.ukuran',
+            'user'
+        ])->orderBy('tanggal_produksi', 'desc')->get();
 
+        $cabangs = Cabang::all();
+
+        $detailProduks = DetailProduk::with(['produk', 'ukuran'])->get();
 
         return view('produksi.index', compact('produksis', 'cabangs', 'detailProduks'));
     }
@@ -37,43 +43,53 @@ class ProduksiController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            // 'kode_cabang' => 'required|string|max:10',
-            'tanggal_produksi' => 'required|date',
-            'total_biaya' => 'required|numeric',
-            'keterangan' => 'nullable|string',
-            'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
-            'qty.*' => 'required|integer|min:1',
+{
+    $request->validate([
+        'tanggal_produksi' => 'required|date',
+        'total_biaya' => 'required|numeric',
+        'keterangan' => 'nullable|string',
+        'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
+        'qty.*' => 'required|integer|min:1',
+    ]);
+
+    DB::beginTransaction();
+
+    try {
+        $produksi = Produksi::create([
+            'kode_cabang' => Auth::user()->kode_cabang,
+            'tanggal_produksi' => $request->tanggal_produksi,
+            'total_biaya' => $request->total_biaya,
+            'keterangan' => $request->keterangan,
+            'created_by' => Auth::id(),
         ]);
 
-        DB::beginTransaction();
-
-        try {
-            $produksi = Produksi::create([
-                'kode_cabang' => Auth::user()->kode_cabang,
-                'tanggal_produksi' => $request->tanggal_produksi,
-                'total_biaya' => $request->total_biaya,
-                'keterangan' => $request->keterangan,
-                'created_by' => Auth::id(),
+        foreach ($request->detail_produk_id as $i => $detailId) {
+            DetailProduksi::create([
+                'produksi_id' => $produksi->id,
+                'detail_produk_id' => $detailId,
+                'qty' => $request->qty[$i],
             ]);
-
-            foreach ($request->detail_produk_id as $i => $detailId) {
-                DetailProduksi::create([
-                    'produksi_id' => $produksi->id,
-                    'detail_produk_id' => $detailId,
-                    'qty' => $request->qty[$i],
-                ]);
-            }
-
-            DB::commit();
-            return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil ditambahkan.');
-
-        } catch (\Throwable $e) {
-            DB::rollback();
-            return back()->withErrors('Gagal menyimpan data produksi: ' . $e->getMessage());
         }
+
+        // Simpan juga ke tabel pengeluarans (kategori biaya produksi)
+        Pengeluaran::create([
+            'tanggal' => $request->tanggal_produksi,
+            'kode_cabang' => Auth::user()->kode_cabang,
+            'created_by' => Auth::id(),
+            'kategori_id' => 5,
+            'total_pengeluaran' => $request->total_biaya,
+            'keterangan' => 'Biaya Produksi tanggal ' . $request->tanggal_produksi,
+        ]);
+
+        DB::commit();
+        return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil ditambahkan.');
+
+    } catch (\Throwable $e) {
+        DB::rollback();
+        return back()->withErrors('Gagal menyimpan data produksi: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Display the specified resource.
@@ -96,49 +112,43 @@ class ProduksiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Produksi $produksi)
-{
-    $request->validate([
-        'kode_cabang' => 'required|string|max:10',
-        'tanggal_produksi' => 'required|date',
-        'total_biaya' => 'required|numeric',
-        'keterangan' => 'nullable|string',
-        'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
-        'qty.*' => 'required|integer|min:1',
-    ]);
+    public function update(Request $request, $id)
+    {
+        // validasi input
+        $request->validate([
+            'tanggal_produksi' => 'required|date',
+            'total_biaya' => 'required|numeric|min:0',
+            'keterangan' => 'nullable|string',
+            'detail_produk_id' => 'required|array|min:1',
+            'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
+            'qty' => 'required|array|min:1',
+            'qty.*' => 'required|integer|min:1',
+        ]);
 
-    DB::beginTransaction();
+        // ambil data produksi yg akan diupdate
+        $produksi = Produksi::findOrFail($id);
 
-    try {
-        // Update data utama produksi
+        // update data produksi
         $produksi->update([
-            'kode_cabang' => $request->kode_cabang,
             'tanggal_produksi' => $request->tanggal_produksi,
             'total_biaya' => $request->total_biaya,
             'keterangan' => $request->keterangan,
         ]);
 
-        // Hapus detail produksi lama
+        // hapus detail produksi lama
         $produksi->detailProduksis()->delete();
 
-        // Simpan ulang data detail produksi
-        foreach ($request->detail_produk_id as $i => $detailId) {
+        // tambah detail produksi baru
+        foreach ($request->detail_produk_id as $index => $detail_produk_id) {
             DetailProduksi::create([
                 'produksi_id' => $produksi->id,
-                'detail_produk_id' => $detailId,
-                'qty' => $request->qty[$i],
+                'detail_produk_id' => $detail_produk_id,
+                'qty' => $request->qty[$index],
             ]);
         }
 
-        DB::commit();
         return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil diperbarui.');
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        return back()->withErrors('Gagal memperbarui data produksi: ' . $e->getMessage());
     }
-}
-
 
     /**
      * Remove the specified resource from storage.

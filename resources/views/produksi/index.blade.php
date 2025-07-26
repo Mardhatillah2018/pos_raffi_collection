@@ -18,7 +18,7 @@
                             <th>No</th>
                             <th>Tanggal Produksi</th>
                             <th>Total Biaya</th>
-                            <th>Keterangan</th>
+                            <th>Total Qty</th>
                             <th>Dibuat Oleh</th>
                             <th>Aksi</th>
                         </tr>
@@ -29,7 +29,8 @@
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td class="text-center">{{ $produksi->tanggal_produksi }}</td>
                                 <td class="text-end">Rp {{ number_format($produksi->total_biaya, 0, ',', '.') }}</td>
-                                <td>{{ $produksi->keterangan }}</td>
+                                <td>{{ $produksi->detailProduksis->sum('qty') }}</td>
+
                                 <td class="text-center">{{ $produksi->user->nama ?? '-' }}</td>
 
                                 <td class="align-middle text-center">
