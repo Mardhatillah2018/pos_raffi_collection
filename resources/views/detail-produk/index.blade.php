@@ -62,9 +62,13 @@
                 </div>
             @endif
         </div>
-        <div class="card-footer text-end">
-            <a href="{{ route('produk.index') }}" class="btn btn-secondary btn-sm">← Kembali</a>
+        <div class="card-footer bg-white text-end">
+            <a href="{{ route('produk.index') }}" class="btn btn-sm btn-secondary d-inline-flex align-items-center">
+                <i class="material-icons-round me-1" style="font-size: 16px;">arrow_back</i>
+                Kembali
+            </a>
         </div>
+
     </div>
 </div>
 

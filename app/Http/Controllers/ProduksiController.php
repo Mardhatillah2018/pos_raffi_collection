@@ -7,6 +7,7 @@ use App\Models\DetailProduk;
 use App\Models\DetailProduksi;
 use App\Models\Pengeluaran;
 use App\Models\Produksi;
+use App\Models\Stok;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +43,8 @@ class ProduksiController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+
+public function store(Request $request)
 {
     $request->validate([
         'tanggal_produksi' => 'required|date',
@@ -64,11 +66,30 @@ class ProduksiController extends Controller
         ]);
 
         foreach ($request->detail_produk_id as $i => $detailId) {
+            $qty = $request->qty[$i];
+
+            // Simpan ke detail produksis
             DetailProduksi::create([
                 'produksi_id' => $produksi->id,
                 'detail_produk_id' => $detailId,
-                'qty' => $request->qty[$i],
+                'qty' => $qty,
             ]);
+
+            // Tambah/update ke tabel stoks
+            $stok = Stok::where('detail_produk_id', $detailId)
+                ->where('kode_cabang', Auth::user()->kode_cabang)
+                ->first();
+
+            if ($stok) {
+                $stok->stok += $qty;
+                $stok->save();
+            } else {
+                Stok::create([
+                    'detail_produk_id' => $detailId,
+                    'kode_cabang' => Auth::user()->kode_cabang,
+                    'stok' => $qty,
+                ]);
+            }
         }
 
         // Simpan juga ke tabel pengeluarans (kategori biaya produksi)
@@ -83,7 +104,6 @@ class ProduksiController extends Controller
 
         DB::commit();
         return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil ditambahkan.');
-
     } catch (\Throwable $e) {
         DB::rollback();
         return back()->withErrors('Gagal menyimpan data produksi: ' . $e->getMessage());

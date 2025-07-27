@@ -18,12 +18,12 @@ class DetailProduk extends Model
 
     public function produk()
     {
-        return $this->belongsTo(Produk::class, 'produk_id')->withTrashed(); // ← tambahkan ini
+        return $this->belongsTo(Produk::class, 'produk_id')->withTrashed();
     }
 
     public function ukuran()
     {
-        return $this->belongsTo(UkuranProduk::class, 'ukuran_id')->withTrashed(); // opsional kalau ukuran juga bisa soft delete
+        return $this->belongsTo(UkuranProduk::class, 'ukuran_id')->withTrashed();
     }
 
     public function detailProduksis()

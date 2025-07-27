@@ -67,7 +67,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/stok.html">
+            <a class="nav-link {{ Request::is('stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/stok">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
                 <span class="nav-link-text ms-1">Stok</span>
             </a>
