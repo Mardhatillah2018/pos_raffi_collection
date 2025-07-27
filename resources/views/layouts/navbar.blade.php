@@ -16,6 +16,8 @@
                     'ukuran-produk.index' => 'Ukuran Produk',
                     'detail-produk.index' => 'Detail Produk',
                     'produksi.index' => 'Produksi',
+                    'stok.index' => 'Stok',
+                    'stok.show' => 'Detail Stok',
                     'pengeluaran.index' => 'Pengeluaran',
                     'kategori-pengeluaran.index' => 'Kategori Pengeluaran',
                     'karyawan.index' => 'Karyawan',

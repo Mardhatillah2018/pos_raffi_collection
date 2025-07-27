@@ -5,6 +5,7 @@ use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriPengeluaranController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\ProduksiController;
@@ -42,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('detail-produk', DetailProdukController::class)->names('detail-produk');
     Route::resource('produksi', ProduksiController::class)->names('produksi');
     Route::get('/produksi/{id}/detail', [ProduksiController::class, 'show'])->name('produksi.detail');
+    Route::resource('pembelian', PembelianController::class)->names('pembelian');
+    Route::get('/pembelian/{id}/detail', [PembelianController::class, 'show'])->name('pembelian.detail');
     Route::resource('stok', StokController::class)->names('stok');
     Route::resource('pengeluaran', PengeluaranController::class)->names(names: 'pengeluaran');
     Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');

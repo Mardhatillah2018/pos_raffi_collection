@@ -31,4 +31,9 @@ class DetailProduk extends Model
         return $this->hasMany(DetailProduksi::class);
     }
 
+    public function detailPembelian()
+    {
+        return $this->hasMany(DetailPembelian::class);
+    }
+
 }

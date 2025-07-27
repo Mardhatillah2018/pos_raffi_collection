@@ -118,7 +118,7 @@ public function store(Request $request)
     {
         $produksi = Produksi::with(['detailProduksis.detailProduk.produk', 'detailProduksis.detailProduk.ukuran', 'user', 'cabang'])->findOrFail($id);
 
-    return view('detail-produksi.index', compact('produksi'));
+    return view('produksi.detail-produksi', compact('produksi'));
     }
 
     /**

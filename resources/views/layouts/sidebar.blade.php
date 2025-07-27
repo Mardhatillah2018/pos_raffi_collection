@@ -67,6 +67,12 @@
             </a>
         </li>
         <li class="nav-item">
+            <a class="nav-link {{ Request::is('pembelian*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pembelian">
+                <i class="material-icons-round opacity-5 me-2">shopping_bag</i>
+                <span class="nav-link-text ms-1">Pembelian</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link {{ Request::is('stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/stok">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
                 <span class="nav-link-text ms-1">Stok</span>
