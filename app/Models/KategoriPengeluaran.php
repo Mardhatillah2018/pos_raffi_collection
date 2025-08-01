@@ -10,5 +10,6 @@ class KategoriPengeluaran extends Model
     use HasFactory;
     protected $fillable = [
         'nama_kategori',
+        'is_modal_produk',
     ];
 }

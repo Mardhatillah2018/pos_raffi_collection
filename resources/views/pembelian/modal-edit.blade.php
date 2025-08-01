@@ -14,15 +14,15 @@
         <div class="modal-body">
           <div class="row mb-3">
             <div class="col-md-4">
-              <label for="tanggal_pembelian" class="form-label">Tanggal Pembelian</label>
+              <label class="form-label">Tanggal Pembelian</label>
               <input type="date" name="tanggal_pembelian" class="form-control" value="{{ $pembelian->tanggal_pembelian }}" required>
             </div>
             <div class="col-md-4">
-              <label for="total_biaya" class="form-label">Total Biaya Pembelian (Rp)</label>
+              <label class="form-label">Total Biaya Pembelian (Rp)</label>
               <input type="number" name="total_biaya" class="form-control" value="{{ $pembelian->total_biaya }}" required min="0">
             </div>
             <div class="col-md-4">
-              <label for="keterangan" class="form-label">Keterangan</label>
+              <label class="form-label">Keterangan</label>
               <input type="text" name="keterangan" class="form-control" value="{{ $pembelian->keterangan }}">
             </div>
           </div>
@@ -38,11 +38,12 @@
               </thead>
               <tbody>
                 @foreach ($pembelian->detailPembelian as $detail)
-                    @php
-                        $namaProduk = $detail->detailProduk
-                            ? ($detail->detailProduk->produk->nama_produk ?? '-') . ' - ' . ($detail->detailProduk->ukuran->nama_ukuran ?? '-')
-                            : 'Produk tidak ditemukan (sudah dihapus)';
-                    @endphp
+                  @php
+                      $produk = $detail->detailProduk;
+                      $namaProduk = $produk
+                          ? ($produk->produk->nama_produk ?? '-') . ' - ' . ($produk->ukuran->nama_ukuran ?? '-')
+                          : 'Produk tidak ditemukan (sudah dihapus)';
+                  @endphp
                   <tr>
                     <td>
                       <input type="hidden" name="detail_produk_id[]" value="{{ $detail->detail_produk_id }}">
@@ -71,23 +72,68 @@
   </div>
 </div>
 
-<!-- Script untuk tambah dan hapus baris -->
+<script>
+  window.detailProduks = @json($detailProduks);
+</script>
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const table = document.querySelector('#tableEditPembelian{{ $pembelian->id }} tbody');
     const tambahBtn = document.querySelector('#tambahBarisEdit{{ $pembelian->id }}');
 
+    function initSelect2(el) {
+      $(el).select2({
+        dropdownParent: $('#modalEditPembelian{{ $pembelian->id }}'),
+        width: '100%'
+      });
+    }
+
+    function getSelectedProdukIDs() {
+      const ids = [];
+
+      table.querySelectorAll('input[name="detail_produk_id[]"]').forEach(input => {
+        if (input.type === 'hidden') ids.push(input.value);
+      });
+
+      table.querySelectorAll('select[name="detail_produk_id[]"]').forEach(select => {
+        if (select.value) ids.push(select.value);
+      });
+
+      return ids;
+    }
+
+    function refreshSelectOptions() {
+      const selected = getSelectedProdukIDs();
+      const selects = table.querySelectorAll('select[name="detail_produk_id[]"]');
+
+      selects.forEach(select => {
+        const currentVal = select.value;
+        select.innerHTML = '<option value="">-- Pilih Produk --</option>';
+
+        window.detailProduks.forEach(produk => {
+          const id = produk.id.toString();
+          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.nama_ukuran ?? 'Ukuran Kosong');
+          const isUsed = selected.includes(id) && id !== currentVal;
+
+          if (!isUsed) {
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = nama;
+            if (id === currentVal) option.selected = true;
+            select.appendChild(option);
+          }
+        });
+
+        $(select).trigger('change.select2');
+      });
+    }
+
     tambahBtn.addEventListener('click', function () {
-      const baris = document.createElement('tr');
-      baris.innerHTML = `
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
         <td>
-          <select name="detail_produk_id[]" class="form-select" required>
+          <select name="detail_produk_id[]" class="form-select select-produk" required>
             <option value="">-- Pilih Produk --</option>
-            @foreach ($detailProduks as $produk)
-              <option value="{{ $produk->id }}">
-                {{ $produk->produk->nama_produk ?? 'Nama Kosong' }} - {{ $produk->ukuran->nama_ukuran ?? 'Ukuran Kosong' }}
-              </option>
-            @endforeach
           </select>
         </td>
         <td>
@@ -97,12 +143,22 @@
           <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
         </td>
       `;
-      table.appendChild(baris);
+      table.appendChild(tr);
+      const select = tr.querySelector('select');
+      initSelect2(select);
+      refreshSelectOptions();
     });
 
     table.addEventListener('click', function (e) {
       if (e.target.classList.contains('hapusBaris')) {
         e.target.closest('tr').remove();
+        refreshSelectOptions();
+      }
+    });
+
+    table.addEventListener('change', function (e) {
+      if (e.target.classList.contains('select-produk')) {
+        refreshSelectOptions();
       }
     });
   });

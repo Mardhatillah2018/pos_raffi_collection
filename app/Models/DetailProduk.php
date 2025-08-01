@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class DetailProduk extends Model
 {
@@ -36,4 +37,8 @@ class DetailProduk extends Model
         return $this->hasMany(DetailPembelian::class);
     }
 
+    public function stokCabang()
+    {
+        return $this->hasOne(Stok::class)->where('kode_cabang', Auth::user()->kode_cabang);
+    }
 }

@@ -31,15 +31,18 @@ class KategoriPengeluaranController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
+            'is_modal_produk' => 'nullable|boolean',
         ]);
 
         KategoriPengeluaran::create([
             'nama_kategori' => $request->nama_kategori,
+            'is_modal_produk' => $request->has('is_modal_produk'),
         ]);
 
         return redirect()->route('kategori-pengeluaran.index')
-                         ->with('success', 'Kategori pengeluaran berhasil ditambahkan.');
+                        ->with('success', 'Kategori pengeluaran berhasil ditambahkan.');
     }
+
 
     /**
      * Display the specified resource.
@@ -64,16 +67,19 @@ class KategoriPengeluaranController extends Controller
     {
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
+            'is_modal_produk' => 'nullable|boolean',
         ]);
 
         $kategoriPengeluaran = KategoriPengeluaran::findOrFail($id);
         $kategoriPengeluaran->update([
             'nama_kategori' => $request->nama_kategori,
+            'is_modal_produk' => $request->has('is_modal_produk'),
         ]);
 
         return redirect()->route('kategori-pengeluaran.index')
-                         ->with('success', 'Kategori pengeluaran berhasil diperbarui.');
+                        ->with('success', 'Kategori pengeluaran berhasil diperbarui.');
     }
+
 
     /**
      * Remove the specified resource from storage.

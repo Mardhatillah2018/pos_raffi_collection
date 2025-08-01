@@ -11,13 +11,23 @@
         </div>
 
         <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label for="edit_nama_kategori" class="form-label">Nama Kategori Pengeluaran</label>
-              <input type="text" name="nama_kategori" id="edit_nama_kategori" class="form-control" required>
+            <div class="row g-3">
+                <div class="col-md-12">
+                <label for="edit_nama_kategori" class="form-label">Nama Kategori Pengeluaran</label>
+                <input type="text" name="nama_kategori" id="edit_nama_kategori" class="form-control" required>
+                </div>
+
+                <div class="col-md-12 mt-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="edit_is_modal_produk" name="is_modal_produk" value="1">
+                    <label class="form-check-label" for="edit_is_modal_produk">
+                    Termasuk Modal Produk
+                    </label>
+                </div>
+                </div>
             </div>
-          </div>
         </div>
+
 
         <div class="modal-footer mt-3">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
@@ -30,15 +40,20 @@
 
 <script>
   function openEditKategoriPengeluaranModal(kategori) {
-    const modal = new bootstrap.Modal(document.getElementById('modalEditKategoriPengeluaran'));
+  const modal = new bootstrap.Modal(document.getElementById('modalEditKategoriPengeluaran'));
 
-    // Set nilai input
-    document.getElementById('edit_nama_kategori').value = kategori.nama_kategori;
+  // Isi nilai input
+  document.getElementById('edit_nama_kategori').value = kategori.nama_kategori;
 
-    // Set action form
-    const form = document.getElementById('formEditKategoriPengeluaran');
-    form.action = `/kategori-pengeluaran/${kategori.id}`;
+  // Set checkbox modal produk
+  const checkbox = document.getElementById('edit_is_modal_produk');
+  checkbox.checked = kategori.is_modal_produk === 1 || kategori.is_modal_produk === true;
 
-    modal.show();
-  }
+  // Set form action
+  const form = document.getElementById('formEditKategoriPengeluaran');
+  form.action = `/kategori-pengeluaran/${kategori.id}`;
+
+  modal.show();
+}
+
 </script>

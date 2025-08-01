@@ -35,7 +35,7 @@
               <tbody>
                 <tr>
                   <td>
-                    <select name="detail_produk_id[]" class="form-select" required>
+                    <select name="detail_produk_id[]" class="form-select select-produk" required>
                       <option value="">-- Pilih Produk --</option>
                       @foreach ($detailProduks as $produk)
                         <option value="{{ $produk->id }}">
@@ -56,7 +56,6 @@
             <button type="button" class="btn btn-sm btn-primary mt-2" id="tambahBarisCreate">+ Tambah Baris</button>
           </div>
 
-          <!-- Pindah Keterangan ke Bawah Tabel -->
           <div class="mb-3">
             <label for="keterangan" class="form-label">Keterangan</label>
             <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
@@ -71,23 +70,71 @@
     </div>
   </div>
 </div>
-
+<script>
+  window.detailProduks = @json($detailProduks);
+</script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const tableCreate = document.querySelector('#tableCreateProduksi tbody');
     const tambahBtnCreate = document.querySelector('#tambahBarisCreate');
 
+    // Inisialisasi Select2 (gunakan dropdownParent agar tidak tertutup modal)
+    function initSelect2(el) {
+      $(el).select2({
+        dropdownParent: $('#modalProduksi'),
+        width: '100%'
+      });
+    }
+
+    // Fungsi untuk refresh opsi select agar produk tidak bisa dipilih lebih dari satu kali
+    function refreshSelectOptions() {
+      const allSelects = document.querySelectorAll('.select-produk');
+      const selectedValues = Array.from(allSelects)
+        .map(sel => sel.value)
+        .filter(val => val !== '');
+
+      allSelects.forEach(select => {
+        const currentValue = select.value;
+
+        // Kosongkan select
+        select.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Pilih Produk --';
+        select.appendChild(placeholder);
+
+        // Tambahkan ulang opsi yang belum dipilih di select lain
+        window.detailProduks.forEach(produk => {
+          const id = produk.id.toString();
+          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.nama_ukuran ?? 'Ukuran Kosong');
+          const isUsed = selectedValues.includes(id) && id !== currentValue;
+
+          if (!isUsed) {
+            const opt = document.createElement('option');
+            opt.value = id;
+            opt.textContent = nama;
+            if (id === currentValue) opt.selected = true;
+            select.appendChild(opt);
+          }
+        });
+
+        $(select).trigger('change.select2');
+      });
+    }
+
+    // Inisialisasi select yang sudah ada
+    document.querySelectorAll('.select-produk').forEach(select => {
+      initSelect2(select);
+    });
+    refreshSelectOptions();
+
+    // Tambah baris baru
     tambahBtnCreate.addEventListener('click', function () {
-      const baris = document.createElement('tr');
-      baris.innerHTML = `
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
         <td>
-          <select name="detail_produk_id[]" class="form-select" required>
+          <select name="detail_produk_id[]" class="form-select select-produk" required>
             <option value="">-- Pilih Produk --</option>
-            @foreach ($detailProduks as $produk)
-              <option value="{{ $produk->id }}">
-                {{ $produk->produk->nama_produk ?? 'Nama Kosong' }} - {{ $produk->ukuran->nama_ukuran ?? 'Ukuran Kosong' }}
-              </option>
-            @endforeach
           </select>
         </td>
         <td>
@@ -97,13 +144,28 @@
           <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
         </td>
       `;
-      tableCreate.appendChild(baris);
+      tableCreate.appendChild(newRow);
+
+      const newSelect = newRow.querySelector('.select-produk');
+      initSelect2(newSelect);
+      refreshSelectOptions();
     });
 
+    // Hapus baris
     tableCreate.addEventListener('click', function (e) {
       if (e.target.classList.contains('hapusBaris')) {
         e.target.closest('tr').remove();
+        refreshSelectOptions();
+      }
+    });
+
+    // Saat produk berubah, perbarui semua select lainnya
+    tableCreate.addEventListener('change', function (e) {
+      if (e.target.classList.contains('select-produk')) {
+        refreshSelectOptions();
       }
     });
   });
 </script>
+
+

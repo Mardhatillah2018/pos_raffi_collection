@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cabang;
 use App\Models\DetailProduk;
 use App\Models\DetailProduksi;
+use App\Models\LogStok;
 use App\Models\Pengeluaran;
 use App\Models\Produksi;
 use App\Models\Stok;
@@ -44,72 +45,84 @@ class ProduksiController extends Controller
      * Store a newly created resource in storage.
      */
 
-public function store(Request $request)
-{
-    $request->validate([
-        'tanggal_produksi' => 'required|date',
-        'total_biaya' => 'required|numeric',
-        'keterangan' => 'nullable|string',
-        'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
-        'qty.*' => 'required|integer|min:1',
-    ]);
-
-    DB::beginTransaction();
-
-    try {
-        $produksi = Produksi::create([
-            'kode_cabang' => Auth::user()->kode_cabang,
-            'tanggal_produksi' => $request->tanggal_produksi,
-            'total_biaya' => $request->total_biaya,
-            'keterangan' => $request->keterangan,
-            'created_by' => Auth::id(),
+    public function store(Request $request)
+    {
+        $request->validate([
+            'tanggal_produksi' => 'required|date',
+            'total_biaya' => 'required|numeric',
+            'keterangan' => 'nullable|string',
+            'detail_produk_id.*' => 'required|integer|exists:detail_produks,id',
+            'qty.*' => 'required|integer|min:1',
         ]);
 
-        foreach ($request->detail_produk_id as $i => $detailId) {
-            $qty = $request->qty[$i];
+        DB::beginTransaction();
 
-            // Simpan ke detail produksis
-            DetailProduksi::create([
-                'produksi_id' => $produksi->id,
-                'detail_produk_id' => $detailId,
-                'qty' => $qty,
+        try {
+            $produksi = Produksi::create([
+                'kode_cabang' => Auth::user()->kode_cabang,
+                'tanggal_produksi' => $request->tanggal_produksi,
+                'total_biaya' => $request->total_biaya,
+                'keterangan' => $request->keterangan,
+                'created_by' => Auth::id(),
             ]);
 
-            // Tambah/update ke tabel stoks
-            $stok = Stok::where('detail_produk_id', $detailId)
-                ->where('kode_cabang', Auth::user()->kode_cabang)
-                ->first();
+            foreach ($request->detail_produk_id as $i => $detailId) {
+                $qty = $request->qty[$i];
 
-            if ($stok) {
-                $stok->stok += $qty;
-                $stok->save();
-            } else {
-                Stok::create([
+                // Simpan ke detail produksis
+                DetailProduksi::create([
+                    'produksi_id' => $produksi->id,
+                    'detail_produk_id' => $detailId,
+                    'qty' => $qty,
+                ]);
+
+                // Tambah/update ke tabel stoks
+                $stok = Stok::where('detail_produk_id', $detailId)
+                    ->where('kode_cabang', Auth::user()->kode_cabang)
+                    ->first();
+
+                if ($stok) {
+                    $stok->stok += $qty;
+                    $stok->save();
+                } else {
+                    Stok::create([
+                        'detail_produk_id' => $detailId,
+                        'kode_cabang' => Auth::user()->kode_cabang,
+                        'stok' => $qty,
+                    ]);
+                }
+
+                // Simpan ke log_stoks (stok masuk karena produksi)
+                LogStok::create([
                     'detail_produk_id' => $detailId,
                     'kode_cabang' => Auth::user()->kode_cabang,
-                    'stok' => $qty,
+                    'tanggal' => $request->tanggal_produksi,
+                    'qty' => $qty,
+                    'jenis' => 'masuk',
+                    'created_by' => Auth::id(),
+                    'status' => 'disetujui',
+                    'sumber' => 'produksi',
+                    'keterangan' => 'Hasil produksi tanggal ' . $request->tanggal_produksi,
                 ]);
             }
+
+            // Simpan juga ke tabel pengeluarans (kategori biaya produksi)
+            Pengeluaran::create([
+                'tanggal' => $request->tanggal_produksi,
+                'kode_cabang' => Auth::user()->kode_cabang,
+                'created_by' => Auth::id(),
+                'kategori_id' => 5,
+                'total_pengeluaran' => $request->total_biaya,
+                'keterangan' => 'Biaya Produksi tanggal ' . $request->tanggal_produksi,
+            ]);
+
+            DB::commit();
+            return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil ditambahkan.');
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return back()->withErrors('Gagal menyimpan data produksi: ' . $e->getMessage());
         }
-
-        // Simpan juga ke tabel pengeluarans (kategori biaya produksi)
-        Pengeluaran::create([
-            'tanggal' => $request->tanggal_produksi,
-            'kode_cabang' => Auth::user()->kode_cabang,
-            'created_by' => Auth::id(),
-            'kategori_id' => 5,
-            'total_pengeluaran' => $request->total_biaya,
-            'keterangan' => 'Biaya Produksi tanggal ' . $request->tanggal_produksi,
-        ]);
-
-        DB::commit();
-        return redirect()->route('produksi.index')->with('success', 'Data produksi berhasil ditambahkan.');
-    } catch (\Throwable $e) {
-        DB::rollback();
-        return back()->withErrors('Gagal menyimpan data produksi: ' . $e->getMessage());
     }
-}
-
 
     /**
      * Display the specified resource.

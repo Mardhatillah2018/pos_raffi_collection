@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cabang;
 use App\Models\DetailPembelian;
 use App\Models\DetailProduk;
+use App\Models\LogStok;
 use App\Models\Pembelian;
 use App\Models\Pengeluaran;
 use App\Models\Stok;
@@ -89,6 +90,18 @@ class PembelianController extends Controller
                         'stok' => $qty,
                     ]);
                 }
+                // Simpan ke log_stoks (stok masuk karena produksi)
+                LogStok::create([
+                    'detail_produk_id' => $detailId,
+                    'kode_cabang' => Auth::user()->kode_cabang,
+                    'tanggal' => $request->tanggal_pembelian,
+                    'qty' => $qty,
+                    'jenis' => 'masuk',
+                    'created_by' => Auth::id(),
+                    'status' => 'disetujui',
+                    'sumber' => 'pembelian',
+                    'keterangan' => 'Pembelian Barang Jadi tanggal ' . $request->tanggal_pembelian,
+                ]);
             }
 
             // Simpan juga ke tabel pengeluarans (kategori biaya pembelian)
@@ -96,7 +109,7 @@ class PembelianController extends Controller
                 'tanggal' => $request->tanggal_pembelian,
                 'kode_cabang' => Auth::user()->kode_cabang,
                 'created_by' => Auth::id(),
-                'kategori_id' => 5,
+                'kategori_id' => 3,
                 'total_pengeluaran' => $request->total_biaya,
                 'keterangan' => 'Biaya Pembelian tanggal ' . $request->tanggal_pembelian,
             ]);

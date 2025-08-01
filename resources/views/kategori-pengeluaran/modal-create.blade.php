@@ -11,9 +11,18 @@
 
         <div class="modal-body">
           <div class="row g-3">
-            <div class="col-md-6">
+            <div class="col-md-12">
               <label for="nama_kategori" class="form-label">Nama Kategori Pengeluaran</label>
               <input type="text" name="nama_kategori" id="nama_kategori" class="form-control" required>
+            </div>
+
+            <div class="col-md-12 mt-2">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="is_modal_produk" name="is_modal_produk" value="1">
+                <label class="form-check-label" for="is_modal_produk">
+                  Termasuk Modal Produk
+                </label>
+              </div>
             </div>
           </div>
         </div>

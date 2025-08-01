@@ -85,7 +85,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/penjualan.html">
+            <a class="nav-link {{ Request::is('penjualan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/penjualan">
                 <i class="material-icons-round opacity-5 me-2">point_of_sale</i>
                 <span class="nav-link-text ms-1">Penjualan</span>
             </a>
