@@ -60,40 +60,41 @@ class PenjualanController extends Controller
     }
 
     public function review(Request $request)
-    {
-        $validated = $request->validate([
-            'no_faktur' => 'required|string',
-            'tanggal_penjualan' => 'required|date',
-            'detail_produk_id.*' => 'required|exists:detail_produks,id',
-            'qty.*' => 'required|integer|min:1',
-            'harga_satuan.*' => 'required|numeric|min:0',
-            'total_harga' => 'required|numeric|min:0',
-        ]);
+{
+    $validated = $request->validate([
+        'no_faktur' => 'required|string',
+        'tanggal_penjualan' => 'required|date',
+        'detail_produk_id.*' => 'required|exists:detail_produks,id',
+        'qty.*' => 'required|integer|min:1',
+        'harga_satuan.*' => 'required|numeric|min:0',
+        'total_harga' => 'required|numeric|min:0',
+    ]);
 
-        $produkDetails = [];
-        foreach ($request->detail_produk_id as $index => $id) {
-            $produk = DetailProduk::with(['produk', 'ukuran'])->find($id);
-            $qty = $request->qty[$index];
-            $harga = $request->harga_satuan[$index];
-            $subtotal = $qty * $harga;
+    $produkDetails = [];
+    foreach ($request->detail_produk_id as $index => $id) {
+        $produk = DetailProduk::with(['produk', 'ukuran'])->find($id);
+        $qty = $request->qty[$index];
+        $harga = $request->harga_satuan[$index];
+        $subtotal = $qty * $harga;
 
-            $produkDetails[] = [
-                'detail_produk_id' => $id,
-                'produk' => $produk->produk->nama_produk,
-                'ukuran' => $produk->ukuran->nama_ukuran,
-                'qty' => $qty,
-                'harga' => $harga,
-                'subtotal' => $subtotal,
-            ];
-        }
-
-        return view('penjualan.review', [
-            'no_faktur' => $request->no_faktur,
-            'tanggal_penjualan' => $request->tanggal_penjualan,
-            'total_harga' => $request->total_harga,
-            'produkDetails' => $produkDetails,
-        ]);
+        $produkDetails[] = [
+            'detail_produk_id' => $id,
+            'produk' => $produk->produk->nama_produk,
+            'ukuran' => $produk->ukuran->nama_ukuran,
+            'qty' => $qty,
+            'harga' => $harga,
+            'subtotal' => $subtotal,
+        ];
     }
+
+    return redirect()->route('penjualan.create')->with('reviewData', [
+        'no_faktur' => $request->no_faktur,
+        'tanggal_penjualan' => $request->tanggal_penjualan,
+        'total_harga' => $request->total_harga,
+        'produkDetails' => $produkDetails,
+    ]);
+}
+
 
     /**
      * Store a newly created resource in storage.

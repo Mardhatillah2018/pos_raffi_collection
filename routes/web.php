@@ -5,6 +5,7 @@ use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriPengeluaranController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\LogStokController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PengeluaranController;
 use App\Http\Controllers\PenjualanController;
@@ -47,6 +48,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('pembelian', PembelianController::class)->names('pembelian');
     Route::get('/pembelian/{id}/detail', [PembelianController::class, 'show'])->name('pembelian.detail');
     Route::resource('stok', StokController::class)->names('stok');
+    Route::get('/pengurangan-stok', [LogStokController::class, 'penguranganIndex'])->name('pengurangan.index');
+    Route::post('/pengurangan-stok/ajukan', [LogStokController::class, 'ajukanPengurangan'])->name('pengurangan.ajukan');
+    Route::post('/pengurangan/{id}/ubah-status', [LogStokController::class, 'ubahStatus'])->name('pengurangan.ubah-status');
     Route::resource('penjualan', PenjualanController::class)->names('penjualan');
     Route::post('/penjualan/review', [PenjualanController::class, 'review'])->name('penjualan.review');
     Route::post('/penjualan/konfirmasi', [PenjualanController::class, 'store'])->name('penjualan.konfirmasi');

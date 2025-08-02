@@ -79,11 +79,19 @@
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/stok.html">
+            <a class="nav-link {{ Request::is('pengurangan-stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengurangan-stok">
                 <i class="material-icons-round opacity-5 me-2">style</i>
-                <span class="nav-link-text ms-1">Pengurangan Stok</span>
+                <span class="nav-link-text ms-1 d-flex align-items-center">
+                    Pengurangan Stok
+                    @if ($jumlahPendingPengurangan > 0)
+                        <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.75rem;">
+                            {{ $jumlahPendingPengurangan }}
+                        </span>
+                    @endif
+                </span>
             </a>
         </li>
+
         <li class="nav-item">
             <a class="nav-link {{ Request::is('penjualan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/penjualan">
                 <i class="material-icons-round opacity-5 me-2">point_of_sale</i>

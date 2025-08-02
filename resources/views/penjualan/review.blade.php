@@ -57,22 +57,3 @@
     </form>
 </div>
 @endsection
-@if(session('sukses_penjualan'))
-<script>
-    Swal.fire({
-        title: 'Penjualan Berhasil!',
-        text: 'Apa yang ingin Anda lakukan selanjutnya?',
-        icon: 'success',
-        showCancelButton: true,
-        confirmButtonText: 'Cetak Struk',
-        cancelButtonText: 'Lihat Penjualan',
-        reverseButtons: true
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.open('{{ route('penjualan.cetakFaktur', $penjualan->id) }}', '_blank');
-        } else {
-            window.location.href = '{{ route('penjualan.index') }}';
-        }
-    });
-</script>
-@endif

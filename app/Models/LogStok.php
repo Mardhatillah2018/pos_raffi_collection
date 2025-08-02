@@ -19,4 +19,10 @@ class LogStok extends Model
         'sumber',
         'keterangan',
     ];
+
+    public function detailProduk()
+    {
+        return $this->belongsTo(DetailProduk::class);
+    }
+
 }

@@ -67,7 +67,6 @@
                     <a class="nav-link dropdown-toggle d-flex align-items-center text-white" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="me-1 fw-bold">{{ auth()->user()->nama }}</span>
                         <i class="material-symbols-rounded me-1" style="font-size: 1.6rem;">account_circle</i>
-                        <i class="material-symbols-rounded" style="font-size: 1.2rem;">expand_more</i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="navbarDropdown">
                         <li>

@@ -29,15 +29,18 @@
                             <td>{{ $detail->ukuran->nama_ukuran }}</td>
                             <td>{{ $stok }}</td>
                             <td>
-                                <button class="btn btn-success btn-sm px-2 py-1"
+                                {{-- <button class="btn btn-success btn-sm px-2 py-1"
                                     onclick=""
                                     title="Tambah Stok">
                                     <i class="material-icons-round text-white">add</i>
                                     <span class="text-white fw-semibold small">Tambah</span>
-                                </button>
+                                </button> --}}
 
                                 <button class="btn btn-danger btn-sm px-2 py-1"
-                                    onclick=""
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalKurangiStok"
+                                    data-id="{{ $detail->id }}"
+                                    data-nama="{{ $produk->nama_produk }} - Ukuran {{ $detail->ukuran->nama_ukuran }}"
                                     title="Kurangi Stok">
                                     <i class="material-icons-round text-white">remove</i>
                                     <span class="text-white fw-semibold small">Kurang</span>
@@ -58,3 +61,22 @@
     </div>
 </div>
 @endsection
+
+@push('modals')
+    @include('stok.modal-kurang-stok')
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = document.getElementById('modalKurangiStok');
+        modal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const produkId = button.getAttribute('data-id');
+            const namaProduk = button.getAttribute('data-nama');
+            modal.querySelector('#kurangDetailProdukId').value = produkId;
+            modal.querySelector('#kurangNamaProduk').value = namaProduk;
+        });
+    });
+</script>
+@endpush

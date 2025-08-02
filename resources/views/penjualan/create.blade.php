@@ -2,6 +2,10 @@
 
 @section('content')
 <div class="container mt-4">
+    @php
+        $reviewData = session('reviewData');
+    @endphp
+
     <form action="{{ route('penjualan.review') }}" method="POST">
         @csrf
 
@@ -13,12 +17,12 @@
                 <div class="row mb-4">
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">No Faktur</label>
-                        <input type="text" name="no_faktur" class="form-control bg-light border-0 fw-bold" value="{{ $noFaktur }}" readonly>
+                        <input type="text" name="no_faktur" class="form-control" value="{{ $reviewData['no_faktur'] ?? $noFaktur }}" readonly>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Tanggal Penjualan</label>
                         <div class="form-control bg-light border-0">{{ date('d-m-Y') }}</div>
-                        <input type="hidden" name="tanggal_penjualan" value="{{ date('Y-m-d') }}">
+                        <input type="hidden" name="tanggal_penjualan" value="{{ $reviewData['tanggal_penjualan'] ?? date('Y-m-d') }}">
                     </div>
                 </div>
 
@@ -36,33 +40,67 @@
                             </tr>
                         </thead>
                         <tbody id="produkBody">
-                            <tr>
-                                <td>
-                                    <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
-                                        <option value="">-- Pilih Produk --</option>
-                                        @foreach ($detailProduks as $detail)
-                                            @php
-                                                $stok = $detail->stokCabang->stok ?? 0;
-                                            @endphp
-                                            <option
-                                                value="{{ $detail->id }}"
-                                                data-harga="{{ $detail->harga_jual }}"
-                                                data-stok="{{ $stok }}"
-                                                {{ $stok < 1 ? 'disabled class=text-danger' : '' }}
-                                            >
-                                                {{ $detail->produk->nama_produk }} - {{ $detail->ukuran->nama_ukuran }}
-                                                {{ $stok < 1 ? '(Stok Habis)' : '' }}
-                                            </option>
-                                        @endforeach
+    @if($reviewData && isset($reviewData['produkDetails']))
+        @foreach($reviewData['produkDetails'] as $index => $detail)
+        <tr>
+            <td>
+                <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
+                    <option value="">-- Pilih Produk --</option>
+                    @foreach ($detailProduks as $dp)
+                        @php
+                            $stok = $dp->stokCabang->stok ?? 0;
+                            $selected = $dp->id == $detail['detail_produk_id'] ? 'selected' : '';
+                        @endphp
+                        <option value="{{ $dp->id }}"
+                                data-harga="{{ $dp->harga_jual }}"
+                                data-stok="{{ $stok }}"
+                                {{ $stok < 1 ? 'disabled class=text-danger' : '' }}
+                                {{ $selected }}>
+                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->nama_ukuran }}
+                            {{ $stok < 1 ? '(Stok Habis)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </td>
+            <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="{{ $detail['qty'] }}" required></td>
+            <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly value="{{ $detail['harga'] }}"></td>
+            <td><input type="text" class="form-control subtotal text-end bg-light" readonly value="{{ $detail['subtotal'] }}"></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-danger btn-remove">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        </tr>
+        @endforeach
+    @else
+        {{-- Baris default jika belum ada review --}}
+        <tr>
+            <td>
+                <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
+                    <option value="">-- Pilih Produk --</option>
+                    @foreach ($detailProduks as $dp)
+                        @php $stok = $dp->stokCabang->stok ?? 0; @endphp
+                        <option value="{{ $dp->id }}" data-harga="{{ $dp->harga_jual }}"
+                            data-stok="{{ $stok }}"
+                            {{ $stok < 1 ? 'disabled class=text-danger' : '' }}>
+                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->nama_ukuran }}
+                            {{ $stok < 1 ? '(Stok Habis)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </td>
+            <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="1" required></td>
+            <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly></td>
+            <td><input type="text" class="form-control subtotal text-end bg-light" readonly></td>
+            <td class="text-center">
+                <button type="button" class="btn btn-sm btn-danger btn-remove">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        </tr>
+    @endif
+</tbody>
 
-                                    </select>
-                                </td>
-                                <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="1" required></td>
-                                <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly></td>
-                                <td><input type="text" class="form-control subtotal text-end bg-light" readonly></td>
-                                <td class="text-center"><button type="button" class="btn btn-sm btn-danger btn-remove"><i class="bi bi-trash-fill"></i></button></td>
-                            </tr>
-                        </tbody>
                     </table>
                     <button type="button" class="btn btn-outline-info btn-sm" id="btnAddRow">
                         <i class="bi bi-plus-circle me-1"></i>Tambah Baris
@@ -80,7 +118,9 @@
                 <div class="d-flex justify-content-end">
                     <div class="text-end">
                         <label class="fw-bold fs-5 text-success">Total Harga</label>
-                        <input type="text" id="totalHarga" name="total_harga" class="form-control fw-bold text-end fs-5 bg-light border-0" readonly>
+                        <input type="text" id="totalHarga" name="total_harga"
+                            class="form-control fw-bold text-end fs-5 bg-light border-0"
+                            readonly value="{{ $reviewData['total_harga'] ?? '' }}">
                     </div>
                 </div>
             </div>
@@ -219,4 +259,14 @@
         updateProdukOptions();
     });
 </script>
+@if(session('reviewData'))
+        @include('penjualan.modal-review', session('reviewData'))
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var reviewModal = new bootstrap.Modal(document.getElementById('modalReviewPenjualan'));
+                reviewModal.show();
+            });
+        </script>
+    @endif
 @endpush

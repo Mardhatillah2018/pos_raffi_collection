@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\DetailProduk;
+use App\Models\LogStok;
 use App\Models\Produk;
 use App\Models\Stok;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class StokController extends Controller
 {

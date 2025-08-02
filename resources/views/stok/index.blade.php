@@ -5,9 +5,9 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Daftar Stok Produk</h5>
-            <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahStok">
+            {{-- <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTambahStok">
                 + Tambah Stok Manual
-            </a>
+            </a> --}}
         </div>
 
         <div class="card-body">
@@ -54,8 +54,3 @@
 </div>
 @endsection
 
-@push('modals')
-    @include('stok.modal-create')
-    @include('stok.modal-tambah-stok')
-    @include('stok.modal-kurang-stok')
-@endpush
