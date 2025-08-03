@@ -18,7 +18,9 @@
                             <th>Qty</th>
                             <th>Keterangan</th>
                             <th>Status</th>
-                            <th>Aksi</th>
+                            @if (Auth::user()->role === 'super_admin')
+                                <th>Aksi</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -38,69 +40,71 @@
                                         <span class="badge bg-danger">Ditolak</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
-                                    @if($log->status == 'menunggu')
-                                        <span
-                                            class="badge bg-primary text-white"
-                                            style="cursor: pointer;"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalKonfirmasi{{ $log->id }}"
-                                            title="Proses Pengurangan"
-                                        >
-                                            <i class="fas fa-cogs me-1"></i> Proses
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary"><i class="fas fa-cogs me-1"></i> Proses</span>
-                                    @endif
-                                </td>
+                                @if (Auth::user()->role === 'super_admin')
+                                    <td class="text-center">
+                                        @if($log->status == 'menunggu')
+                                            <span
+                                                class="badge bg-primary text-white"
+                                                style="cursor: pointer;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalKonfirmasi{{ $log->id }}"
+                                                title="Proses Pengurangan"
+                                            >
+                                                <i class="fas fa-cogs me-1"></i> Proses
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary"><i class="fas fa-cogs me-1"></i> Proses</span>
+                                        @endif
+                                    </td>
 
-                                {{-- modal konfirmasi --}}
-                                <div class="modal fade" id="modalKonfirmasi{{ $log->id }}" tabindex="-1" aria-labelledby="modalKonfirmasiLabel{{ $log->id }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content border-0 shadow">
-                                        <div class="modal-header" style="background-color: #8B0000; color: white;">
-                                            <h5 class="modal-title" id="modalKonfirmasiLabel{{ $log->id }}" style="color: white;">
-                                                <i class="fas fa-exclamation-circle me-2"></i>Konfirmasi Pengurangan Stok
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p class="mb-3 fs-6 text-dark fw-bold">Anda yakin ingin memproses pengurangan stok berikut?</p>
+                                    {{-- modal konfirmasi --}}
+                                    <div class="modal fade" id="modalKonfirmasi{{ $log->id }}" tabindex="-1" aria-labelledby="modalKonfirmasiLabel{{ $log->id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow">
+                                            <div class="modal-header" style="background-color: #8B0000; color: white;">
+                                                <h5 class="modal-title" id="modalKonfirmasiLabel{{ $log->id }}" style="color: white;">
+                                                    <i class="fas fa-exclamation-circle me-2"></i>Konfirmasi Pengurangan Stok
+                                                </h5>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="mb-3 fs-6 text-dark fw-bold">Anda yakin ingin memproses pengurangan stok berikut?</p>
 
-                                            <div class="border rounded p-3 bg-light text-dark text-sm">
-                                                <div class="row mb-2">
-                                                    <div class="col-4 fw-bold">Produk</div>
-                                                    <div class="col-8">
-                                                        {{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->nama_ukuran ?? '-' }}
+                                                <div class="border rounded p-3 bg-light text-dark text-sm">
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 fw-bold">Produk</div>
+                                                        <div class="col-8">
+                                                            {{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->nama_ukuran ?? '-' }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="row mb-2">
+                                                        <div class="col-4 fw-bold">Qty</div>
+                                                        <div class="col-8">{{ $log->qty }}</div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-4 fw-bold">Keterangan</div>
+                                                        <div class="col-8">{{ $log->keterangan ?? '-' }}</div>
                                                     </div>
                                                 </div>
-                                                <div class="row mb-2">
-                                                    <div class="col-4 fw-bold">Qty</div>
-                                                    <div class="col-8">{{ $log->qty }}</div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-4 fw-bold">Keterangan</div>
-                                                    <div class="col-8">{{ $log->keterangan ?? '-' }}</div>
-                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <form action="{{ route('pengurangan.ubah-status', $log->id) }}" method="POST" id="formUbahStatus-{{ $log->id }}">
+                                                    @csrf
+                                                    <input type="hidden" name="status" id="statusInput-{{ $log->id }}">
+
+                                                    <button type="button" class="btn btn-success" onclick="submitStatus('{{ $log->id }}', 'disetujui')">
+                                                        <i class="fas fa-check me-1"></i>Setujui
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger" onclick="submitStatus('{{ $log->id }}', 'ditolak')">
+                                                        <i class="fas fa-times me-1"></i>Tolak
+                                                    </button>
+                                                </form>
+                                            </div>
                                             </div>
                                         </div>
-
-                                        <div class="modal-footer">
-                                            <form action="{{ route('pengurangan.ubah-status', $log->id) }}" method="POST" id="formUbahStatus-{{ $log->id }}">
-                                                @csrf
-                                                <input type="hidden" name="status" id="statusInput-{{ $log->id }}">
-
-                                                <button type="button" class="btn btn-success" onclick="submitStatus('{{ $log->id }}', 'disetujui')">
-                                                    <i class="fas fa-check me-1"></i>Setujui
-                                                </button>
-                                                <button type="button" class="btn btn-danger" onclick="submitStatus('{{ $log->id }}', 'ditolak')">
-                                                    <i class="fas fa-times me-1"></i>Tolak
-                                                </button>
-                                            </form>
-                                        </div>
-                                        </div>
                                     </div>
-                                </div>
+                                @endif
 
                             </tr>
                         @empty

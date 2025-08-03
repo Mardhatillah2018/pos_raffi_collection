@@ -24,11 +24,13 @@ class LogStokController extends Controller
         $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
             ->where('jenis', 'keluar')
             ->where('sumber', 'pengurangan')
+            ->where('kode_cabang', $kodeCabang) // filter berdasarkan cabang
             ->latest()
             ->get();
 
         return view('stok.pengurangan-stok', compact('logStoks'));
     }
+
     public function ajukanPengurangan(Request $request)
     {
         $request->validate([

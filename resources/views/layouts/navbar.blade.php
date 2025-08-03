@@ -19,11 +19,17 @@
                     'pembelian.index' => 'Pembelian',
                     'stok.index' => 'Stok',
                     'stok.show' => 'Detail Stok',
+                    'pengurangan.index' => 'Pengurangan Stok',
                     'penjualan.index' => 'Penjualan',
                     'penjualan.create' => 'Tambah Penjualan',
+                    'penjualan.detail' => 'Detail Penjualan',
                     'pengeluaran.index' => 'Pengeluaran',
                     'kategori-pengeluaran.index' => 'Kategori Pengeluaran',
+                    'keuntungan.index' => 'Keuntungan',
+                    'keuntungan.show' => 'Keuntungan Per Hari',
                     'karyawan.index' => 'Karyawan',
+                    'gaji.index' => 'Gaji',
+                    'gaji.create' => 'Tambah Gaji',
                     'user.index' => 'User',
                 ];
 

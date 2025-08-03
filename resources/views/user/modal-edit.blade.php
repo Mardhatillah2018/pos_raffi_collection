@@ -48,7 +48,7 @@
 
         <div class="modal-footer mt-3">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary">Perbarui</button>
+          <button type="submit" class="btn btn-primary" id="edit-submit">Perbarui</button>
         </div>
       </form>
     </div>
@@ -60,18 +60,48 @@
     document.getElementById('edit_nama').value = user.nama;
     document.getElementById('edit_email').value = user.email;
     document.getElementById('edit_role').value = user.role;
-    document.getElementById('edit_kode_cabang').value = user.kode_cabang || '';
-    document.getElementById('editUserForm').action = `/users/${user.id}`;
 
     const container = document.getElementById('edit_kodeCabangContainer');
-    container.style.display = user.role === 'admin_cabang' ? 'block' : 'none';
+    const kodeCabangSelect = document.getElementById('edit_kode_cabang');
 
+    if (user.role === 'admin_cabang') {
+        container.style.display = 'block';
+        kodeCabangSelect.value = user.kode_cabang || '';
+        kodeCabangSelect.disabled = false;
+    } else {
+        container.style.display = 'none';
+        kodeCabangSelect.value = ''; // Kosongkan kalau bukan admin_cabang
+        kodeCabangSelect.disabled = true;
+    }
+
+    // Tambahkan listener supaya ketika role berubah, tampilan ikut berubah
     const roleSelect = document.getElementById('edit_role');
     roleSelect.addEventListener('change', function () {
-      container.style.display = this.value === 'admin_cabang' ? 'block' : 'none';
+        if (this.value === 'admin_cabang') {
+        container.style.display = 'block';
+        kodeCabangSelect.disabled = false;
+        } else {
+        container.style.display = 'none';
+        kodeCabangSelect.value = '';
+        kodeCabangSelect.disabled = true;
+        }
     });
 
+    document.getElementById('editUserForm').action = `/users/${user.id}`;
+
     new bootstrap.Modal(document.getElementById('modalEditUser')).show();
-  }
+    }
+
+    document.getElementById('edit_submit').addEventListener('click', function (e) {
+    const role = document.getElementById('edit_role').value;
+    const kodeCabang = document.getElementById('edit_kode_cabang').value;
+
+    if (role === 'admin_cabang' && !kodeCabang) {
+      e.preventDefault(); // cegah form submit
+      alert('Admin Cabang wajib memilih cabang!');
+      return false;
+    }
+  });
+
 </script>
 

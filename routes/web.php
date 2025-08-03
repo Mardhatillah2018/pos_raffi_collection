@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CabangController;
 use App\Http\Controllers\DetailProdukController;
+use App\Http\Controllers\GajiController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriPengeluaranController;
+use App\Http\Controllers\KeuntunganController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogStokController;
 use App\Http\Controllers\PembelianController;
@@ -57,7 +59,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/penjualan/{id}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetakFaktur');
     Route::get('/penjualan/{id}/detail', [PenjualanController::class, 'show'])->name('penjualan.detail');
     Route::resource('pengeluaran', PengeluaranController::class)->names(names: 'pengeluaran');
+    Route::resource('keuntungan', KeuntunganController::class)->names(names: 'keuntungan');
     Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');
     Route::resource('karyawan', KaryawanController::class)->names('karyawan');
+    Route::resource('gaji', GajiController::class)->names('gaji');
+    Route::patch('/gaji/bayar/{gaji}', [GajiController::class, 'bayar'])->name('gaji.bayar');
+
+
 });
 

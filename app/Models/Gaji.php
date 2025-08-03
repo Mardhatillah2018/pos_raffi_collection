@@ -23,7 +23,7 @@ class Gaji extends Model
 
     public function cabang()
     {
-        return $this->belongsTo(Cabang::class, 'kode_cabang', 'kode');
+        return $this->belongsTo(Cabang::class, 'kode_cabang', 'kode_cabang');
     }
 
     /**

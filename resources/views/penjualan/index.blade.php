@@ -49,7 +49,7 @@
                                             <span class="text-white fw-semibold small">Faktur</span>
                                         </a>
 
-                                        <form action="#" method="POST"
+                                        {{-- <form action="#" method="POST"
                                             onsubmit="return confirm('Yakin ingin menghapus penjualan ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -59,7 +59,7 @@
                                                 <i class="material-icons-round text-white me-1" style="font-size: 16px;">delete</i>
                                                 <span class="text-white fw-semibold small">Hapus</span>
                                             </button>
-                                        </form>
+                                        </form> --}}
 
                                     </div>
                                 </td>

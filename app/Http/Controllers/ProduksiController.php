@@ -20,14 +20,18 @@ class ProduksiController extends Controller
      */
     public function index()
     {
+        $kodeCabang = Auth::user()->kode_cabang;
+
         $produksis = Produksi::with([
             'detailProduksis.detailProduk.produk',
             'detailProduksis.detailProduk.ukuran',
             'user'
-        ])->orderBy('tanggal_produksi', 'desc')->get();
+        ])
+        ->where('kode_cabang', $kodeCabang)
+        ->orderBy('tanggal_produksi', 'desc')
+        ->get();
 
         $cabangs = Cabang::all();
-
         $detailProduks = DetailProduk::with(['produk', 'ukuran'])->get();
 
         return view('produksi.index', compact('produksis', 'cabangs', 'detailProduks'));

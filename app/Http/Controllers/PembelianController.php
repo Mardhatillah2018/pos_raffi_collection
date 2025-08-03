@@ -20,14 +20,18 @@ class PembelianController extends Controller
      */
     public function index()
     {
+        $kodeCabang = Auth::user()->kode_cabang;
+
         $pembelians = Pembelian::with([
             'detailPembelian.detailProduk.produk',
             'detailPembelian.detailProduk.ukuran',
             'user'
-        ])->orderBy('tanggal_pembelian', 'desc')->get();
+        ])
+        ->where('kode_cabang', $kodeCabang)
+        ->orderBy('tanggal_pembelian', 'desc')
+        ->get();
 
         $cabangs = Cabang::all();
-
         $detailProduks = DetailProduk::with(['produk', 'ukuran'])->get();
 
         return view('pembelian.index', compact('pembelians', 'cabangs', 'detailProduks'));

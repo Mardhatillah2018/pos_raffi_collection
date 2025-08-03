@@ -14,10 +14,18 @@ class PengeluaranController extends Controller
      */
     public function index()
     {
-        $pengeluarans = Pengeluaran::with('kategori')->latest()->get();
+        $kodeCabang = Auth::user()->kode_cabang;
+
+        $pengeluarans = Pengeluaran::with('kategori')
+            ->where('kode_cabang', $kodeCabang)
+            ->latest()
+            ->get();
+
         $kategori_pengeluarans = KategoriPengeluaran::all();
+
         return view('pengeluaran.index', compact('pengeluarans', 'kategori_pengeluarans'));
     }
+
 
     /**
      * Show the form for creating a new resource.

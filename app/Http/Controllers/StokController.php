@@ -16,7 +16,10 @@ class StokController extends Controller
      */
     public function index()
     {
+        $kodeCabang = Auth::user()->kode_cabang;
+
         $produkStok = \App\Models\Stok::with('detailProduk.produk')
+            ->where('kode_cabang', $kodeCabang) // filter cabang
             ->selectRaw('detail_produk_id, SUM(stok) as total_stok')
             ->groupBy('detail_produk_id')
             ->get()
@@ -55,17 +58,23 @@ class StokController extends Controller
      */
     // StokController.php
     public function show($id)
-    {
-        $produk = Produk::findOrFail($id);
-        $detailProduks = DetailProduk::with(['produk', 'ukuran'])
-            ->where('produk_id', $id)
-            ->get();
+{
+    $kodeCabang = Auth::user()->kode_cabang;
 
-        $detailProdukIds = $detailProduks->pluck('id');
-        $stokList = Stok::whereIn('detail_produk_id', $detailProdukIds)->get();
+    $produk = Produk::findOrFail($id);
 
-        return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList'));
-    }
+    $detailProduks = DetailProduk::with(['produk', 'ukuran'])
+        ->where('produk_id', $id)
+        ->get();
+
+    $detailProdukIds = $detailProduks->pluck('id');
+
+    $stokList = Stok::whereIn('detail_produk_id', $detailProdukIds)
+        ->where('kode_cabang', $kodeCabang) // filter cabang
+        ->get();
+
+    return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList'));
+}
 
     /**
      * Show the form for editing the specified resource.

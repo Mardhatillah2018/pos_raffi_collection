@@ -19,10 +19,16 @@ class PenjualanController extends Controller
      */
     public function index()
     {
-        $penjualans = Penjualan::with('user')->orderBy('created_at', 'desc')->get();
+        $kodeCabang = Auth::user()->kode_cabang;
+
+        $penjualans = Penjualan::with('user')
+            ->where('kode_cabang', $kodeCabang)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('penjualan.index', compact('penjualans'));
     }
+
 
 
     /**

@@ -5,9 +5,10 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Data Gaji Karyawan</h5>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalGaji">
+            <a href="{{ route('gaji.create') }}" class="btn btn-success btn-sm">
                 + Tambah Gaji
-            </button>
+            </a>
+
         </div>
 
         <div class="card-body">
@@ -18,14 +19,9 @@
                             <th>No</th>
                             <th>Nama Karyawan</th>
                             <th>Periode</th>
-                            <th>Jenis Gaji</th>
                             <th>Tanggal Dibayar</th>
-                            <th>Gaji Pokok</th>
-                            <th>Bonus</th>
                             <th>Jumlah Dibayar</th>
                             <th>Status</th>
-                            <th>Keterangan</th>
-                            <th>Kode Cabang</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -34,21 +30,66 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $gaji->karyawan->nama ?? '-' }}</td>
-                                <td>{{ $gaji->periode }}</td>
-                                <td>{{ $gaji->jenis_gaji }}</td>
-                                <td>{{ $gaji->tanggal_dibayar }}</td>
-                                <td>Rp {{ number_format($gaji->gaji_pokok, 0, ',', '.') }}</td>
-                                <td>Rp {{ number_format($gaji->bonus, 0, ',', '.') }}</td>
+                                <td>{{ \Illuminate\Support\Carbon::parse($gaji->periode)->locale('id')->translatedFormat('F Y') }}</td>
+                                <td>{{ $gaji->tanggal_dibayar ?? 'Belum Dibayar' }}</td>
                                 <td>Rp {{ number_format($gaji->jumlah_dibayar, 0, ',', '.') }}</td>
                                 <td>
-                                    <span class="badge {{ $gaji->status == 'lunas' ? 'bg-success' : 'bg-warning' }}">
-                                        {{ ucfirst($gaji->status) }}
-                                    </span>
+                                    @if ($gaji->status == 'dibayar')
+                                        <span class="badge bg-success">{{ ucfirst($gaji->status) }}</span>
+                                    @else
+                                        <style>
+                                            .badge-hover:hover {
+                                                background-color: #fd0d0d !important; /* Bootstrap primary */
+                                                color: white !important;
+                                            }
+                                        </style>
+
+                                        <button class="badge bg-warning border-0 text-dark badge-hover"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#bayarModal{{ $gaji->id }}"
+                                            style="cursor: pointer;">
+                                            {{ ucfirst($gaji->status) }}
+                                        </button>
+
+                                    @endif
                                 </td>
-                                <td>{{ $gaji->keterangan ?? '-' }}</td>
-                                <td>{{ $gaji->cabang->kode_cabang ?? '-' }}</td>
+
+                                {{-- modal ubah status gaji --}}
+                                <div class="modal fade" id="bayarModal{{ $gaji->id }}" tabindex="-1" aria-labelledby="bayarModalLabel{{ $gaji->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content p-3">
+                                            <form action="{{ route('gaji.bayar', $gaji->id) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Bayar Gaji - {{ $gaji->karyawan->nama }}</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="mb-3">
+                                                        <label for="tanggal_dibayar{{ $gaji->id }}" class="form-label">Tanggal Dibayar</label>
+                                                        <input type="date" name="tanggal_dibayar" class="form-control" id="tanggal_dibayar{{ $gaji->id }}" required>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Bayar Sekarang</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                                 <td class="align-middle text-center">
                                     <div class="d-flex justify-content-center gap-2">
+                                        <button type="button"
+                                            class="btn btn-info btn-sm d-flex align-items-center px-2 py-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#detailModal{{ $gaji->id }}"
+                                            title="Detail"
+                                            style="line-height: 1;">
+                                            <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
+                                            <span class="text-white fw-semibold small">Detail</span>
+                                        </button>
+
                                         <button
                                             class="btn btn-warning btn-sm d-flex align-items-center px-2 py-1">
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">edit</i>
@@ -66,7 +107,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="12" class="text-center">Data belum tersedia</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -78,9 +125,7 @@
 @endsection
 
 @push('modals')
-    @include('gaji.modal-create')
-    @include('gaji.modal-edit')
-    @include('gaji.modal-delete')
+    @include('gaji.modal-detail')
 @endpush
 
 @push('scripts')

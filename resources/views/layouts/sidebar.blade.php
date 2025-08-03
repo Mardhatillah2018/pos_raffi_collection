@@ -21,57 +21,61 @@
                 <span class="nav-link-text ms-1">Dashboard</span>
             </a>
         </li>
-        <!-- Master Data -->
-        <li class="nav-item mt-2">
-            <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Master Data</h6>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('cabang*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/cabang">
-                <i class="material-icons-round opacity-5 me-2">store</i>
-                <span class="nav-link-text ms-1">Cabang</span>
-            </a>
-        </li>
-        {{-- <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/kategori.html">
-                <i class="material-icons-round opacity-5 me-2">category</i>
-                <span class="nav-link-text ms-1">Kategori</span>
-            </a>
-        </li> --}}
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
-                <i class="material-icons-round opacity-5 me-2">inventory_2</i>
-                <span class="nav-link-text ms-1">Produk</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/ukuran-produk">
-                <i class="material-icons-round opacity-5 me-2">straighten</i>
-                <span class="nav-link-text ms-1">Ukuran Produk</span>
-            </a>
-        </li>
-        {{-- <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/varian.html">
-                <i class="material-icons-round opacity-5 me-2">style</i>
-                <span class="nav-link-text ms-1">Produk Varian</span>
-            </a>
-        </li> --}}
+        @if (Auth::user()->role === 'super_admin')
+            <!-- Master Data -->
+            <li class="nav-item mt-2">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Master Data</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('cabang*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/cabang">
+                    <i class="material-icons-round opacity-5 me-2">store</i>
+                    <span class="nav-link-text ms-1">Cabang</span>
+                </a>
+            </li>
+            {{-- <li class="nav-item">
+                <a class="nav-link text-dark" href="../pages/kategori.html">
+                    <i class="material-icons-round opacity-5 me-2">category</i>
+                    <span class="nav-link-text ms-1">Kategori</span>
+                </a>
+            </li> --}}
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
+                    <i class="material-icons-round opacity-5 me-2">inventory_2</i>
+                    <span class="nav-link-text ms-1">Produk</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/ukuran-produk">
+                    <i class="material-icons-round opacity-5 me-2">straighten</i>
+                    <span class="nav-link-text ms-1">Ukuran Produk</span>
+                </a>
+            </li>
+            {{-- <li class="nav-item">
+                <a class="nav-link text-dark" href="../pages/varian.html">
+                    <i class="material-icons-round opacity-5 me-2">style</i>
+                    <span class="nav-link-text ms-1">Produk Varian</span>
+                </a>
+            </li> --}}
+        @endif
 
         <!-- Operasional -->
         <li class="nav-item mt-2">
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Operasional</h6>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('produksi*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produksi">
-                <i class="material-icons-round opacity-5 me-2">content_cut</i>
-                <span class="nav-link-text ms-1">Produksi</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('pembelian*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pembelian">
-                <i class="material-icons-round opacity-5 me-2">shopping_bag</i>
-                <span class="nav-link-text ms-1">Pembelian</span>
-            </a>
-        </li>
+        @if (Auth::user()->role === 'super_admin')
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('produksi*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produksi">
+                    <i class="material-icons-round opacity-5 me-2">content_cut</i>
+                    <span class="nav-link-text ms-1">Produksi</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('pembelian*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pembelian">
+                    <i class="material-icons-round opacity-5 me-2">shopping_bag</i>
+                    <span class="nav-link-text ms-1">Pembelian</span>
+                </a>
+            </li>
+        @endif
         <li class="nav-item">
             <a class="nav-link {{ Request::is('stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/stok">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
@@ -98,41 +102,45 @@
                 <span class="nav-link-text ms-1">Penjualan</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
-                <i class="material-icons-round opacity-5 me-2">receipt_long</i>
-                <span class="nav-link-text ms-1">Pengeluaran</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/pengeluaran.html">
-                <i class="material-icons-round opacity-5 me-2">trending_up</i>
-                <span class="nav-link-text ms-1">Keuntungan</span>
-            </a>
-        </li>
+        @if (Auth::user()->role === 'super_admin')
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
+                    <i class="material-icons-round opacity-5 me-2">receipt_long</i>
+                    <span class="nav-link-text ms-1">Pengeluaran</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('keuntungan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/keuntungan">
+                    <i class="material-icons-round opacity-5 me-2">trending_up</i>
+                    <span class="nav-link-text ms-1">Keuntungan</span>
+                </a>
+            </li>
+        @endif
 
+        @if (Auth::user()->role === 'super_admin')
         <!-- Kepegawaian & Akses -->
-        <li class="nav-item mt-2">
-            <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Kepegawaian & Akses</h6>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('karyawan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/karyawan">
-                <i class="material-icons-round opacity-5 me-2">badge</i>
-                <span class="nav-link-text ms-1">Karyawan</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" href="../pages/gaji.html">
-                <i class="material-icons-round opacity-5 me-2">payments</i>
-                <span class="nav-link-text ms-1">Gaji</span>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link {{ Request::is('users*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/users">
-                <i class="material-icons-round opacity-5 me-2">manage_accounts</i>
-                <span class="nav-link-text ms-1">User</span>
-            </a>
-        </li>
+            <li class="nav-item mt-2">
+                <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Kepegawaian & Akses</h6>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('karyawan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/karyawan">
+                    <i class="material-icons-round opacity-5 me-2">badge</i>
+                    <span class="nav-link-text ms-1">Karyawan</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('gaji*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/gaji">
+                    <i class="material-icons-round opacity-5 me-2">payments</i>
+                    <span class="nav-link-text ms-1">Gaji</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Request::is('users*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/users">
+                    <i class="material-icons-round opacity-5 me-2">manage_accounts</i>
+                    <span class="nav-link-text ms-1">User</span>
+                </a>
+            </li>
+        @endif
       </ul>
     </div>
   </aside>
