@@ -56,7 +56,7 @@
                                 data-stok="{{ $stok }}"
                                 {{ $stok < 1 ? 'disabled class=text-danger' : '' }}
                                 {{ $selected }}>
-                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->nama_ukuran }}
+                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
                             {{ $stok < 1 ? '(Stok Habis)' : '' }}
                         </option>
                     @endforeach
@@ -83,7 +83,7 @@
                         <option value="{{ $dp->id }}" data-harga="{{ $dp->harga_jual }}"
                             data-stok="{{ $stok }}"
                             {{ $stok < 1 ? 'disabled class=text-danger' : '' }}>
-                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->nama_ukuran }}
+                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
                             {{ $stok < 1 ? '(Stok Habis)' : '' }}
                         </option>
                     @endforeach

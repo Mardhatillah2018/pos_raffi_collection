@@ -102,13 +102,13 @@
                 <span class="nav-link-text ms-1">Penjualan</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
+                <i class="material-icons-round opacity-5 me-2">receipt_long</i>
+                <span class="nav-link-text ms-1">Pengeluaran</span>
+            </a>
+        </li>
         @if (Auth::user()->role === 'super_admin')
-            <li class="nav-item">
-                <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
-                    <i class="material-icons-round opacity-5 me-2">receipt_long</i>
-                    <span class="nav-link-text ms-1">Pengeluaran</span>
-                </a>
-            </li>
             <li class="nav-item">
                 <a class="nav-link {{ Request::is('keuntungan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/keuntungan">
                     <i class="material-icons-round opacity-5 me-2">trending_up</i>

@@ -26,7 +26,7 @@
                         @endphp
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}</td>
-                            <td>{{ $detail->ukuran->nama_ukuran }}</td>
+                            <td>{{ $detail->ukuran->kode_ukuran }}</td>
                             <td>{{ $stok }}</td>
                             <td>
                                 {{-- <button class="btn btn-success btn-sm px-2 py-1"
@@ -40,7 +40,7 @@
                                     data-bs-toggle="modal"
                                     data-bs-target="#modalKurangiStok"
                                     data-id="{{ $detail->id }}"
-                                    data-nama="{{ $produk->nama_produk }} - Ukuran {{ $detail->ukuran->nama_ukuran }}"
+                                    data-nama="{{ $produk->nama_produk }} - Ukuran {{ $detail->ukuran->kode_ukuran }}"
                                     title="Kurangi Stok">
                                     <i class="material-icons-round text-white">remove</i>
                                     <span class="text-white fw-semibold small">Kurang</span>

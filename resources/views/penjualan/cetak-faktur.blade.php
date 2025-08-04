@@ -102,7 +102,7 @@
                     <tr>
                         <td>{{ $i + 1 }}</td>
                         <td>{{ $item->detailProduk->produk->nama_produk ?? '-' }}</td>
-                        <td>{{ $item->detailProduk->ukuran->nama_ukuran ?? '-' }}</td>
+                        <td>{{ $item->detailProduk->ukuran->kode_ukuran ?? '-' }}</td>
                         <td class="text-right">{{ $item->qty }}</td>
                         <td class="text-right">Rp{{ number_format($item->detailProduk->harga_jual, 0, ',', '.') }}</td>
                         <td class="text-right">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</td>

@@ -181,30 +181,58 @@ class PenjualanController extends Controller
         }
     }
 
-public function cetakFaktur($id)
-{
-    $penjualan = Penjualan::with([
-        'detailPenjualans.detailProduk.produk',
-        'user',
-        'cabang'
-    ])->findOrFail($id);
+    public function cetakFaktur($id)
+    {
+        $penjualan = Penjualan::with([
+            'detailPenjualans.detailProduk.produk',
+            'user',
+            'cabang'
+        ])->findOrFail($id);
 
-    $pdf = Pdf::loadView('penjualan.cetak-faktur', compact('penjualan'))
-              ->setPaper([0, 0, 226.77, 566.93]);
+        $pdf = Pdf::loadView('penjualan.cetak-faktur', compact('penjualan'))
+                ->setPaper([0, 0, 226.77, 566.93]);
 
-    return $pdf->stream('faktur-penjualan-' . $penjualan->no_faktur . '.pdf');
-}
+        return $pdf->stream('faktur-penjualan-' . $penjualan->no_faktur . '.pdf');
+    }
 
 
     /**
      * Display the specified resource.
      */
     public function show($id)
-{
-    $penjualan = Penjualan::with(['detailPenjualans.detailProduk.produk', 'detailPenjualans.detailProduk.ukuran'])
-                    ->findOrFail($id);
+    {
+        $penjualan = Penjualan::with(['detailPenjualans.detailProduk.produk', 'detailPenjualans.detailProduk.ukuran'])
+                        ->findOrFail($id);
 
-    return view('penjualan.detail-penjualan', compact('penjualan'));
+        return view('penjualan.detail-penjualan', compact('penjualan'));
+    }
+
+    public function cetakPDF(Request $request)
+{
+    $tanggalMulai = $request->tanggal_mulai;
+    $tanggalSampai = $request->tanggal_sampai;
+
+    $kodeCabang = Auth::user()->kode_cabang;
+
+    $penjualans = Penjualan::where('kode_cabang', $kodeCabang)
+        ->whereDate('tanggal_penjualan', '>=', $tanggalMulai)
+        ->whereDate('tanggal_penjualan', '<=', $tanggalSampai)
+        ->orderBy('tanggal_penjualan', 'asc')
+        ->get();
+
+    $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
+
+    $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
+        'penjualans' => $penjualans,
+        'namaCabang' => $namaCabang,
+        'periode' => [
+            'mulai' => $tanggalMulai,
+            'sampai' => $tanggalSampai,
+        ],
+        'tanggalCetak' => now()->toDateString(),
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('laporan-penjualan.pdf');
 }
 
 

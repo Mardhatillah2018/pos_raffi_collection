@@ -41,4 +41,11 @@ class DetailProduk extends Model
     {
         return $this->hasOne(Stok::class)->where('kode_cabang', Auth::user()->kode_cabang);
     }
+
+//     public function stoks()
+// {
+//     return $this->hasMany(Stok::class);
+// }
+
+
 }

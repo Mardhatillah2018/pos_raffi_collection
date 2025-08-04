@@ -24,7 +24,7 @@
                     @foreach ($penjualan->detailPenjualans as $detail)
                         <tr>
                             <td>{{ $detail->detailProduk->produk->nama_produk ?? '-' }}</td>
-                            <td>{{ $detail->detailProduk->ukuran->nama_ukuran ?? '-' }}</td>
+                            <td>{{ $detail->detailProduk->ukuran->kode_ukuran ?? '-' }}</td>
                             <td>{{ $detail->qty }}</td>
                             <td>Rp {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($detail->harga_satuan * $detail->qty, 0, ',', '.') }}</td>

@@ -16,10 +16,10 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-  <label class="form-label">Ukuran</label>
-  <input type="hidden" name="ukuran_id" value="{{ $detail->ukuran_id }}">
-  <input type="text" class="form-control" value="{{ $detail->ukuran->kode_ukuran }}" disabled>
-</div>
+                <label class="form-label">Ukuran</label>
+                <input type="hidden" name="ukuran_id" value="{{ $detail->ukuran_id }}">
+                <input type="text" class="form-control" value="{{ $detail->ukuran->kode_ukuran }}" disabled>
+            </div>
 
 
             <div class="col-md-6">

@@ -3,9 +3,14 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
+       <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Daftar Pengeluaran</h5>
             <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetak">
+                    <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
+                    Cetak
+                </button>
+
                 <a href="{{ route('kategori-pengeluaran.index') }}" class="btn btn-primary btn-sm">
                     Kategori Pengeluaran
                 </a>
@@ -15,6 +20,34 @@
                 </button>
             </div>
         </div>
+
+        <!-- Modal Cetak -->
+        <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="{{ route('pengeluaran.cetak') }}" method="GET" target="_blank" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCetakLabel">Cetak Laporan Pengeluaran</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
+                    <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
+                    </div>
+                    <div class="mb-3">
+                    <label for="tanggal_sampai" class="form-label">Tanggal Sampai</label>
+                    <input type="date" class="form-control" id="tanggal_sampai" name="tanggal_sampai" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-printer me-1"></i> Cetak PDF
+                    </button>
+                </div>
+                </form>
+            </div>
+        </div>
+
 
         <div class="card-body">
             <div class="table-responsive">

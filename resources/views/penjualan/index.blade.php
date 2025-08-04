@@ -5,7 +5,47 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Daftar Penjualan</h5>
-            <a href="{{ route('penjualan.create') }}" class="btn btn-primary">Tambah Penjualan</a>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetak">
+                    <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
+                    Cetak
+                </button>
+                {{-- modal cetak --}}
+                <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-md modal-dialog-centered">
+                        <div class="modal-content">
+                        <form action="{{ route('penjualan.cetakLaporan') }}" method="GET" target="_blank">
+                            <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="modalCetakLabel">Cetak Laporan Penjualan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                            </div>
+                            <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="tanggal_mulai" class="form-label">Dari Tanggal</label>
+                                <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal_sampai" class="form-label">Sampai Tanggal</label>
+                                <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control" required>
+                            </div>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-printer me-1"></i> Cetak Laporan
+                            </button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+                @if (Auth::user()->role === 'admin_cabang')
+                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary">
+                        <i class="material-icons-round me-1" style="font-size: 16px;">add</i>
+                        Tambah Penjualan
+                    </a>
+                @endif
+            </div>
         </div>
 
         <div class="card-body">

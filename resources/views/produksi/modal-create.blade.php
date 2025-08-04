@@ -39,7 +39,7 @@
                       <option value="">-- Pilih Produk --</option>
                       @foreach ($detailProduks as $produk)
                         <option value="{{ $produk->id }}">
-                          {{ $produk->produk->nama_produk ?? 'Nama Kosong' }} - {{ $produk->ukuran->nama_ukuran ?? 'Ukuran Kosong' }}
+                          {{ $produk->produk->nama_produk ?? 'Nama Kosong' }} - {{ $produk->ukuran->kode_ukuran ?? 'Ukuran Kosong' }}
                         </option>
                       @endforeach
                     </select>
@@ -106,7 +106,7 @@
         // Tambahkan ulang opsi yang belum dipilih di select lain
         window.detailProduks.forEach(produk => {
           const id = produk.id.toString();
-          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.nama_ukuran ?? 'Ukuran Kosong');
+          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.kode_ukuran ?? 'Ukuran Kosong');
           const isUsed = selectedValues.includes(id) && id !== currentValue;
 
           if (!isUsed) {

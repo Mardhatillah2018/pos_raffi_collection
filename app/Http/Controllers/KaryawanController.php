@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cabang;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class KaryawanController extends Controller
 {
@@ -12,12 +13,17 @@ class KaryawanController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $karyawans = Karyawan::with('cabang')->get();
-        $cabangs = Cabang::all();
+{
+    $user = Auth::user();
+    $cabangs = Cabang::all();
 
-        return view('karyawan.index', compact('karyawans', 'cabangs'));
-    }
+    $karyawans = Karyawan::with('cabang')
+        ->where('kode_cabang', $user->kode_cabang)
+        ->get();
+
+    return view('karyawan.index', compact('karyawans', 'cabangs'));
+}
+
 
     /**
      * Show the form for creating a new resource.

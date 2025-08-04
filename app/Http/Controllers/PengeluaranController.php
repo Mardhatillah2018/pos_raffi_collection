@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\KategoriPengeluaran;
 use App\Models\Pengeluaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PengeluaranController extends Controller
 {
@@ -84,22 +86,52 @@ public function store(Request $request)
      * Update the specified resource in storage.
      */
     public function update(Request $request, Pengeluaran $pengeluaran)
+    {
+        $request->validate([
+            'kategori_id' => 'required|exists:kategori_pengeluarans,id',
+            'tanggal' => 'required|date',
+            'total_pengeluaran' => 'required|numeric',
+            'keterangan' => 'nullable|string|max:255',
+        ]);
+
+        $pengeluaran->update([
+            'kategori_id' => $request->kategori_id,
+            'tanggal' => $request->tanggal,
+            'total_pengeluaran' => $request->total_pengeluaran,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()->back()->with('success', 'Pengeluaran berhasil diperbarui.');
+    }
+
+public function cetakPDF(Request $request)
 {
-    $request->validate([
-        'kategori_id' => 'required|exists:kategori_pengeluarans,id',
-        'tanggal' => 'required|date',
-        'total_pengeluaran' => 'required|numeric',
-        'keterangan' => 'nullable|string|max:255',
-    ]);
+    $kodeCabang = Auth::user()->kode_cabang;
 
-    $pengeluaran->update([
-        'kategori_id' => $request->kategori_id,
-        'tanggal' => $request->tanggal,
-        'total_pengeluaran' => $request->total_pengeluaran,
-        'keterangan' => $request->keterangan,
-    ]);
+    $tanggalMulai = $request->tanggal_mulai;
+    $tanggalSampai = $request->tanggal_sampai;
 
-    return redirect()->back()->with('success', 'Pengeluaran berhasil diperbarui.');
+    $pengeluarans = Pengeluaran::with('kategori')
+        ->where('kode_cabang', $kodeCabang)
+        ->whereBetween('tanggal', [$tanggalMulai, $tanggalSampai])
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    // Ambil nama_cabang dari tabel cabangs
+    $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
+    $namaCabang = $cabang ? $cabang->nama_cabang : 'Semua Cabang';
+
+    $pdf = PDF::loadView('pengeluaran.laporan-pengeluaran', [
+        'pengeluarans' => $pengeluarans,
+        'namaCabang' => $namaCabang,
+        'tanggalCetak' => now()->format('d-m-Y'),
+        'periode' => [
+            'mulai' => $tanggalMulai,
+            'sampai' => $tanggalSampai,
+        ]
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('laporan-pengeluaran.pdf');
 }
 
 

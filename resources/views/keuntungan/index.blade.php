@@ -3,9 +3,40 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white fw-bold">
-            Laporan Keuntungan Per Bulan
+        <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+            <span>Laporan Keuntungan Per Bulan</span>
+            <button class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalCetakKeuntungan">
+                <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
+                Cetak Laporan
+            </button>
         </div>
+
+        <!-- Modal Pilih Rentang Waktu -->
+        <div class="modal fade" id="modalCetakKeuntungan" tabindex="-1" aria-labelledby="modalCetakKeuntunganLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form action="{{ route('keuntungan.cetak') }}" method="GET" target="_blank">
+                    <div class="modal-content">
+                        <div class="modal-header bg-dark text-white">
+                            <h5 class="modal-title" id="modalCetakKeuntunganLabel">Cetak Laporan Keuntungan</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="bulan" class="form-label">Pilih Bulan</label>
+                                <input type="month" name="bulan" id="bulan" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-printer me-1"></i> Cetak
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover text-center">

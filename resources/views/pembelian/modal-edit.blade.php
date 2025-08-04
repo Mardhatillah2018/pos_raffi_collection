@@ -41,7 +41,7 @@
                   @php
                       $produk = $detail->detailProduk;
                       $namaProduk = $produk
-                          ? ($produk->produk->nama_produk ?? '-') . ' - ' . ($produk->ukuran->nama_ukuran ?? '-')
+                          ? ($produk->produk->nama_produk ?? '-') . ' - ' . ($produk->ukuran->kode_ukuran ?? '-')
                           : 'Produk tidak ditemukan (sudah dihapus)';
                   @endphp
                   <tr>
@@ -112,7 +112,7 @@
 
         window.detailProduks.forEach(produk => {
           const id = produk.id.toString();
-          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.nama_ukuran ?? 'Ukuran Kosong');
+          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.kode_ukuran ?? 'Ukuran Kosong');
           const isUsed = selected.includes(id) && id !== currentVal;
 
           if (!isUsed) {

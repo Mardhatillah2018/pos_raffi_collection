@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Gaji;
 use App\Models\Karyawan;
 use App\Models\Pengeluaran;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,14 +20,13 @@ class GajiController extends Controller
         $user = Auth::user();
 
         $gajis = Gaji::with(['karyawan', 'cabang'])
-            ->when($user->role === 'admin', function ($query) use ($user) {
-                $query->where('kode_cabang', $user->kode_cabang);
-            })
+            ->where('kode_cabang', $user->kode_cabang)
             ->latest()
             ->get();
 
         return view('gaji.index', compact('gajis'));
-    }
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -88,6 +89,10 @@ class GajiController extends Controller
 
     public function bayar(Request $request, Gaji $gaji)
     {
+        if (Auth::user()->role != 'super-admin') {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
+
         $request->validate([
             'tanggal_dibayar' => 'required|date',
         ]);
@@ -109,6 +114,32 @@ class GajiController extends Controller
 
         return back()->with('success', 'Gaji berhasil dibayar dan dicatat sebagai pengeluaran.');
     }
+
+    public function cetakPDF(Request $request)
+{
+    $request->validate([
+        'bulan' => 'required|date_format:Y-m',
+    ]);
+
+    $tanggalAwal = $request->bulan . '-01';
+    $tanggalAkhir = Carbon::parse($tanggalAwal)->endOfMonth()->toDateString();
+
+    $gajis = Gaji::with('karyawan')
+        ->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
+        ->where('kode_cabang', Auth::user()->kode_cabang)
+        ->get();
+
+    $cabang = Auth::user()->cabang->nama ?? 'Semua Cabang';
+
+    $pdf = Pdf::loadView('gaji.laporan-gaji', [
+        'gajis' => $gajis,
+        'tanggalAwal' => $tanggalAwal,
+        'tanggalAkhir' => $tanggalAkhir,
+        'cabang' => $cabang,
+    ])->setPaper('A4', 'portrait');
+
+    return $pdf->stream('laporan-gaji-' . $request->bulan . '.pdf');
+}
 
 
     /**

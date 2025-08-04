@@ -28,7 +28,7 @@
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td class="text-center">{{ $log->created_at->format('d-m-Y') }}</td>
-                                <td>{{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->nama_ukuran ?? '-' }}</td>
+                                <td>{{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->kode_ukuran ?? '-' }}</td>
                                 <td class="text-center">{{ $log->qty }}</td>
                                 <td>{{ $log->keterangan ?? '-' }}</td>
                                 <td class="text-center">
@@ -74,7 +74,7 @@
                                                     <div class="row mb-2">
                                                         <div class="col-4 fw-bold">Produk</div>
                                                         <div class="col-8">
-                                                            {{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->nama_ukuran ?? '-' }}
+                                                            {{ $log->detailProduk->produk->nama_produk ?? '-' }} - {{ $log->detailProduk->ukuran->kode_ukuran ?? '-' }}
                                                         </div>
                                                     </div>
                                                     <div class="row mb-2">
