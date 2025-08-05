@@ -70,31 +70,32 @@
 
     <table>
         <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Produk</th>
-                <th>Ukuran</th>
-                <th>Stok Masuk</th>
-                <th>Stok Keluar</th>
-                <th>Sisa Akhir</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($dataMutasi as $i => $item)
-                <tr>
-                    <td>{{ $i + 1 }}</td>
-                    <td>{{ $item->nama_produk }}</td>
-                    <td>{{ $item->ukuran }}</td>
-                    <td>{{ $item->masuk }}</td>
-                    <td>{{ $item->keluar }}</td>
-                    <td>{{ $item->sisa }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6">Tidak ada data mutasi stok</td>
-                </tr>
-            @endforelse
-        </tbody>
+    <tr>
+        <th>No</th>
+        <th>Nama Produk</th>
+        <th>Ukuran</th>
+        <th>Stok Masuk</th>
+        <th>Stok Keluar</th>
+        <th>Stok Akhir</th>
+    </tr>
+</thead>
+<tbody>
+    @forelse ($dataMutasi as $i => $item)
+        <tr>
+            <td>{{ $i + 1 }}</td>
+            <td>{{ $item->nama_produk }}</td>
+            <td>{{ $item->ukuran }}</td>
+            <td>{{ $item->masuk }}</td>
+            <td>{{ $item->keluar }}</td>
+            <td>{{ $item->stok_akhir }}</td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="5">Tidak ada data mutasi stok</td>
+        </tr>
+    @endforelse
+</tbody>
+
     </table>
 </body>
 </html>

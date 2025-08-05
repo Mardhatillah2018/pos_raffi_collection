@@ -31,6 +31,11 @@
               <input type="time" name="jam_tutup" id="jam_tutup" class="form-control" required>
             </div>
 
+            <div class="col-md-6">
+              <label for="no_hp" class="form-label">No HP</label>
+              <input type="text" name="no_hp" id="no_hp" class="form-control" required>
+            </div>
+
             <div class="col-md-12">
               <label for="alamat" class="form-label">Alamat</label>
               <textarea name="alamat" id="alamat" class="form-control" rows="3" required></textarea>

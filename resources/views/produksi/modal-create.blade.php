@@ -13,12 +13,18 @@
         <div class="modal-body">
           <div class="row mb-3">
             <div class="col-md-6">
-              <label for="tanggal_produksi" class="form-label">Tanggal Produksi</label>
-              <input type="date" name="tanggal_produksi" class="form-control" required>
+                <label for="tanggal_produksi" class="form-label" style="color: black; font-weight: bold;">Tanggal Produksi</label>
+                <div class="input-group">
+                    <input type="text" id="tanggal_produksi" name="tanggal_produksi" class="form-control" placeholder="YYYY-MM-DD" required>
+                    <span class="input-group-text" id="btn-tanggal-produk">
+                        <span class="material-symbols-rounded">calendar_today</span>
+                    </span>
+                </div>
             </div>
+
             <div class="col-md-6">
-              <label for="total_biaya" class="form-label">Total Biaya Produksi (Rp)</label>
-              <input type="number" name="total_biaya" class="form-control" required min="0">
+                <label for="total_biaya" class="form-label" style="color: black; font-weight: bold;">Total Biaya Produksi (Rp)</label>
+                <input type="number" name="total_biaya" class="form-control" required min="0" placeholder="Masukkan total biaya (Rp)">
             </div>
             <input type="hidden" name="kode_cabang" value="{{ Auth::user()->kode_cabang }}">
           </div>
@@ -48,8 +54,10 @@
                     <input type="number" name="qty[]" class="form-control" required min="1" value="1">
                   </td>
                   <td class="text-center">
-                    <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
-                  </td>
+                        <button type="button" class="btn btn-sm btn-danger hapusBaris">
+                            <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
+                        </button>
+                    </td>
                 </tr>
               </tbody>
             </table>
@@ -57,7 +65,7 @@
           </div>
 
           <div class="mb-3">
-            <label for="keterangan" class="form-label">Keterangan</label>
+            <label for="keterangan" class="form-label" style="color: black; font-weight: bold;">Keterangan</label>
             <input type="text" name="keterangan" class="form-control" placeholder="Opsional">
           </div>
         </div>
@@ -161,11 +169,21 @@
 
     // Saat produk berubah, perbarui semua select lainnya
     tableCreate.addEventListener('change', function (e) {
-      if (e.target.classList.contains('select-produk')) {
-        refreshSelectOptions();
-      }
+        if (e.target.classList.contains('select-produk')) {
+            refreshSelectOptions();
+        }
+        });
     });
-  });
+    
+     const fp = flatpickr("#tanggal_produksi", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        defaultDate: "today"
+    });
+
+    document.getElementById('btn-tanggal-produk').addEventListener('click', function () {
+        fp.open();
+    });
 </script>
 
 

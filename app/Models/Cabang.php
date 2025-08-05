@@ -13,6 +13,7 @@ class Cabang extends Model
         'nama_cabang',
         'jam_buka',
         'jam_tutup',
+        'no_hp',
         'alamat',
     ];
 }

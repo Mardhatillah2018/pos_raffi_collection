@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CabangController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\KaryawanController;
@@ -34,9 +35,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // DASHBOARD (boleh super_admin dan admin_cabang)
-    Route::middleware('role:super_admin,admin_cabang')->get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::middleware('role:super_admin,admin_cabang')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // SUPER ADMIN SAJA
     Route::middleware('role:super_admin')->group(function () {
@@ -60,22 +59,22 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/pengurangan/{id}/ubah-status', [LogStokController::class, 'ubahStatus'])->name('pengurangan.ubah-status');
 
+        Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');
         Route::get('/laporan-pengeluaran/cetak', [PengeluaranController::class, 'cetakPDF'])->name('pengeluaran.cetak');
+        Route::get('pengeluaran/{pengeluaran}/edit', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
+        Route::put('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
+        Route::delete('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
 
         Route::get('/keuntungan/cetak', [KeuntunganController::class, 'cetakPDF'])->name('keuntungan.cetak');
         Route::resource('keuntungan', KeuntunganController::class)->names('keuntungan');
 
-        Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');
-
         Route::resource('karyawan', KaryawanController::class)->names('karyawan');
+        Route::get('/gaji/cetak', [GajiController::class, 'cetakPDF'])->name('gaji.cetak');
         Route::resource('gaji', GajiController::class)->names('gaji');
         Route::patch('/gaji/bayar/{gaji}', [GajiController::class, 'bayar'])->name('gaji.bayar');
         Route::get('/gaji/bayar/{gaji}', function () {
             abort(403, 'Metode tidak diizinkan.');
         });
-        Route::get('/gaji/cetak-pdf', [GajiController::class, 'cetakPDF'])->name('gaji.cetak');
-
-
     });
 
     // SUPER ADMIN DAN ADMIN CABANG
@@ -89,7 +88,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/penjualan/{id}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetakFaktur');
         Route::get('/penjualan/cetak-laporan', [PenjualanController::class, 'cetakPDF'])->name('penjualan.cetakLaporan');
 
-        Route::resource('pengeluaran', PengeluaranController::class)->names('pengeluaran');
+        Route::get('pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
+        Route::get('pengeluaran/create', [PengeluaranController::class, 'create'])->name('pengeluaran.create');
+        Route::post('pengeluaran', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
     });
 
     // ADMIN CABANG SAJA

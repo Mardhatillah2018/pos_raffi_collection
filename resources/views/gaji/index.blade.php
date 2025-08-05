@@ -6,7 +6,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Data Gaji Karyawan</h5>
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetak">
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetakGaji">
                     <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
                     Cetak
                 </button>
@@ -14,28 +14,29 @@
                     + Tambah Gaji
                 </a>
             </div>
-            <!-- Modal Filter Cetak Gaji -->
-            <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <form action="{{ route('gaji.cetak') }}" method="GET" target="_blank">
-                        <div class="modal-content">
-                            <div class="modal-header bg-dark text-white">
-                                <h5 class="modal-title" id="modalCetakLabel">Cetak Laporan Gaji Per Bulan</h5>
-                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="bulan" class="form-label">Pilih Bulan</label>
-                                    <input type="month" name="bulan" id="bulan" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-printer me-1"></i> Cetak
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+        </div>
+
+        <div class="modal fade" id="modalCetakGaji" tabindex="-1" aria-labelledby="modalCetakGajiLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content p-3">
+                <form action="{{ route('gaji.cetak') }}" method="GET" target="_blank">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="modalCetakGajiLabel">Pilih Periode Gaji</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="periode" class="form-label">Periode</label>
+                        <input type="month" class="form-control" id="periode" name="periode" required>
+                        {{-- format: 2025-08 --}}
+                    </div>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-printer me-1"></i> Cetak PDF
+                    </button>
+                    </div>
+                </form>
                 </div>
             </div>
         </div>

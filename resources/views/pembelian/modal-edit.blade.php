@@ -14,15 +14,22 @@
         <div class="modal-body">
           <div class="row mb-3">
             <div class="col-md-4">
-              <label class="form-label">Tanggal Pembelian</label>
-              <input type="date" name="tanggal_pembelian" class="form-control" value="{{ $pembelian->tanggal_pembelian }}" required>
+                <label for="tanggal_pembelian" class="form-label" style="color: black; font-weight: bold;">Tanggal Pembelian</label>
+                <div class="input-group">
+                    <input type="text" id="tanggal_pembelian" name="tanggal_pembelian" class="form-control"
+                        placeholder="YYYY-MM-DD" value="{{ $pembelian->tanggal_pembelian }}" required>
+                    <span class="input-group-text" id="btn-tanggal-pembelian">
+                        <span class="material-symbols-rounded">calendar_today</span>
+                    </span>
+                </div>
             </div>
+
             <div class="col-md-4">
-              <label class="form-label">Total Biaya Pembelian (Rp)</label>
+              <label class="form-label" style="color: black; font-weight: bold;">Total Biaya Pembelian (Rp)</label>
               <input type="number" name="total_biaya" class="form-control" value="{{ $pembelian->total_biaya }}" required min="0">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Keterangan</label>
+              <label class="form-label" style="color: black; font-weight: bold;">Keterangan</label>
               <input type="text" name="keterangan" class="form-control" value="{{ $pembelian->keterangan }}">
             </div>
           </div>
@@ -53,7 +60,9 @@
                       <input type="number" name="qty[]" class="form-control" value="{{ $detail->qty }}" required min="1">
                     </td>
                     <td class="text-center">
-                      <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
+                        <button type="button" class="btn btn-sm btn-danger hapusBaris">
+                            <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
+                        </button>
                     </td>
                   </tr>
                 @endforeach
@@ -162,4 +171,12 @@
       }
     });
   });
+  flatpickr("#tanggal_pembelian", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+    });
+
+    document.getElementById('btn-tanggal-pembelian').addEventListener('click', function () {
+        document.getElementById('tanggal_pembelian').focus();
+    });
 </script>

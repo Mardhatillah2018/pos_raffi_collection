@@ -34,6 +34,11 @@
               <input type="time" name="jam_tutup" id="edit_jam_tutup" class="form-control" required>
             </div>
 
+            <div class="col-md-6">
+              <label for="edit_no_hp" class="form-label">No HP</label>
+              <input type="text" name="no_hp" id="edit_no_hp" class="form-control" required>
+            </div>
+
             <div class="col-md-12">
               <label for="edit_alamat" class="form-label">Alamat</label>
               <textarea name="alamat" id="edit_alamat" class="form-control" rows="3" required></textarea>
@@ -61,6 +66,7 @@
   document.getElementById('edit_nama_cabang').value = cabang.nama_cabang;
   document.getElementById('edit_jam_buka').value = jamBuka;
   document.getElementById('edit_jam_tutup').value = jamTutup;
+    document.getElementById('edit_no_hp').value = cabang.no_hp;
   document.getElementById('edit_alamat').value = cabang.alamat;
 
   document.getElementById('editCabangForm').action = `/cabang/${cabang.id}`;

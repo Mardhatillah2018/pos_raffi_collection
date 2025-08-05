@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\LogStok;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,12 +23,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-        $jumlahPendingPengurangan = LogStok::where('jenis', 'keluar')
-            ->where('status', 'menunggu')
-            ->where('sumber', 'pengurangan')
-            ->count();
+            if (Auth::check()) {
+                $kodeCabang = Auth::user()->kode_cabang;
 
-        $view->with('jumlahPendingPengurangan', $jumlahPendingPengurangan);
-    });
+                $jumlahPendingPengurangan = LogStok::where('jenis', 'keluar')
+                    ->where('status', 'menunggu')
+                    ->where('sumber', 'pengurangan')
+                    ->where('kode_cabang', $kodeCabang)
+                    ->count();
+
+                $view->with('jumlahPendingPengurangan', $jumlahPendingPengurangan);
+            }
+        });
     }
 }

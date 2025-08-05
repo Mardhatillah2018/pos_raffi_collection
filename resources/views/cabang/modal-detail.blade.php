@@ -20,6 +20,9 @@
           <dt class="col-sm-4">Jam Tutup</dt>
           <dd class="col-sm-8" id="detail_jam_tutup"></dd>
 
+            <dt class="col-sm-4">No HP</dt>
+            <dd class="col-sm-8" id="detail_no_hp"></dd>
+
           <dt class="col-sm-4">Alamat</dt>
           <dd class="col-sm-8" id="detail_alamat"></dd>
         </dl>
@@ -36,6 +39,7 @@
   document.getElementById('detail_nama_cabang').innerText = cabang.nama_cabang;
   document.getElementById('detail_jam_buka').innerText = cabang.jam_buka;
   document.getElementById('detail_jam_tutup').innerText = cabang.jam_tutup;
+  document.getElementById('detail_no_hp').innerText = cabang.no_hp;
   document.getElementById('detail_alamat').innerText = cabang.alamat;
 
   new bootstrap.Modal(document.getElementById('modalDetailCabang')).show();

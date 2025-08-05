@@ -7,6 +7,7 @@ use App\Models\LogStok;
 use App\Models\Produk;
 use App\Models\Stok;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -78,67 +79,80 @@ class StokController extends Controller
     }
 
     public function cetakPDF()
-{
-    $user = Auth::user();
-    $kodeCabang = $user->kode_cabang;
+    {
+        $user = Auth::user();
+        $kodeCabang = $user->kode_cabang;
 
-    $stokList = Stok::with('detailProduk.produk', 'detailProduk.ukuran')
-        ->where('kode_cabang', $kodeCabang)
-        ->get()
-        ->groupBy('detail_produk_id')
-        ->map(function ($group) {
-            $first = $group->first();
+        $stokList = Stok::with('detailProduk.produk', 'detailProduk.ukuran')
+            ->where('kode_cabang', $kodeCabang)
+            ->get()
+            ->groupBy('detail_produk_id')
+            ->map(function ($group) {
+                $first = $group->first();
 
-            return (object)[
-                'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
-                'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
-                'total_stok' => $group->sum('stok'),
-            ];
-        })
-        ->values();
+                return (object)[
+                    'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
+                    'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
+                    'total_stok' => $group->sum('stok'),
+                ];
+            })
+            ->values();
 
-    $namaCabang = $user->cabang->nama_cabang ?? $kodeCabang;
+        $namaCabang = $user->cabang->nama_cabang ?? $kodeCabang;
 
-    $pdf = PDF::loadView('stok.laporan-stok', [
-        'produkStok' => $stokList,
-        'namaCabang' => $namaCabang
-    ]);
+        $pdf = PDF::loadView('stok.laporan-stok', [
+            'produkStok' => $stokList,
+            'namaCabang' => $namaCabang
+        ]);
 
-    return $pdf->stream('laporan-stok.pdf');
-}
+        return $pdf->stream('laporan-stok.pdf');
+    }
 
 public function cetakMutasiPDF(Request $request)
 {
     $user = Auth::user();
     $kodeCabang = $user->kode_cabang;
-    $bulan = $request->input('bulan') ?? now()->format('m');
+
+    $bulan = sprintf('%02d', $request->input('bulan') ?? now()->format('m'));
     $tahun = $request->input('tahun') ?? now()->format('Y');
 
+    // Tanggal awal dan akhir dari bulan yang dipilih
+    $tanggalAwalBulan = Carbon::create($tahun, $bulan, 1)->startOfDay();
+    $tanggalAkhirBulan = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
+
+    // Ambil semua log stok yang disetujui untuk cabang tersebut
     $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
-        ->where('kode_cabang', $kodeCabang)
-        ->whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->where('status', 'disetujui') // 🔧 Tambahkan filter status disetujui
-        ->get()
-        ->groupBy('detail_produk_id')
-        ->map(function ($logs) use ($kodeCabang) {
-            $first = $logs->first();
-            $masuk = $logs->where('jenis', 'masuk')->sum('jumlah');
-            $keluar = $logs->where('jenis', 'keluar')->sum('jumlah');
+    ->where('kode_cabang', $kodeCabang)
+    ->where('status', 'disetujui')
+    ->whereDate('tanggal', '<=', $tanggalAkhirBulan)
+    ->get()
+    ->groupBy('detail_produk_id')
+    ->map(function ($logs) use ($tanggalAwalBulan, $tanggalAkhirBulan) {
+        $first = $logs->first();
 
-            // Ambil sisa dari tabel stok
-            $stok = Stok::where('detail_produk_id', $first->detail_produk_id)
-                        ->where('kode_cabang', $kodeCabang)
-                        ->sum('stok');
+        $stokAwal = $logs->where('tanggal', '<', $tanggalAwalBulan)
+            ->reduce(function ($total, $log) {
+                return $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty);
+            }, 0);
 
-            return (object)[
-                'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
-                'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
-                'masuk' => $masuk,
-                'keluar' => $keluar,
-                'sisa' => $stok
-            ];
-        })->values();
+        $masuk = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+            ->where('jenis', 'masuk')->sum('qty');
+
+        $keluar = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+            ->where('jenis', 'keluar')->sum('qty');
+
+        $stokAkhir = $stokAwal + $masuk - $keluar;
+
+        return (object)[
+            'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
+            'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
+            'stok_awal' => $stokAwal,
+            'masuk' => $masuk,
+            'keluar' => $keluar,
+            'stok_akhir' => $stokAkhir,
+        ];
+    })->values();
+
 
     $pdf = PDF::loadView('stok.laporan-mutasi', [
         'dataMutasi' => $logStoks,
@@ -148,7 +162,7 @@ public function cetakMutasiPDF(Request $request)
         'tanggalCetak' => now()
     ]);
 
-    return $pdf->stream('mutasi-stok-' . $bulan . '-' . $tahun . '.pdf');
+    return $pdf->stream("mutasi-stok-$bulan-$tahun.pdf");
 }
 
 

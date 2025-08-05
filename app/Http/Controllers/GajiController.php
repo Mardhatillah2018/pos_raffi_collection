@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\Gaji;
 use App\Models\Karyawan;
 use App\Models\Pengeluaran;
@@ -117,28 +118,34 @@ class GajiController extends Controller
 
     public function cetakPDF(Request $request)
 {
-    $request->validate([
-        'bulan' => 'required|date_format:Y-m',
-    ]);
+    $periode = $request->input('periode'); // format: 2025-08
 
-    $tanggalAwal = $request->bulan . '-01';
-    $tanggalAkhir = Carbon::parse($tanggalAwal)->endOfMonth()->toDateString();
+    if (!$periode) {
+        return redirect()->back()->with('error', 'Periode wajib diisi.');
+    }
+
+    $kodeCabang = Auth::user()->kode_cabang;
+    $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
+
+    $tahun = substr($periode, 0, 4);
+    $bulan = substr($periode, 5, 2);
 
     $gajis = Gaji::with('karyawan')
-        ->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
-        ->where('kode_cabang', Auth::user()->kode_cabang)
+        ->where('kode_cabang', $kodeCabang)
+        ->whereYear('periode', $tahun)
+        ->whereMonth('periode', $bulan)
         ->get();
 
-    $cabang = Auth::user()->cabang->nama ?? 'Semua Cabang';
+    $bulanTahun = \Carbon\Carbon::parse($periode . '-01')->translatedFormat('F Y');
 
     $pdf = Pdf::loadView('gaji.laporan-gaji', [
         'gajis' => $gajis,
-        'tanggalAwal' => $tanggalAwal,
-        'tanggalAkhir' => $tanggalAkhir,
-        'cabang' => $cabang,
+        'periode' => $bulanTahun,
+        'kodeCabang' => $kodeCabang,
+        'namaCabang' => $cabang->nama_cabang,
     ])->setPaper('A4', 'portrait');
 
-    return $pdf->stream('laporan-gaji-' . $request->bulan . '.pdf');
+    return $pdf->stream('laporan_gaji_' . $periode . '.pdf');
 }
 
 

@@ -115,7 +115,9 @@
                                 <td class="text-center">-</td>
                                 <td class="text-center">-</td>
                                 <td class="text-center">-</td>
-                                <td class="text-center">-</td>
+                                @if (Auth::user()->role === 'super_admin')
+                                    <td class="text-center">-</td>
+                                @endif
                             </tr>
                         @endforelse
                     </tbody>

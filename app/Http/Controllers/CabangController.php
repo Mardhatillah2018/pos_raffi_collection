@@ -35,6 +35,7 @@ class CabangController extends Controller
             'nama_cabang' => 'required|string|max:100',
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+            'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:255',
         ]);
 
@@ -78,6 +79,7 @@ class CabangController extends Controller
             'nama_cabang' => 'required|string|max:100',
             'jam_buka' => 'required|date_format:H:i',
             'jam_tutup' => 'required|date_format:H:i|after:jam_buka',
+            'no_hp' => 'required|string|max:15',
             'alamat' => 'required|string|max:255',
         ]);
 
@@ -87,6 +89,7 @@ class CabangController extends Controller
             'nama_cabang' => $request->nama_cabang,
             'jam_buka' => $request->jam_buka,
             'jam_tutup' => $request->jam_tutup,
+            'no_hp' => $request->no_hp,
             'alamat' => $request->alamat,
         ]);
 

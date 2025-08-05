@@ -14,15 +14,21 @@
         <div class="modal-body">
           <div class="row mb-3">
             <div class="col-md-4">
-              <label class="form-label">Tanggal Produksi</label>
-              <input type="date" name="tanggal_produksi" class="form-control" value="{{ $produksi->tanggal_produksi }}" required>
+                <label for="tanggal_produksi" class="form-label" style="color: black; font-weight: bold;">Tanggal Produksi</label>
+                <div class="input-group">
+                    <input type="text" id="tanggal_produksi" name="tanggal_produksi" class="form-control" placeholder="YYYY-MM-DD" value="{{ $produksi->tanggal_produksi }}" required>
+                    <span class="input-group-text" id="btn-tanggal-produk">
+                        <span class="material-symbols-rounded">calendar_today</span>
+                    </span>
+                </div>
             </div>
+
             <div class="col-md-4">
-              <label class="form-label">Total Biaya Produksi (Rp)</label>
+              <label class="form-label" style="color: black; font-weight: bold;">Total Biaya Produksi (Rp)</label>
               <input type="number" name="total_biaya" class="form-control" value="{{ $produksi->total_biaya }}" required min="0">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Keterangan</label>
+              <label class="form-label" style="color: black; font-weight: bold;">Keterangan</label>
               <input type="text" name="keterangan" class="form-control" value="{{ $produksi->keterangan }}">
             </div>
           </div>
@@ -53,7 +59,9 @@
                       <input type="number" name="qty[]" class="form-control" value="{{ $detail->qty }}" required min="1">
                     </td>
                     <td class="text-center">
-                      <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
+                        <button type="button" class="btn btn-sm btn-danger hapusBaris">
+                            <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
+                        </button>
                     </td>
                   </tr>
                 @endforeach
@@ -162,4 +170,16 @@
       }
     });
   });
+
+  flatpickr("#tanggal_produksi", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        clickOpens: true,
+        altInput: false,
+    });
+
+    // Optional: klik ikon juga buka kalender
+    document.getElementById('btn-tanggal-produk').addEventListener('click', function () {
+        document.getElementById('tanggal_produksi')._flatpickr.open();
+    });
 </script>

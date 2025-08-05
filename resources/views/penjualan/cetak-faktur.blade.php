@@ -17,11 +17,9 @@
             padding: 0px;
         }
 
-        .header {
+        .header, .footer {
             text-align: center;
-            border-bottom: 1px dashed #000;
-            padding-bottom: 5px;
-            margin-bottom: 5px;
+            font-size: 11px;
         }
 
         .header h2 {
@@ -31,7 +29,10 @@
 
         .info {
             font-size: 11px;
-            margin-bottom: 10px;
+            margin: 10px 0;
+            border-top: 1px dashed #000;
+            border-bottom: 1px dashed #000;
+            padding: 5px 0;
         }
 
         .info p {
@@ -46,15 +47,11 @@
 
         th, td {
             padding: 4px;
-            border-bottom: 1px dashed #000;
-        }
-
-        th {
             text-align: left;
         }
 
-        .text-right {
-            text-align: right;
+        thead {
+            border-bottom: 1px solid #000;
         }
 
         tfoot td {
@@ -63,47 +60,49 @@
             border-top: 1px solid #000;
         }
 
-        .footer {
-            text-align: center;
-            margin-top: 12px;
-            font-size: 11px;
-            border-top: 1px dashed #000;
-            padding-top: 6px;
+        .text-right {
+            text-align: right;
         }
+
+        .text-center {
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
     <div class="faktur-wrapper">
         <div class="header">
-            <h2>Toko Raffi Collection</h2>
+            <p>Selamat Datang</p>
+            <h2>Raffi Collection</h2>
+            <p>{{ $penjualan->cabang->alamat ?? '-' }}</p>
+            <p>{{ $penjualan->cabang->no_hp ?? '-' }}</p>
         </div>
 
         <div class="info">
-            <p><strong>Cabang:</strong> {{ $penjualan->cabang->nama_cabang ?? '-' }}</p>
-            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->tanggal_penjualan)->format('d/m/Y') }}</p>
+            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</p>
+            <p><strong>Kasir:</strong> {{ $penjualan->user->nama ?? '-' }}</p>
             <p><strong>No. Faktur:</strong> {{ $penjualan->no_faktur }}</p>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Produk</th>
+                    <th>Qty</th>
+                    <th>Nama Produk</th>
                     <th>Uk</th>
-                    <th class="text-right">Qty</th>
                     <th class="text-right">Harga</th>
                     <th class="text-right">Sub</th>
                 </tr>
             </thead>
             <tbody>
                 @php $total = 0; @endphp
-                @foreach ($penjualan->detailPenjualans as $i => $item)
+                @foreach ($penjualan->detailPenjualans as $item)
                     @php $total += $item->subtotal ?? 0; @endphp
                     <tr>
-                        <td>{{ $i + 1 }}</td>
+                        <td>{{ $item->qty }}</td>
                         <td>{{ $item->detailProduk->produk->nama_produk ?? '-' }}</td>
                         <td>{{ $item->detailProduk->ukuran->kode_ukuran ?? '-' }}</td>
-                        <td class="text-right">{{ $item->qty }}</td>
                         <td class="text-right">Rp{{ number_format($item->detailProduk->harga_jual, 0, ',', '.') }}</td>
                         <td class="text-right">Rp{{ number_format($item->subtotal, 0, ',', '.') }}</td>
                     </tr>
@@ -111,14 +110,14 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5" class="text-right">Total</td>
+                    <td colspan="4" class="text-right">Total:</td>
                     <td class="text-right">Rp{{ number_format($total, 0, ',', '.') }}</td>
                 </tr>
             </tfoot>
         </table>
 
         <div class="footer">
-            -- Terima kasih --
+            <p>-- Terimakasih --</p>
         </div>
     </div>
 </body>
