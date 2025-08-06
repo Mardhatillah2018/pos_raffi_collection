@@ -12,27 +12,34 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="tanggal" class="form-label fw-bold">Tanggal</label>
-              <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+              <label for="tanggal" class="form-label fw-bold" style="color: black; font-weight: bold;">Tanggal</label>
+              <input type="text" name="tanggal" id="tanggal" class="form-control flatpickr" placeholder="Pilih tanggal" required>
             </div>
 
             <div class="col-md-6">
-              <label for="kategori_pengeluaran_id" class="form-label fw-bold">Kategori Pengeluaran</label>
-              <select name="kategori_pengeluaran_id" id="kategori_pengeluaran_id" class="form-select select2" required>
+              <label for="kategori_pengeluaran_id" class="form-label fw-bold" style="color: black; font-weight: bold;">Kategori Pengeluaran</label>
+              @php
+                    $allowedKategori = [1, 2, 6, 9];
+                @endphp
+
+                <select name="kategori_pengeluaran_id" id="kategori_pengeluaran_id" class="form-select select2" required>
                 <option value="">-- Pilih Kategori --</option>
                 @foreach ($kategori_pengeluarans as $kategori)
-                  <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                    @if (Auth::user()->role !== 'admin_cabang' || in_array($kategori->id, $allowedKategori))
+                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                    @endif
                 @endforeach
-              </select>
+                </select>
+
             </div>
 
             <div class="col-md-6">
-              <label for="total_pengeluaran" class="form-label fw-bold">Total Pengeluaran</label>
-              <input type="number" name="total_pengeluaran" id="total_pengeluaran" class="form-control" step="0.01" required>
+              <label for="total_pengeluaran" class="form-label fw-bold" style="color: black; font-weight: bold;">Total Pengeluaran</label>
+              <input type="number" name="total_pengeluaran" id="total_pengeluaran" class="form-control" step="0.01" placeholder="Masukkan Total Pengeluaran" required>
             </div>
 
             <div class="col-md-12">
-              <label for="keterangan" class="form-label fw-bold">Keterangan (Opsional)</label>
+              <label for="keterangan" class="form-label fw-bold" style="color: black; font-weight: bold;">Keterangan (Opsional)</label>
               <textarea name="keterangan" id="keterangan" rows="3" class="form-control" placeholder="Contoh: Bayar listrik, pembelian alat, dll."></textarea>
             </div>
           </div>
@@ -54,4 +61,11 @@
       width: '100%'
     });
   });
+
+  document.addEventListener("DOMContentLoaded", function () {
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+    });
 </script>

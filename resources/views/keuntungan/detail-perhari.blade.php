@@ -9,7 +9,7 @@
         <div class="card-body">
             <a href="{{ route('keuntungan.index') }}" class="btn btn-secondary mb-3">← Kembali</a>
             <div class="table-responsive">
-                <table class="table table-bordered text-center">
+                <table id="datatable" class="table table-bordered text-center">
                     <thead class="table-light">
                         <tr>
                             <th>No</th>

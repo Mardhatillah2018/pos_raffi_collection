@@ -16,19 +16,19 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label">Ukuran</label>
+                <label class="form-label" style="color: black; font-weight: bold;">Ukuran</label>
                 <input type="hidden" name="ukuran_id" value="{{ $detail->ukuran_id }}">
                 <input type="text" class="form-control" value="{{ $detail->ukuran->kode_ukuran }}" disabled>
             </div>
 
 
             <div class="col-md-6">
-              <label for="harga_modal{{ $detail->id }}" class="form-label">Harga Modal</label>
+              <label for="harga_modal{{ $detail->id }}" class="form-label" style="color: black; font-weight: bold;">Harga Modal</label>
               <input type="number" name="harga_modal" id="harga_modal{{ $detail->id }}" class="form-control" min="0" value="{{ $detail->harga_modal }}" required>
             </div>
 
             <div class="col-md-6">
-              <label for="harga_jual{{ $detail->id }}" class="form-label">Harga Jual</label>
+              <label for="harga_jual{{ $detail->id }}" class="form-label" style="color: black; font-weight: bold;">Harga Jual</label>
               <input type="number" name="harga_jual" id="harga_jual{{ $detail->id }}" class="form-control" min="0" value="{{ $detail->harga_jual }}" required>
             </div>
           </div>

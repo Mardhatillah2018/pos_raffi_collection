@@ -14,33 +14,33 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="edit_kode_cabang_display" class="form-label">Kode Cabang</label>
+              <label for="edit_kode_cabang_display" class="form-label" style="color: black; font-weight: bold;">Kode Cabang</label>
               <input type="text" id="edit_kode_cabang_display" class="form-control" readonly>
               <input type="hidden" name="kode_cabang" id="edit_kode_cabang">
             </div>
 
             <div class="col-md-6">
-              <label for="edit_nama_cabang" class="form-label">Nama Cabang</label>
+              <label for="edit_nama_cabang" class="form-label" style="color: black; font-weight: bold;">Nama Cabang</label>
               <input type="text" name="nama_cabang" id="edit_nama_cabang" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="edit_jam_buka" class="form-label">Jam Buka</label>
+              <label for="edit_jam_buka" class="form-label" style="color: black; font-weight: bold;">Jam Buka</label>
               <input type="time" name="jam_buka" id="edit_jam_buka" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="edit_jam_tutup" class="form-label">Jam Tutup</label>
+              <label for="edit_jam_tutup" class="form-label" style="color: black; font-weight: bold;">Jam Tutup</label>
               <input type="time" name="jam_tutup" id="edit_jam_tutup" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="edit_no_hp" class="form-label">No HP</label>
+              <label for="edit_no_hp" class="form-label" style="color: black; font-weight: bold;">No HP</label>
               <input type="text" name="no_hp" id="edit_no_hp" class="form-control" required>
             </div>
 
             <div class="col-md-12">
-              <label for="edit_alamat" class="form-label">Alamat</label>
+              <label for="edit_alamat" class="form-label" style="color: black; font-weight: bold;">Alamat</label>
               <textarea name="alamat" id="edit_alamat" class="form-control" rows="3" required></textarea>
             </div>
           </div>

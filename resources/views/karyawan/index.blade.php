@@ -3,14 +3,16 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Daftar Karyawan</h5>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalKaryawan">
-                + Tambah Karyawan
-            </button>
+        <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0" style="color: white">Daftar Karyawan</h6>
         </div>
 
         <div class="card-body">
+            <div class="px-3 py-2 mb-0 d-flex justify-content-end">
+                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalKaryawan">
+                    + Tambah Karyawan
+                </button>
+            </div>
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
                     <thead class="table-light text-center">

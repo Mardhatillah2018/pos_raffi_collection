@@ -13,22 +13,22 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="nama" class="form-label">Nama Lengkap</label>
-              <input type="text" name="nama" id="nama" class="form-control" required>
+              <label for="nama" class="form-label" style="color: black; font-weight: bold;">Nama Lengkap</label>
+              <input type="text" name="nama" id="nama" class="form-control" placeholder="Masukkan Nama Lengkap" required>
             </div>
 
             <div class="col-md-6">
-              <label for="no_hp" class="form-label">Nomor HP</label>
-              <input type="text" name="no_hp" id="no_hp" class="form-control" required>
+              <label for="no_hp" class="form-label" style="color: black; font-weight: bold;">Nomor HP</label>
+              <input type="text" name="no_hp" id="no_hp" class="form-control" placeholder="Masukkan Nomor HP" required>
             </div>
 
             <div class="col-12">
-              <label for="alamat" class="form-label">Alamat</label>
-              <textarea name="alamat" id="alamat" class="form-control" rows="2" required></textarea>
+              <label for="alamat" class="form-label" style="color: black; font-weight: bold;">Alamat</label>
+              <textarea name="alamat" id="alamat" class="form-control" rows="2" placeholder="Masukkan Alamat" required></textarea>
             </div>
 
             <div class="col-12">
-              <label for="kode_cabang" class="form-label">Cabang</label>
+              <label for="kode_cabang" class="form-label" style="color: black; font-weight: bold;">Cabang</label>
               <select name="kode_cabang" id="kode_cabang" class="form-select select2" required>
                 <option value="">-- Pilih Cabang --</option>
                     @foreach ($cabangs as $cabang)

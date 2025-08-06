@@ -161,39 +161,56 @@ class KeuntunganController extends Controller
         return view('keuntungan.detail-perhari', compact('rekapPerHari', 'namaBulan'));
     }
 
-    public function cetakPDF()
-{
-    $user = Auth::user();
-    $kodeCabang = $user->kode_cabang;
+   public function cetakPDF(Request $request)
+    {
+        $user = Auth::user();
+        $kodeCabang = $user->kode_cabang;
 
-    $penjualans = Penjualan::with(['detailPenjualans.detailProduk'])
-        ->where('kode_cabang', $kodeCabang)
-        ->orderBy('tanggal_penjualan', 'desc')
-        ->get()
-        ->groupBy(function ($item) {
-            return \Carbon\Carbon::parse($item->tanggal_penjualan)->format('Y-m');
-        });
+        $kategoriBebanMap = [
+            7 => 'Gaji',
+            1 => 'Perawatan & Kebersihan',
+            2 => 'Perlengkapan Toko',
+            6 => 'Transportasi',
+            8 => 'Sewa Toko',
+            9 => 'Lain-lain',
+        ];
 
-    $pengeluarans = Pengeluaran::with('kategori')
-        ->where('kode_cabang', $kodeCabang)
-        ->get()
-        ->groupBy(function ($item) {
-            return \Carbon\Carbon::parse($item->tanggal)->format('Y-m');
-        });
+        // Tangkap input
+        $filter = $request->filter;
+        $bulan = $request->bulan;
+        $from = $request->from;
+        $to = $request->to;
 
-    $rekap = [];
+        if ($filter === 'bulan' && $bulan) {
+            $startDate = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
+            $endDate = Carbon::createFromFormat('Y-m', $bulan)->endOfMonth();
+            $periodeLabel = Carbon::createFromFormat('Y-m', $bulan)->isoFormat('MMMM Y');
+        } elseif ($filter === 'tanggal' && $from && $to) {
+            $startDate = Carbon::parse($from)->startOfDay();
+            $endDate = Carbon::parse($to)->endOfDay();
+            $periodeLabel = 'Periode: ' . Carbon::parse($from)->format('d/m/Y') . ' - ' . Carbon::parse($to)->format('d/m/Y');
+        } else {
+            return back()->with('error', 'Pilih bulan atau rentang tanggal.');
+        }
 
-    foreach ($penjualans as $bulan => $listPenjualan) {
+        // Data penjualan dan pengeluaran
+        $penjualans = Penjualan::with(['detailPenjualans.detailProduk'])
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal_penjualan', [$startDate, $endDate])
+            ->get();
+
+        $pengeluarans = Pengeluaran::with('kategori')
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get();
+
         $totalPenjualan = 0;
         $totalModal = 0;
-        $totalQty = 0;
 
-        foreach ($listPenjualan as $penjualan) {
+        foreach ($penjualans as $penjualan) {
             foreach ($penjualan->detailPenjualans as $detail) {
                 $hargaModal = $detail->detailProduk->harga_modal ?? 0;
                 $qty = $detail->qty;
-
-                $totalQty += $qty;
                 $totalPenjualan += $detail->subtotal;
                 $totalModal += ($hargaModal * $qty);
             }
@@ -201,31 +218,56 @@ class KeuntunganController extends Controller
 
         $labaKotor = $totalPenjualan - $totalModal;
 
-        $pengeluaranBulanItu = $pengeluarans[$bulan] ?? collect();
-        $totalPengeluaran = $pengeluaranBulanItu->filter(function ($p) {
-            return !$p->kategori->is_modal_produk;
-        })->sum('total_pengeluaran');
+        $beban = [];
+        $totalBeban = 0;
 
-        $labaBersih = $labaKotor - $totalPengeluaran;
+        foreach ($kategoriBebanMap as $id => $label) {
+            $jumlah = $pengeluarans
+                ->filter(fn($item) => $item->kategori_id == $id)
+                ->sum('total_pengeluaran');
 
-        $rekap[] = [
-            'bulan' => \Carbon\Carbon::createFromFormat('Y-m', $bulan)->isoFormat('MMMM Y'),
-            'total_produk' => $totalQty,
-            'total_penjualan' => $totalPenjualan,
-            'laba_kotor' => $labaKotor,
-            'pengeluaran' => $totalPengeluaran,
-            'laba_bersih' => $labaBersih,
-        ];
+            if ($jumlah > 0) {
+                $beban[] = [
+                    'kategori' => $label,
+                    'jumlah' => $jumlah,
+                ];
+                $totalBeban += $jumlah;
+            }
+        }
+
+        if ($totalPenjualan > 0 || $totalModal > 0 || $totalBeban > 0) {
+            $rekap[] = [
+                'bulan' => $periodeLabel,
+                'total_penjualan' => $totalPenjualan,
+                'total_modal' => $totalModal,
+                'laba_kotor' => $labaKotor,
+                'beban' => $beban,
+                'total_beban' => $totalBeban,
+                'laba_bersih' => $labaKotor - $totalBeban,
+            ];
+        } else {
+            $rekap = []; // kosongkan agar di blade tidak ditampilkan
+        }
+
+        // Nama file
+        if ($filter === 'bulan') {
+            $namaFile = 'Laporan Laba Rugi - ' . Carbon::createFromFormat('Y-m', $bulan)->format('F Y');
+        } else {
+            $startFormat = Carbon::parse($from)->format('d F Y');
+            $endFormat = Carbon::parse($to)->format('d F Y');
+            $namaFile = 'Laporan Laba Rugi - ' . $startFormat . ' - ' . $endFormat;
+        }
+        $namaFile = str_replace([' ', ':'], ['-', '-'], $namaFile) . '.pdf';
+
+
+        $pdf = PDF::loadView('keuntungan.laporan-laba-rugi', [
+            'rekap' => $rekap,
+            'namaCabang' => \App\Models\Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang'),
+            'tanggalCetak' => now()->format('d-m-Y'),
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->stream('Laporan Laba Rugi - ' . str_replace(['/', ':'], '-', $periodeLabel) . '.pdf');
     }
-
-    $pdf = PDF::loadView('keuntungan.laporan-keuntungan', [
-        'rekap' => $rekap,
-        'namaCabang' => \App\Models\Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang'),
-        'tanggalCetak' => now()->format('d-m-Y'),
-    ])->setPaper('A4', 'portrait');
-
-    return $pdf->stream('laporan-keuntungan.pdf');
-}
 
 
     /**

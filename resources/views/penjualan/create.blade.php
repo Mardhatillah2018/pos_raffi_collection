@@ -40,67 +40,66 @@
                             </tr>
                         </thead>
                         <tbody id="produkBody">
-    @if($reviewData && isset($reviewData['produkDetails']))
-        @foreach($reviewData['produkDetails'] as $index => $detail)
-        <tr>
-            <td>
-                <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
-                    <option value="">-- Pilih Produk --</option>
-                    @foreach ($detailProduks as $dp)
-                        @php
-                            $stok = $dp->stokCabang->stok ?? 0;
-                            $selected = $dp->id == $detail['detail_produk_id'] ? 'selected' : '';
-                        @endphp
-                        <option value="{{ $dp->id }}"
-                                data-harga="{{ $dp->harga_jual }}"
-                                data-stok="{{ $stok }}"
-                                {{ $stok < 1 ? 'disabled class=text-danger' : '' }}
-                                {{ $selected }}>
-                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
-                            {{ $stok < 1 ? '(Stok Habis)' : '' }}
-                        </option>
-                    @endforeach
-                </select>
-            </td>
-            <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="{{ $detail['qty'] }}" required></td>
-            <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly value="{{ $detail['harga'] }}"></td>
-            <td><input type="text" class="form-control subtotal text-end bg-light" readonly value="{{ $detail['subtotal'] }}"></td>
-            <td class="text-center">
-                <button type="button" class="btn btn-sm btn-danger btn-remove">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </td>
-        </tr>
-        @endforeach
-    @else
-        {{-- Baris default jika belum ada review --}}
-        <tr>
-            <td>
-                <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
-                    <option value="">-- Pilih Produk --</option>
-                    @foreach ($detailProduks as $dp)
-                        @php $stok = $dp->stokCabang->stok ?? 0; @endphp
-                        <option value="{{ $dp->id }}" data-harga="{{ $dp->harga_jual }}"
-                            data-stok="{{ $stok }}"
-                            {{ $stok < 1 ? 'disabled class=text-danger' : '' }}>
-                            {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
-                            {{ $stok < 1 ? '(Stok Habis)' : '' }}
-                        </option>
-                    @endforeach
-                </select>
-            </td>
-            <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="1" required></td>
-            <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly></td>
-            <td><input type="text" class="form-control subtotal text-end bg-light" readonly></td>
-            <td class="text-center">
-                <button type="button" class="btn btn-sm btn-danger btn-remove">
-                    <i class="bi bi-trash-fill"></i>
-                </button>
-            </td>
-        </tr>
-    @endif
-</tbody>
-
+                            @if($reviewData && isset($reviewData['produkDetails']))
+                                @foreach($reviewData['produkDetails'] as $index => $detail)
+                                <tr>
+                                    <td>
+                                        <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
+                                            <option value="">-- Pilih Produk --</option>
+                                            @foreach ($detailProduks as $dp)
+                                                @php
+                                                    $stok = $dp->stokCabang->stok ?? 0;
+                                                    $selected = $dp->id == $detail['detail_produk_id'] ? 'selected' : '';
+                                                @endphp
+                                                <option value="{{ $dp->id }}"
+                                                        data-harga="{{ $dp->harga_jual }}"
+                                                        data-stok="{{ $stok }}"
+                                                        {{ $stok < 1 ? 'disabled class=text-danger' : '' }}
+                                                        {{ $selected }}>
+                                                    {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
+                                                    {{ $stok < 1 ? '(Stok Habis)' : '' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="{{ $detail['qty'] }}" required></td>
+                                    <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly value="{{ $detail['harga'] }}"></td>
+                                    <td><input type="text" class="form-control subtotal text-end bg-light" readonly value="{{ $detail['subtotal'] }}"></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            @else
+                                {{-- Baris default jika belum ada review --}}
+                                <tr>
+                                    <td>
+                                        <select name="detail_produk_id[]" class="produk-select" required style="width: 100%">
+                                            <option value="">-- Pilih Produk --</option>
+                                            @foreach ($detailProduks as $dp)
+                                                @php $stok = $dp->stokCabang->stok ?? 0; @endphp
+                                                <option value="{{ $dp->id }}" data-harga="{{ $dp->harga_jual }}"
+                                                    data-stok="{{ $stok }}"
+                                                    {{ $stok < 1 ? 'disabled class=text-danger' : '' }}>
+                                                    {{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}
+                                                    {{ $stok < 1 ? '(Stok Habis)' : '' }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="qty[]" class="form-control qty text-end" min="1" value="1" required></td>
+                                    <td><input type="number" name="harga_satuan[]" class="form-control harga text-end" readonly></td>
+                                    <td><input type="text" class="form-control subtotal text-end bg-light" readonly></td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endif
+                        </tbody>
                     </table>
                     <button type="button" class="btn btn-outline-info btn-sm" id="btnAddRow">
                         <i class="bi bi-plus-circle me-1"></i>Tambah Baris

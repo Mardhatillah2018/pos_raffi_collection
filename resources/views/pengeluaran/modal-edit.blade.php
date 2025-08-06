@@ -13,12 +13,12 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="editTanggal" class="form-label fw-bold">Tanggal</label>
-              <input type="date" name="tanggal" id="editTanggal" class="form-control" required>
+                <label for="editTanggal" class="form-label fw-bold" style="color: black; font-weight: bold;">Tanggal</label>
+                <input type="text" name="tanggal" id="editTanggal" class="form-control flatpickr" placeholder="Pilih tanggal" required>
             </div>
 
             <div class="col-md-6">
-              <label for="editKategori" class="form-label fw-bold">Kategori Pengeluaran</label>
+              <label for="editKategori" class="form-label fw-bold" style="color: black; font-weight: bold;">Kategori Pengeluaran</label>
               <select name="kategori_id" id="editKategori" class="form-select select2-edit" required>
                 <option value="">-- Pilih Kategori --</option>
                 @foreach ($kategori_pengeluarans as $kategori)
@@ -28,12 +28,12 @@
             </div>
 
             <div class="col-md-6">
-              <label for="editTotal" class="form-label fw-bold">Total Pengeluaran</label>
+              <label for="editTotal" class="form-label fw-bold" style="color: black; font-weight: bold;">Total Pengeluaran</label>
               <input type="number" name="total_pengeluaran" id="editTotal" class="form-control" step="0.01" required>
             </div>
 
             <div class="col-md-12">
-              <label for="editKeterangan" class="form-label fw-bold">Keterangan (Opsional)</label>
+              <label for="editKeterangan" class="form-label fw-bold" style="color: black; font-weight: bold;">Keterangan (Opsional)</label>
               <textarea name="keterangan" id="editKeterangan" rows="3" class="form-control" placeholder="Contoh: Bayar listrik, pembelian alat, dll."></textarea>
             </div>
           </div>

@@ -3,45 +3,49 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Data Gaji Karyawan</h5>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetakGaji">
-                    <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
-                    Cetak
-                </button>
-                <a href="{{ route('gaji.create') }}" class="btn btn-success btn-sm">
-                    + Tambah Gaji
-                </a>
-            </div>
-        </div>
-
-        <div class="modal fade" id="modalCetakGaji" tabindex="-1" aria-labelledby="modalCetakGajiLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content p-3">
-                <form action="{{ route('gaji.cetak') }}" method="GET" target="_blank">
-                    <div class="modal-header">
-                    <h5 class="modal-title" id="modalCetakGajiLabel">Pilih Periode Gaji</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                    </div>
-                    <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="periode" class="form-label">Periode</label>
-                        <input type="month" class="form-control" id="periode" name="periode" required>
-                        {{-- format: 2025-08 --}}
-                    </div>
-                    </div>
-                    <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-printer me-1"></i> Cetak PDF
-                    </button>
-                    </div>
-                </form>
-                </div>
-            </div>
+        <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0" style="color: white">Daftar Gaji Karyawan</h6>
         </div>
 
         <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 mb-0">
+                <div>
+                    <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetakGaji">
+                        <i class="bi bi-printer me-1" style="color: #a20f0f; font-size: 0.9rem;"></i>
+                        Laporan Gaji
+                    </button>
+                </div>
+                <div>
+                    <a href="{{ route('gaji.create') }}" class="btn btn-success btn-sm">
+                        + Tambah Gaji
+                    </a>
+                </div>
+            </div>
+            {{-- modal cetak gaji --}}
+            <div class="modal fade" id="modalCetakGaji" tabindex="-1" aria-labelledby="modalCetakGajiLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content p-3">
+                    <form action="{{ route('gaji.cetak') }}" method="GET" target="_blank">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalCetakGajiLabel">Pilih Periode Gaji</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="periode" class="form-label">Periode</label>
+                                    <input type="month" class="form-control" id="periode" name="periode" required>
+                                {{-- format: 2025-08 --}}
+                                </div>
+                            </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-printer me-1"></i> Cetak PDF
+                            </button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
                     <thead class="table-light text-center">

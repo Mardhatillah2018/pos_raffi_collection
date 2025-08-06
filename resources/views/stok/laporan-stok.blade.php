@@ -1,42 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>Laporan Stok</title>
     <style>
         body {
             font-family: sans-serif;
             font-size: 12px;
-            margin: 30px;
             color: #333;
         }
 
-        .header {
+        h2, h4 {
             text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .header h2 {
             margin: 0;
-            font-size: 18px;
-            letter-spacing: 1px;
         }
 
-        .header p {
-            margin: 2px 0 0 0;
+        .tanggal-cetak {
+            text-align: center;
             font-size: 13px;
-        }
-
-        .info {
-            text-align: right;
-            font-size: 11px;
             margin-top: 5px;
         }
 
-        hr {
-            border: 0;
-            border-top: 1px solid #999;
-            margin: 10px 0 20px 0;
+        .periode {
+            margin: 20px 0 10px;
+            font-size: 13px;
         }
 
         table {
@@ -45,14 +32,14 @@
             margin-top: 10px;
         }
 
-        thead {
-            background-color: #f0f0f0;
+        th, td {
+            border: 1px solid #333;
+            padding: 6px;
+            text-align: center;
         }
 
-        th, td {
-            border: 1px solid #999;
-            padding: 8px;
-            text-align: center;
+        th {
+            background-color: #f2f2f2;
         }
 
         tbody tr:nth-child(even) {
@@ -65,45 +52,59 @@
             text-align: center;
             color: #666;
         }
+
+        .no-data {
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>LAPORAN STOK PRODUK</h2>
-        <p>Toko Raffi Collection - <strong>{{ $namaCabang }}</strong></p>
+    <header>
+        <h2>Laporan Sisa Stok Produk</h2>
+        <h4 style="margin-bottom: 6px"><strong>{{ $namaCabang }}</strong></h4>
+        <div style="border-bottom: 2px solid #000; width: 100%; margin: 0 auto 10px;"></div>
+        <div class="tanggal-cetak">
+            Tanggal Cetak: {{ \Carbon\Carbon::parse($tanggalCetak)->format('d M Y') }}
+        </div>
+    </header>
+
+    <div class="periode">
+        @if(isset($periode))
+            <strong>Periode:</strong>
+            {{ \Carbon\Carbon::parse($periode['mulai'])->format('d M Y') }}
+            -
+            {{ \Carbon\Carbon::parse($periode['sampai'])->format('d M Y') }}
+        @endif
     </div>
 
-    <div class="info">
-        Dicetak pada: {{ \Carbon\Carbon::now()->setTimezone('Asia/Jakarta')->format('d-m-Y H:i:s') }}
-    </div>
-
-    <hr>
-
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>Nama Produk</th>
-                <th>Ukuran</th>
-                <th>Total Stok</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($produkStok as $item)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $item->nama_produk }}</td>
-                <td>{{ $item->ukuran }}</td>
-                <td>{{ $item->total_stok }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="4">Tidak ada data stok</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+    @if(count($produkStok) > 0)
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 5%;">No</th>
+                    <th style="width: 50%;">Nama Produk</th>
+                    <th style="width: 25%;">Ukuran</th>
+                    <th style="width: 20%;">Total Stok</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($produkStok as $item)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->nama_produk }}</td>
+                        <td>{{ $item->ukuran }}</td>
+                        <td>{{ $item->total_stok }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @else
+        <div class="no-data">Tidak ada data stok untuk periode ini.</div>
+    @endif
 
     <div class="footer">
         © {{ date('Y') }} Raffi Collection — Sistem POS Multi Cabang

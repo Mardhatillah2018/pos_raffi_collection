@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Models\LogStok;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        App::setLocale('id');
+        Carbon::setLocale('id');
         View::composer('*', function ($view) {
             if (Auth::check()) {
                 $kodeCabang = Auth::user()->kode_cabang;

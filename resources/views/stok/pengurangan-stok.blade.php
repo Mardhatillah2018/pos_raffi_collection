@@ -3,8 +3,8 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Daftar Pengurangan Stok</h5>
+         <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0" style="color: white">Daftar Pengurangan Stok</h6>
         </div>
 
         <div class="card-body">

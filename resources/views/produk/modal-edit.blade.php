@@ -13,7 +13,7 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="edit_nama_produk" class="form-label">Nama Produk</label>
+              <label for="edit_nama_produk" class="form-label" style="color: black; font-weight: bold;">Nama Produk</label>
               <input type="text" name="nama_produk" id="edit_nama_produk" class="form-control" required>
             </div>
           </div>

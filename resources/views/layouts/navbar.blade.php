@@ -92,6 +92,41 @@
     </div>
   </div>
 </nav>
+{{-- modal profile --}}
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold" id="profileModalLabel">
+          <i class="bi bi-person-circle me-2"></i>Profil Pengguna
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+
+      <div class="modal-body">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-person-fill me-3 text-primary fs-5"></i>
+            <span>{{ auth()->user()->nama }}</span>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-envelope-fill me-3 text-success fs-5"></i>
+            <span>{{ auth()->user()->email }}</span>
+          </li>
+          <li class="list-group-item d-flex align-items-center">
+            <i class="bi bi-shield-lock-fill me-3 text-warning fs-5"></i>
+            <span class="text-capitalize">{{ auth()->user()->role }}</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

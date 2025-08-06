@@ -8,6 +8,7 @@ use App\Models\Pengeluaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class PengeluaranController extends Controller
 {
@@ -23,7 +24,10 @@ class PengeluaranController extends Controller
             ->latest()
             ->get();
 
-        $kategori_pengeluarans = KategoriPengeluaran::all();
+        $kategori_pengeluarans = Auth::user()->role === 'admin_cabang'
+            ? KategoriPengeluaran::whereIn('id', [1, 2, 6, 9])->get()
+            : KategoriPengeluaran::all();
+
 
         return view('pengeluaran.index', compact('pengeluarans', 'kategori_pengeluarans'));
     }
@@ -41,30 +45,32 @@ class PengeluaranController extends Controller
      * Store a newly created resource in storage.
      */
 
-public function store(Request $request)
-{
-    $request->validate([
-        'kategori_pengeluaran_id' => 'required|exists:kategori_pengeluarans,id',
-        'tanggal' => 'required|date',
-        'total_pengeluaran' => 'required|numeric',
-        'keterangan' => 'nullable|string',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'kategori_pengeluaran_id' => 'required|exists:kategori_pengeluarans,id',
+            'tanggal' => 'required|date',
+            'total_pengeluaran' => 'required|numeric',
+            'keterangan' => 'nullable|string',
+        ]);
 
-    $user = Auth::user();
+        if (Auth::user()->role === 'admin_cabang' && !in_array($request->kategori_pengeluaran_id, [1, 2, 6, 9])) {
+            return back()->withErrors('Kategori ini tidak diperbolehkan untuk admin cabang.');
+        }
 
-    Pengeluaran::create([
-        'kategori_id' => $request->kategori_pengeluaran_id,
-        'tanggal' => $request->tanggal,
-        'total_pengeluaran' => $request->total_pengeluaran,
-        'keterangan' => $request->keterangan,
-        'kode_cabang' => $user->kode_cabang,
-        'created_by' => $user->id,
-    ]);
+        $user = Auth::user();
 
-    return redirect()->back()->with('success', 'Pengeluaran berhasil ditambahkan.');
-}
+        Pengeluaran::create([
+            'kategori_id' => $request->kategori_pengeluaran_id,
+            'tanggal' => $request->tanggal,
+            'total_pengeluaran' => $request->total_pengeluaran,
+            'keterangan' => $request->keterangan,
+            'kode_cabang' => $user->kode_cabang,
+            'created_by' => $user->id,
+        ]);
 
-
+        return redirect()->back()->with('success', 'Pengeluaran berhasil ditambahkan.');
+    }
 
     /**
      * Display the specified resource.
@@ -117,22 +123,27 @@ public function cetakPDF(Request $request)
         ->orderBy('tanggal', 'asc')
         ->get();
 
-    // Ambil nama_cabang dari tabel cabangs
     $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
     $namaCabang = $cabang ? $cabang->nama_cabang : 'Semua Cabang';
 
     $pdf = PDF::loadView('pengeluaran.laporan-pengeluaran', [
         'pengeluarans' => $pengeluarans,
         'namaCabang' => $namaCabang,
-        'tanggalCetak' => now()->format('d-m-Y'),
+        'tanggalCetak' => now(),
         'periode' => [
             'mulai' => $tanggalMulai,
             'sampai' => $tanggalSampai,
         ]
     ])->setPaper('A4', 'portrait');
 
-    return $pdf->stream('laporan-pengeluaran.pdf');
+    $mulaiFormatted = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
+    $sampaiFormatted = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
+
+    $namaFile = "Laporan Pengeluaran Periode {$mulaiFormatted} - {$sampaiFormatted}.pdf";
+
+    return $pdf->stream($namaFile);
 }
+
 
 
     /**

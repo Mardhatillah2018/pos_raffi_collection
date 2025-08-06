@@ -12,13 +12,13 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="kode_ukuran" class="form-label">Kode Ukuran</label>
-              <input type="text" name="kode_ukuran" id="kode_ukuran" class="form-control" required>
+              <label for="kode_ukuran" class="form-label" style="color: black; font-weight: bold;">Kode Ukuran</label>
+              <input type="text" name="kode_ukuran" id="kode_ukuran" class="form-control" placeholder="Masukkan Kode Ukuran" required>
             </div>
 
             <div class="col-md-6">
-              <label for="nama_ukuran" class="form-label">Nama Ukuran</label>
-              <input type="text" name="nama_ukuran" id="nama_ukuran" class="form-control" required>
+              <label for="nama_ukuran" class="form-label" style="color: black; font-weight: bold;">Nama Ukuran</label>
+              <input type="text" name="nama_ukuran" id="nama_ukuran" class="form-control" placeholder="Masukkan Nama Ukuran" required>
             </div>
           </div>
         </div>

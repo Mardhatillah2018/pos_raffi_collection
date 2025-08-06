@@ -14,22 +14,22 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="edit_nama" class="form-label">Nama Lengkap</label>
+              <label for="edit_nama" class="form-label" style="color: black; font-weight: bold;">Nama Lengkap</label>
               <input type="text" name="nama" id="edit_nama" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="edit_no_hp" class="form-label">Nomor HP</label>
+              <label for="edit_no_hp" class="form-label" style="color: black; font-weight: bold;">Nomor HP</label>
               <input type="text" name="no_hp" id="edit_no_hp" class="form-control" required>
             </div>
 
             <div class="col-12">
-              <label for="edit_alamat" class="form-label">Alamat</label>
+              <label for="edit_alamat" class="form-label" style="color: black; font-weight: bold;">Alamat</label>
               <textarea name="alamat" id="edit_alamat" class="form-control" rows="2" required></textarea>
             </div>
 
             <div class="col-12">
-              <label for="edit_kode_cabang" class="form-label">Cabang</label>
+              <label for="edit_kode_cabang" class="form-label" style="color: black; font-weight: bold;">Cabang</label>
               <select name="kode_cabang" id="edit_kode_cabang" class="form-select" required>
                 <option value="">-- Pilih Cabang --</option>
                 @foreach ($cabangs as $cabang)

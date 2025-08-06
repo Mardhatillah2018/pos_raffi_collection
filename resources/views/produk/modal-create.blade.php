@@ -12,8 +12,8 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="nama_produk" class="form-label">Nama Produk</label>
-              <input type="text" name="nama_produk" id="nama_produk" class="form-control" required>
+              <label for="nama_produk" class="form-label" style="color: black; font-weight: bold;">Nama Produk</label>
+              <input type="text" name="nama_produk" id="nama_produk" class="form-control" placeholder="Masukkan Nama Produk" required>
             </div>
           </div>
         </div>

@@ -16,6 +16,18 @@ class UserController extends Controller
         return view('user.index', compact('users', 'cabangs'));
     }
 
+    // public function index()
+    // {
+    //     $kodeCabang = Auth::user()->kode_cabang;
+    //     $users = User::where('kode_cabang', $kodeCabang)
+    //                 ->orderBy('created_at', 'desc')
+    //                 ->get();
+
+    //     $cabangs = Cabang::all();
+
+    //     return view('user.index', compact('users', 'cabangs'));
+    // }
+
     public function create()
     {
         //

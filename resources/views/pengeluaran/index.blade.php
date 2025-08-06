@@ -3,55 +3,57 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-       <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Daftar Pengeluaran</h5>
-            <div class="d-flex gap-2">
-                @if (Auth::user()->role === 'super_admin')
-                    <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetak">
-                        <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
-                        Cetak
-                    </button>
-
-                    <a href="{{ route('kategori-pengeluaran.index') }}" class="btn btn-primary btn-sm">
-                        Kategori Pengeluaran
-                    </a>
-                @endif
-
-                <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalPengeluaran">
-                    + Tambah Pengeluaran
-                </button>
-            </div>
+        <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0" style="color: white">Daftar Pengeluaran</h6>
         </div>
-
-        <!-- Modal Cetak -->
-        <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form action="{{ route('pengeluaran.cetak') }}" method="GET" target="_blank" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalCetakLabel">Cetak Laporan Pengeluaran</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                    <label for="tanggal_mulai" class="form-label">Tanggal Mulai</label>
-                    <input type="date" class="form-control" id="tanggal_mulai" name="tanggal_mulai" required>
-                    </div>
-                    <div class="mb-3">
-                    <label for="tanggal_sampai" class="form-label">Tanggal Sampai</label>
-                    <input type="date" class="form-control" id="tanggal_sampai" name="tanggal_sampai" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-printer me-1"></i> Cetak PDF
-                    </button>
-                </div>
-                </form>
-            </div>
-        </div>
-
 
         <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 mb-0">
+                <div>
+                    @if (Auth::user()->role === 'super_admin')
+                        <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetak">
+                            <i class="bi bi-printer me-1" style="color: #a20f0f; font-size: 0.9rem;"></i>
+                            Laporan Pengeluaran
+                        </button>
+                    @endif
+                </div>
+                <div>
+                    @if (Auth::user()->role === 'super_admin')
+                        <a href="{{ route('kategori-pengeluaran.index') }}" class="btn btn-primary btn-sm">
+                            Kategori Pengeluaran
+                        </a>
+                    @endif
+                    <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalPengeluaran">
+                    + Tambah Pengeluaran
+                    </button>
+                </div>
+            </div>
+            <!-- Modal Cetak -->
+            <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
+                <div class="modal-dialog modal-md modal-dialog-centered">
+                    <form action="{{ route('pengeluaran.cetak') }}" method="GET" target="_blank" class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCetakLabel">Cetak Laporan Pengeluaran</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="tanggal_mulai" class="form-label" style="color: black; font-weight: semibold;">Tanggal Mulai</label>
+                            <input type="text" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="dari tanggal ..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tanggal_sampai" class="form-label" style="color: black; font-weight: semibold;">Tanggal Sampai</label>
+                            <input type="text" class="form-control" id="tanggal_sampai" name="tanggal_sampai" placeholder="sampai tanggal ..." required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-printer me-1"></i> Cetak PDF
+                        </button>
+                    </div>
+                    </form>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
                     <thead class="table-light text-center">
@@ -160,5 +162,28 @@
             showConfirmButton: true,
         });
     @endif
+
+    const today = new Date();
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const tanggalMulaiInput = document.getElementById("tanggal_mulai");
+        const tanggalSampaiInput = document.getElementById("tanggal_sampai");
+
+        const sampaiPicker = flatpickr(tanggalSampaiInput, {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+
+        flatpickr(tanggalMulaiInput, {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length > 0) {
+                    // Set minDate ke tanggal mulai (boleh sama)
+                    sampaiPicker.set('minDate', selectedDates[0]);
+                }
+            }
+        });
+    });
 </script>
 @endpush

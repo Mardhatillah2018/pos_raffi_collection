@@ -14,7 +14,7 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="ukuran_id" class="form-label">Ukuran</label>
+              <label for="ukuran_id" class="form-label" style="color: black; font-weight: bold;">Ukuran</label>
               <select name="ukuran_id" id="ukuran_id" class="form-select select2" required>
                 <option value="">-- Pilih Ukuran --</option>
                 @foreach ($ukuranList as $ukuran)
@@ -24,13 +24,13 @@
             </div>
 
             <div class="col-md-6">
-              <label for="harga_modal" class="form-label">Harga Modal</label>
-              <input type="number" name="harga_modal" id="harga_modal" class="form-control" min="0" required>
+              <label for="harga_modal" class="form-label" style="color: black; font-weight: bold;">Harga Modal</label>
+              <input type="number" name="harga_modal" id="harga_modal" class="form-control" min="0" placeholder="Masukkan Harga Modal" required>
             </div>
 
             <div class="col-md-6">
-              <label for="harga_jual" class="form-label">Harga Jual</label>
-              <input type="number" name="harga_jual" id="harga_jual" class="form-control" min="0" required>
+              <label for="harga_jual" class="form-label" style="color: black; font-weight: bold;">Harga Jual</label>
+              <input type="number" name="harga_jual" id="harga_jual" class="form-control" min="0" placeholder="Masukkan Harga Jual" required>
             </div>
           </div>
         </div>

@@ -12,33 +12,33 @@
         <div class="modal-body">
           <div class="row g-3">
             <div class="col-md-6">
-              <label for="kode_cabang" class="form-label">Kode Cabang</label>
-              <input type="text" name="kode_cabang" id="kode_cabang" class="form-control" required>
+              <label for="kode_cabang" class="form-label" style="color: black; font-weight: bold;">Kode Cabang</label>
+              <input type="text" name="kode_cabang" id="kode_cabang" class="form-control" placeholder="Masukkan Kode Cabang" required>
             </div>
 
             <div class="col-md-6">
-              <label for="nama_cabang" class="form-label">Nama Cabang</label>
-              <input type="text" name="nama_cabang" id="nama_cabang" class="form-control" required>
+              <label for="nama_cabang" class="form-label" style="color: black; font-weight: bold;">Nama Cabang</label>
+              <input type="text" name="nama_cabang" id="nama_cabang" class="form-control" placeholder="Masukkan Nama Cabang" required>
             </div>
 
             <div class="col-md-6">
-              <label for="jam_buka" class="form-label">Jam Buka</label>
+              <label for="jam_buka" class="form-label" style="color: black; font-weight: bold;">Jam Buka</label>
               <input type="time" name="jam_buka" id="jam_buka" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="jam_tutup" class="form-label">Jam Tutup</label>
+              <label for="jam_tutup" class="form-label" style="color: black; font-weight: bold;">Jam Tutup</label>
               <input type="time" name="jam_tutup" id="jam_tutup" class="form-control" required>
             </div>
 
             <div class="col-md-6">
-              <label for="no_hp" class="form-label">No HP</label>
-              <input type="text" name="no_hp" id="no_hp" class="form-control" required>
+              <label for="no_hp" class="form-label" style="color: black; font-weight: bold;">No HP</label>
+              <input type="text" name="no_hp" id="no_hp" class="form-control" placeholder="Masukkan No HP" required>
             </div>
 
             <div class="col-md-12">
-              <label for="alamat" class="form-label">Alamat</label>
-              <textarea name="alamat" id="alamat" class="form-control" rows="3" required></textarea>
+              <label for="alamat" class="form-label" style="color: black; font-weight: bold;">Alamat</label>
+              <textarea name="alamat" id="alamat" class="form-control" rows="3" placeholder="Masukkan Alamat" required></textarea>
             </div>
           </div>
         </div>

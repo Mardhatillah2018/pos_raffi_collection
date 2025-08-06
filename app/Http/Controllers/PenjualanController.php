@@ -8,6 +8,7 @@ use App\Models\LogStok;
 use App\Models\Penjualan;
 use App\Models\Stok;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -68,41 +69,40 @@ class PenjualanController extends Controller
 
 
     public function review(Request $request)
-{
-    $validated = $request->validate([
-        'no_faktur' => 'required|string',
-        'tanggal_penjualan' => 'required|date',
-        'detail_produk_id.*' => 'required|exists:detail_produks,id',
-        'qty.*' => 'required|integer|min:1',
-        'harga_satuan.*' => 'required|numeric|min:0',
-        'total_harga' => 'required|numeric|min:0',
-    ]);
+    {
+        $validated = $request->validate([
+            'no_faktur' => 'required|string',
+            'tanggal_penjualan' => 'required|date',
+            'detail_produk_id.*' => 'required|exists:detail_produks,id',
+            'qty.*' => 'required|integer|min:1',
+            'harga_satuan.*' => 'required|numeric|min:0',
+            'total_harga' => 'required|numeric|min:0',
+        ]);
 
-    $produkDetails = [];
-    foreach ($request->detail_produk_id as $index => $id) {
-        $produk = DetailProduk::with(['produk', 'ukuran'])->find($id);
-        $qty = $request->qty[$index];
-        $harga = $request->harga_satuan[$index];
-        $subtotal = $qty * $harga;
+        $produkDetails = [];
+        foreach ($request->detail_produk_id as $index => $id) {
+            $produk = DetailProduk::with(['produk', 'ukuran'])->find($id);
+            $qty = $request->qty[$index];
+            $harga = $request->harga_satuan[$index];
+            $subtotal = $qty * $harga;
 
-        $produkDetails[] = [
-            'detail_produk_id' => $id,
-            'produk' => $produk->produk->nama_produk,
-            'ukuran' => $produk->ukuran->nama_ukuran,
-            'qty' => $qty,
-            'harga' => $harga,
-            'subtotal' => $subtotal,
-        ];
+            $produkDetails[] = [
+                'detail_produk_id' => $id,
+                'produk' => $produk->produk->nama_produk,
+                'ukuran' => $produk->ukuran->nama_ukuran,
+                'qty' => $qty,
+                'harga' => $harga,
+                'subtotal' => $subtotal,
+            ];
+        }
+
+        return redirect()->route('penjualan.create')->with('reviewData', [
+            'no_faktur' => $request->no_faktur,
+            'tanggal_penjualan' => $request->tanggal_penjualan,
+            'total_harga' => $request->total_harga,
+            'produkDetails' => $produkDetails,
+        ]);
     }
-
-    return redirect()->route('penjualan.create')->with('reviewData', [
-        'no_faktur' => $request->no_faktur,
-        'tanggal_penjualan' => $request->tanggal_penjualan,
-        'total_harga' => $request->total_harga,
-        'produkDetails' => $produkDetails,
-    ]);
-}
-
 
     /**
      * Store a newly created resource in storage.
@@ -210,32 +210,36 @@ class PenjualanController extends Controller
     }
 
     public function cetakPDF(Request $request)
-{
-    $tanggalMulai = $request->tanggal_mulai;
-    $tanggalSampai = $request->tanggal_sampai;
+    {
+        $tanggalMulai = $request->tanggal_mulai;
+        $tanggalSampai = $request->tanggal_sampai;
 
-    $kodeCabang = Auth::user()->kode_cabang;
+        $kodeCabang = Auth::user()->kode_cabang;
 
-    $penjualans = Penjualan::where('kode_cabang', $kodeCabang)
-        ->whereDate('tanggal_penjualan', '>=', $tanggalMulai)
-        ->whereDate('tanggal_penjualan', '<=', $tanggalSampai)
-        ->orderBy('tanggal_penjualan', 'asc')
-        ->get();
+        $penjualans = Penjualan::where('kode_cabang', $kodeCabang)
+            ->whereDate('tanggal_penjualan', '>=', $tanggalMulai)
+            ->whereDate('tanggal_penjualan', '<=', $tanggalSampai)
+            ->orderBy('tanggal_penjualan', 'asc')
+            ->get();
 
-    $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
+        $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
 
-    $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
-        'penjualans' => $penjualans,
-        'namaCabang' => $namaCabang,
-        'periode' => [
-            'mulai' => $tanggalMulai,
-            'sampai' => $tanggalSampai,
-        ],
-        'tanggalCetak' => now()->toDateString(),
-    ])->setPaper('A4', 'portrait');
+        $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
+            'penjualans' => $penjualans,
+            'namaCabang' => $namaCabang,
+            'periode' => [
+                'mulai' => $tanggalMulai,
+                'sampai' => $tanggalSampai,
+            ],
+            'tanggalCetak' => now()->toDateString(),
+        ])->setPaper('A4', 'portrait');
 
-    return $pdf->stream('laporan-penjualan.pdf');
-}
+        $mulaiFormat = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
+        $sampaiFormat = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
+        $namaFile = "Laporan Penjualan Periode {$mulaiFormat} - {$sampaiFormat}.pdf";
+
+        return $pdf->stream($namaFile);
+    }
 
 
     /**

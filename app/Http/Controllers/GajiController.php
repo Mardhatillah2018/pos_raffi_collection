@@ -117,36 +117,38 @@ class GajiController extends Controller
     }
 
     public function cetakPDF(Request $request)
-{
-    $periode = $request->input('periode'); // format: 2025-08
+    {
+        $periode = $request->input('periode'); // format: 2025-08
 
-    if (!$periode) {
-        return redirect()->back()->with('error', 'Periode wajib diisi.');
+        if (!$periode) {
+            return redirect()->back()->with('error', 'Periode wajib diisi.');
+        }
+
+        $kodeCabang = Auth::user()->kode_cabang;
+        $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
+
+        $tahun = substr($periode, 0, 4);
+        $bulan = substr($periode, 5, 2);
+
+        $gajis = Gaji::with('karyawan')
+            ->where('kode_cabang', $kodeCabang)
+            ->whereYear('periode', $tahun)
+            ->whereMonth('periode', $bulan)
+            ->get();
+
+        // Format: "Agustus 2025"
+        $bulanTahun = Carbon::parse($periode . '-01')->translatedFormat('F Y');
+
+        $pdf = Pdf::loadView('gaji.laporan-gaji', [
+            'gajis' => $gajis,
+            'periode' => $bulanTahun,
+            'kodeCabang' => $kodeCabang,
+            'namaCabang' => $cabang->nama_cabang,
+        ])->setPaper('A4', 'portrait');
+
+        // Nama file: Laporan Gaji Karyawan Periode - Agustus 2025.pdf
+        return $pdf->stream('Laporan Gaji Karyawan Periode - ' . $bulanTahun . '.pdf');
     }
-
-    $kodeCabang = Auth::user()->kode_cabang;
-    $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
-
-    $tahun = substr($periode, 0, 4);
-    $bulan = substr($periode, 5, 2);
-
-    $gajis = Gaji::with('karyawan')
-        ->where('kode_cabang', $kodeCabang)
-        ->whereYear('periode', $tahun)
-        ->whereMonth('periode', $bulan)
-        ->get();
-
-    $bulanTahun = \Carbon\Carbon::parse($periode . '-01')->translatedFormat('F Y');
-
-    $pdf = Pdf::loadView('gaji.laporan-gaji', [
-        'gajis' => $gajis,
-        'periode' => $bulanTahun,
-        'kodeCabang' => $kodeCabang,
-        'namaCabang' => $cabang->nama_cabang,
-    ])->setPaper('A4', 'portrait');
-
-    return $pdf->stream('laporan_gaji_' . $periode . '.pdf');
-}
 
 
     /**

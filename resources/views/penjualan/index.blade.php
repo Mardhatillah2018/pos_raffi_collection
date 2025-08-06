@@ -3,52 +3,56 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fw-bold">Daftar Penjualan</h5>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#modalCetak">
-                    <i class="bi bi-printer me-1" style="font-size: 0.9rem;"></i>
-                    Cetak
-                </button>
-                {{-- modal cetak --}}
-                <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-md modal-dialog-centered">
-                        <div class="modal-content">
-                        <form action="{{ route('penjualan.cetakLaporan') }}" method="GET" target="_blank">
-                            <div class="modal-header">
-                            <h5 class="modal-title fw-bold" id="modalCetakLabel">Cetak Laporan Penjualan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                            </div>
-                            <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="tanggal_mulai" class="form-label">Dari Tanggal</label>
-                                <input type="date" name="tanggal_mulai" id="tanggal_mulai" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="tanggal_sampai" class="form-label">Sampai Tanggal</label>
-                                <input type="date" name="tanggal_sampai" id="tanggal_sampai" class="form-control" required>
-                            </div>
-                            </div>
-                            <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-printer me-1"></i> Cetak Laporan
-                            </button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            </div>
-                        </form>
-                        </div>
-                    </div>
-                </div>
-                @if (Auth::user()->role === 'admin_cabang')
-                    <a href="{{ route('penjualan.create') }}" class="btn btn-primary">
-                        <i class="material-icons-round me-1" style="font-size: 16px;">add</i>
-                        Tambah Penjualan
-                    </a>
-                @endif
-            </div>
+        <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0" style="color: white">Daftar Penjualan</h6>
         </div>
 
         <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 mb-0">
+                <div>
+                    <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetak">
+                        <i class="bi bi-printer me-1" style="color: #a20f0f; font-size: 0.9rem;"></i>
+                        Laporan Penjualan
+                    </button>
+                </div>
+                @if (Auth::user()->role === 'admin_cabang')
+                    <div>
+                        <a href="{{ route('penjualan.create') }}" class="btn btn-primary btn-sm">
+                            + Tambah Penjualan
+                        </a>
+                    </div>
+                @endif
+            </div>
+
+            {{-- modal cetak --}}
+            <div class="modal fade" id="modalCetak" tabindex="-1" aria-labelledby="modalCetakLabel" aria-hidden="true">
+                <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="{{ route('penjualan.cetakLaporan') }}" method="GET" target="_blank">
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="modalCetakLabel">Cetak Laporan Penjualan</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="tanggal_mulai" class="form-label" style="color: black; font-weight: semibold;">Dari Tanggal</label>
+                                    <input type="text" name="tanggal_mulai" id="tanggal_mulai" class="form-control flatpickr" placeholder="dari tanggal ..." required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="tanggal_sampai" class="form-label" style="color: black; font-weight: semibold;">Sampai Tanggal</label>
+                                    <input type="text" name="tanggal_sampai" id="tanggal_sampai" class="form-control flatpickr" placeholder="sampai tanggal ..." required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-printer me-1"></i> Cetak Laporan
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
                     <thead class="table-light text-center">
@@ -156,6 +160,27 @@
         }
     });
     @endif
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const tanggalMulaiInput = document.getElementById("tanggal_mulai");
+        const tanggalSampaiInput = document.getElementById("tanggal_sampai");
+
+        const sampaiPicker = flatpickr(tanggalSampaiInput, {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+
+        flatpickr(tanggalMulaiInput, {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length > 0) {
+                    // Set minDate ke tanggal mulai (boleh sama)
+                    sampaiPicker.set('minDate', selectedDates[0]);
+                }
+            }
+        });
+    });
 
 </script>
 @endpush
