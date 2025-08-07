@@ -25,7 +25,7 @@ class LogStokController extends Controller
             ->where('jenis', 'keluar')
             ->where('sumber', 'pengurangan')
             ->where('kode_cabang', $kodeCabang) // filter berdasarkan cabang
-            ->latest()
+            ->orderBy('tanggal', 'desc') 
             ->get();
 
         return view('stok.pengurangan-stok', compact('logStoks'));

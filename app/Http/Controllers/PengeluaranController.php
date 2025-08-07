@@ -23,13 +23,13 @@ class PengeluaranController extends Controller
         if ($user->role === 'super_admin') {
             $pengeluarans = Pengeluaran::with('kategori')
                 ->where('kode_cabang', $kodeCabang)
-                ->latest()
+                ->orderByDesc('tanggal')
                 ->get();
         } else {
             $pengeluarans = Pengeluaran::with('kategori')
                 ->where('kode_cabang', $kodeCabang)
                 ->where('created_by', $user->id)
-                ->latest()
+                ->orderByDesc('tanggal')
                 ->get();
         }
 

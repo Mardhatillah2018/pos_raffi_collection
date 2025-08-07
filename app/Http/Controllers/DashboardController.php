@@ -53,10 +53,12 @@ class DashboardController extends Controller
         ->distinct('detail_produk_id')
         ->count('detail_produk_id');
 
-    $produkStokKosong = Stok::where('kode_cabang', $kodeCabang)
-        ->where('stok', 0)
-        ->distinct('detail_produk_id')
-        ->count('detail_produk_id');
+    $produkStokKosong = DetailProduk::whereDoesntHave('stokCabang')
+    ->orWhereHas('stokCabang', function ($query) {
+        $query->where('stok', 0);
+    })
+    ->count();
+
 
     $jumlahProdukAktif = Stok::where('kode_cabang', $kodeCabang)
         ->where('stok', '>', 0)

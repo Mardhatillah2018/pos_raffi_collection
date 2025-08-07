@@ -56,7 +56,25 @@
                     <td colspan="6" class="no-data">Tidak ada data penjualan untuk periode ini.</td>
                 </tr>
             @endforelse
+
+            @if(count($penjualans) > 0)
+                {{-- Hitung total seluruh qty dan total harga --}}
+                @php
+                    $totalQty = $penjualans->sum(function($p) {
+                        return $p->detailPenjualans->sum('qty');
+                    });
+                    $totalHarga = $penjualans->sum('total_harga');
+                @endphp
+
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total</strong></td>
+                    <td><strong>{{ $totalQty }}</strong></td>
+                    <td class="text-end"><strong>Rp {{ number_format($totalHarga, 0, ',', '.') }}</strong></td>
+                    <td></td>
+                </tr>
+            @endif
         </tbody>
+
     </table>
 
 </body>

@@ -5,10 +5,35 @@
         <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
             aria-hidden="true" id="iconSidenav"></i>
         <a class="navbar-brand m-0 d-block" href="#">
-            <span class="d-block text-sm text-dark fw-bold" style="font-size: 1.5rem;">Raffi</span>
-            <span class="d-block text-xs text-muted" style="font-size: 0.95rem;">Collection</span>
+            <span style="display: block; font-size: 1.8rem; font-weight: 700; font-family: 'Playfair Display', serif;">Raffi</span>
+            {{-- <span class="d-block text-dark" style="font-size: 2rem; font-weight: 800; font-family: 'Segoe UI', sans-serif;">Raffi</span> --}}
+            <span class="d-block text-muted" style="font-size: 0.9rem; letter-spacing: 1px; font-style: italic; font-family: 'Georgia', serif;">Collection</span>
         </a>
     </div>
+
+<style>
+    .sidenav-header.scrolled {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        border-bottom: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+</style>
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidenavHeader = document.querySelector('.sidenav-header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 0) {
+                    sidenavHeader.classList.add('scrolled');
+                } else {
+                    sidenavHeader.classList.remove('scrolled');
+                }
+            });
+        });
+    </script>
+@endpush
+
     <hr class="horizontal dark mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
       <ul class="navbar-nav">

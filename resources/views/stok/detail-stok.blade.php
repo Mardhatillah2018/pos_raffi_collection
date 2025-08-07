@@ -3,12 +3,14 @@
 @section('content')
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-header">
-            <h5 class="fw-bold">Detail Stok Produk</h5>
-            <small class="text-muted">
+        <div class="card-header bg-gradient-dark fw-bold">
+            <h6 class="mb-0 text-white">Detail Stok</h6>
+            <hr style="border-top: 1px solid rgba(255, 255, 255, 0.3); margin: 4px 0;">
+            <small class="text-white">
                 {{ $produk->nama_produk }}
             </small>
         </div>
+
         <div class="card-body">
             <table id="datatable" class="table table-hover align-items-center mb-0">
                 <thead class="table-light text-centerx">

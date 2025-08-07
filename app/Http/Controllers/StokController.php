@@ -17,49 +17,42 @@ class StokController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $kodeCabang = Auth::user()->kode_cabang;
+    {
+        $kodeCabang = Auth::user()->kode_cabang;
 
-    // Ambil semua detail produk beserta relasi produk, ukuran, dan stok untuk cabang tertentu
-    $detailProduks = DetailProduk::with([
-        'produk',
-        'ukuran',
-        'stokCabang' => function ($query) use ($kodeCabang) {
-            $query->where('kode_cabang', $kodeCabang);
-        }
-    ])->get();
+        $detailProduks = DetailProduk::with([
+            'produk',
+            'ukuran',
+            'stokCabang' => function ($query) use ($kodeCabang) {
+                $query->where('kode_cabang', $kodeCabang);
+            }
+        ])->get();
 
-    // Kelompokkan berdasarkan ID produk
-    $grouped = $detailProduks->groupBy(fn($item) => $item->produk->id);
+        $grouped = $detailProduks->groupBy(fn($item) => $item->produk->id);
 
-    // Proses data yang telah dikelompokkan
-    $produkStok = $grouped->map(function ($items) {
-        $produk = $items->first()->produk;
+        $produkStok = $grouped->map(function ($items) {
+            $produk = $items->first()->produk;
 
-        $totalStok = $items->sum(function ($item) {
-    return optional($item->stokCabang)->stok ?? 0;
-});
+            $totalStok = $items->sum(function ($item) {
+                return optional($item->stokCabang)->stok ?? 0;
+            });
 
+            $adaUkuranKosong = $items->contains(function ($item) {
+                return (optional($item->stokCabang)->stok ?? 0) == 0;
+            });
 
-$adaUkuranKosong = $items->contains(function ($item) {
-    return (optional($item->stokCabang)->stok ?? 0) == 0;
-});
+            return (object)[
+                'produk_id' => $produk->id,
+                'nama_produk' => $produk->nama_produk,
+                'total_stok' => $totalStok,
+                'ada_ukuran_kosong' => $adaUkuranKosong,
+            ];
+        });
 
-        return (object)[
-            'produk_id' => $produk->id,
-            'nama_produk' => $produk->nama_produk,
-            'total_stok' => $totalStok,
-            'ada_ukuran_kosong' => $adaUkuranKosong,
-        ];
-    });
-
-    return view('stok.index', [
-        'produkStok' => $produkStok
-    ]);
-}
-
-
-
+        return view('stok.index', [
+            'produkStok' => $produkStok
+        ]);
+    }
 
 
     /**
@@ -132,64 +125,64 @@ $adaUkuranKosong = $items->contains(function ($item) {
         return $pdf->stream('laporan-stok.pdf');
     }
 
-public function cetakMutasiPDF(Request $request)
-{
-    $user = Auth::user();
-    $kodeCabang = $user->kode_cabang;
+    public function cetakMutasiPDF(Request $request)
+    {
+        $user = Auth::user();
+        $kodeCabang = $user->kode_cabang;
 
-    // Ambil dan validasi periode
-    $periode = $request->input('periode');
-    if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
-        abort(400, 'Format periode tidak valid');
+        // Ambil dan validasi periode
+        $periode = $request->input('periode');
+        if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
+            abort(400, 'Format periode tidak valid');
+        }
+
+        [$tahun, $bulan] = explode('-', $periode);
+
+        $tanggalAwalBulan = Carbon::create($tahun, $bulan, 1)->startOfDay();
+        $tanggalAkhirBulan = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
+
+        $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
+            ->where('kode_cabang', $kodeCabang)
+            ->where('status', 'disetujui')
+            ->whereDate('tanggal', '<=', $tanggalAkhirBulan)
+            ->get()
+            ->groupBy('detail_produk_id')
+            ->map(function ($logs) use ($tanggalAwalBulan, $tanggalAkhirBulan) {
+                $first = $logs->first();
+
+                $stokAwal = $logs->where('tanggal', '<', $tanggalAwalBulan)
+                    ->reduce(function ($total, $log) {
+                        return $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty);
+                    }, 0);
+
+                $masuk = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                    ->where('jenis', 'masuk')->sum('qty');
+
+                $keluar = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                    ->where('jenis', 'keluar')->sum('qty');
+
+                $stokAkhir = $stokAwal + $masuk - $keluar;
+
+                return (object)[
+                    'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
+                    'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
+                    'stok_awal' => $stokAwal,
+                    'masuk' => $masuk,
+                    'keluar' => $keluar,
+                    'stok_akhir' => $stokAkhir,
+                ];
+            })->values();
+
+        $pdf = PDF::loadView('stok.laporan-mutasi', [
+            'dataMutasi' => $logStoks,
+            'namaCabang' => $user->cabang->nama_cabang ?? $kodeCabang,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'tanggalCetak' => now()
+        ]);
+
+        return $pdf->stream("mutasi-stok-$bulan-$tahun.pdf");
     }
-
-    [$tahun, $bulan] = explode('-', $periode);
-
-    $tanggalAwalBulan = Carbon::create($tahun, $bulan, 1)->startOfDay();
-    $tanggalAkhirBulan = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
-
-    $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
-        ->where('kode_cabang', $kodeCabang)
-        ->where('status', 'disetujui')
-        ->whereDate('tanggal', '<=', $tanggalAkhirBulan)
-        ->get()
-        ->groupBy('detail_produk_id')
-        ->map(function ($logs) use ($tanggalAwalBulan, $tanggalAkhirBulan) {
-            $first = $logs->first();
-
-            $stokAwal = $logs->where('tanggal', '<', $tanggalAwalBulan)
-                ->reduce(function ($total, $log) {
-                    return $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty);
-                }, 0);
-
-            $masuk = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
-                ->where('jenis', 'masuk')->sum('qty');
-
-            $keluar = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
-                ->where('jenis', 'keluar')->sum('qty');
-
-            $stokAkhir = $stokAwal + $masuk - $keluar;
-
-            return (object)[
-                'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
-                'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
-                'stok_awal' => $stokAwal,
-                'masuk' => $masuk,
-                'keluar' => $keluar,
-                'stok_akhir' => $stokAkhir,
-            ];
-        })->values();
-
-    $pdf = PDF::loadView('stok.laporan-mutasi', [
-        'dataMutasi' => $logStoks,
-        'namaCabang' => $user->cabang->nama_cabang ?? $kodeCabang,
-        'bulan' => $bulan,
-        'tahun' => $tahun,
-        'tanggalCetak' => now()
-    ]);
-
-    return $pdf->stream("mutasi-stok-$bulan-$tahun.pdf");
-}
 
     /**
      * Show the form for editing the specified resource.
