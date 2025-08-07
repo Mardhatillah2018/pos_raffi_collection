@@ -109,7 +109,14 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7">Tidak ada data</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>
+                                <td class="text-center">-</td>  
                             </tr>
                         @endforelse
                     </tbody>

@@ -48,20 +48,19 @@ class PenjualanController extends Controller
 
     $cabangs = Cabang::all();
 
-    // Ambil no_faktur terakhir untuk hari ini
-    $lastFaktur = Penjualan::whereDate('created_at', now()->toDateString())
+    // Ambil no_faktur terakhir untuk hari ini dan cabang ini
+    $lastFaktur = Penjualan::where('kode_cabang', $kodeCabang)
+        ->whereDate('created_at', now()->toDateString())
         ->orderByDesc('id')
         ->first();
 
     if ($lastFaktur) {
-        // ambil 4 digit terakhir dari no_faktur
         $lastNumber = (int) substr($lastFaktur->no_faktur, -4);
         $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
     } else {
         $newNumber = '0001';
     }
 
-    // Format: KODECABANG-TGL-NO
     $noFaktur = $kodeCabang . '-' . now()->format('Ymd') . '-' . $newNumber;
 
     return view('penjualan.create', compact('detailProduks', 'kodeCabang', 'cabangs', 'noFaktur'));

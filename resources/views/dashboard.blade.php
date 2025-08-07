@@ -10,118 +10,206 @@
         </p>
         {{-- card baris pertama --}}
         <div class="row">
-            {{-- Card 1: Penjualan Hari Ini --}}
-            <div class="col-xl-3 col-sm-6">
-                <div class="card">
-                    <div class="card-header p-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-sm text-capitalize mb-0">Penjualan Hari Ini</p>
-                            <h4 class="mb-0">Rp{{ number_format($penjualanHariIni, 0, ',', '.') }}</h4>
-                        </div>
-                        @php
-                            $iconPenjualan = $persenPenjualan >= 0 ? 'trending_up' : 'trending_down';
-                        @endphp
+            @php
+                use Illuminate\Support\Facades\Auth;
+                $role = Auth::user()->role;
+                $hari = \Carbon\Carbon::now()->translatedFormat('l'); // Nama hari dalam Bahasa Indonesia
+                $tanggal = \Carbon\Carbon::now()->format('d-m-Y');
+                $jam = \Carbon\Carbon::now()->format('H:i');
+            @endphp
 
-                        <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">{{ $iconPenjualan }}</i>
+            @if ($role === 'super_admin')
+                {{-- Card 1: Penjualan Hari Ini --}}
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Penjualan Hari Ini</p>
+                                <h4 class="mb-0">Rp{{ number_format($penjualanHariIni, 0, ',', '.') }}</h4>
+                            </div>
+                            @php
+                                $iconPenjualan = $persenPenjualan >= 0 ? 'trending_up' : 'trending_down';
+                            @endphp
+
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">{{ $iconPenjualan }}</i>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
+                            @if ($persenPenjualan !== null)
+                                <p class="mb-0 text-sm d-flex align-items-center">
+                                    <span class="{{ $persenPenjualan >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold d-flex align-items-center">
+                                        <i class="material-icons-round me-1">
+                                            {{ $persenPenjualan >= 0 ? 'arrow_upward' : 'arrow_downward' }}
+                                        </i>
+                                        {{ round($persenPenjualan, 2) }}%
+                                    </span>
+                                    <span class="ms-2 text-muted">dari kemarin</span>
+                                </p>
+                            @else
+                                <p class="mb-0 text-sm text-muted">Tidak ada data kemarin</p>
+                            @endif
                         </div>
                     </div>
-                    <hr class="horizontal dark my-0">
-                    <div class="card-footer p-3">
-                        @if ($persenPenjualan !== null)
+                </div>
+
+                {{-- Card 2: Jumlah Produk --}}
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Jumlah Produk</p>
+                                <h4 class="mb-0">{{ $totalProduk }}</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">inventory_2</i>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
                             <p class="mb-0 text-sm d-flex align-items-center">
-                                <span class="{{ $persenPenjualan >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold d-flex align-items-center">
-                                    <i class="material-icons-round me-1">
-                                        {{ $persenPenjualan >= 0 ? 'arrow_upward' : 'arrow_downward' }}
-                                    </i>
-                                    {{ round($persenPenjualan, 2) }}%
-                                </span>
-                                <span class="ms-2 text-muted">dari kemarin</span>
+                                <span class="text-success font-weight-bold me-1">{{ $jumlahProdukAktif }}</span>
+                                <span>produk aktif</span>
                             </p>
-                        @else
-                            <p class="mb-0 text-sm text-muted">Tidak ada data kemarin</p>
-                        @endif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- Card 2: Jumlah Produk --}}
-            <div class="col-xl-3 col-sm-6">
-                <div class="card">
-                    <div class="card-header p-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-sm text-capitalize mb-0">Jumlah Produk</p>
-                            <h4 class="mb-0">{{ $totalProduk }}</h4>
+                {{-- Card 3: Total Stok --}}
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Total Stok</p>
+                                <h4 class="mb-0">{{ $totalStok }}</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">inventory</i>
+                            </div>
                         </div>
-                        <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">inventory_2</i>
-                        </div>
-                    </div>
-                    <hr class="horizontal dark my-0">
-                    <div class="card-footer p-3">
-                        <p class="mb-0 text-sm d-flex align-items-center">
-                            <span class="text-success font-weight-bold me-1">{{ $jumlahProdukAktif }}</span>
-                            <span>produk aktif</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Card 3: Total Stok --}}
-            <div class="col-xl-3 col-sm-6">
-                <div class="card">
-                    <div class="card-header p-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-sm text-capitalize mb-0">Total Stok</p>
-                            <h4 class="mb-0">{{ $totalStok }}</h4>
-                        </div>
-                        <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">inventory</i>
-                        </div>
-                    </div>
-                    <hr class="horizontal dark my-0">
-                    <div class="card-footer p-3">
-                        <p class="mb-0 text-sm d-flex align-items-center">
-                            <span class="text-danger font-weight-bold me-1">{{ $produkStokKosong }}</span>
-                            <span>produk stok kosong</span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Card 4: Pengeluaran Hari Ini --}}
-            <div class="col-xl-3 col-sm-6">
-                <div class="card">
-                    <div class="card-header p-3 d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-sm text-capitalize mb-0">Pengeluaran Hari Ini</p>
-                            <h4 class="mb-0">Rp{{ number_format($pengeluaranHariIni, 0, ',', '.') }}</h4>
-                        </div>
-                        <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
-                            <i class="material-symbols-rounded opacity-10">payments</i>
-                        </div>
-                    </div>
-                    <hr class="horizontal dark my-0">
-                    <div class="card-footer p-3">
-                        @if (!is_null($persenPengeluaran))
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
                             <p class="mb-0 text-sm d-flex align-items-center">
-                                @php
-                                    $ikon = $persenPengeluaran >= 0 ? 'arrow_upward' : 'arrow_downward';
-                                    $warna = $persenPengeluaran >= 0 ? 'text-danger' : 'text-success';
-                                @endphp
-
-                                <span class="{{ $warna }} font-weight-bold d-flex align-items-center">
-                                    <i class="material-icons-round me-1">{{ $ikon }}</i>
-                                    {{ round(abs($persenPengeluaran), 2) }}%
-                                </span>
-                                <span class="ms-2 text-muted">dari kemarin</span>
+                                <span class="text-danger font-weight-bold me-1">{{ $produkStokKosong }}</span>
+                                <span>produk stok kosong</span>
                             </p>
-                        @else
-                            <p class="mb-0 text-sm text-muted">Belum ada data kemarin</p>
-                        @endif
+                        </div>
                     </div>
                 </div>
+
+                {{-- Card 4: Pengeluaran Hari Ini --}}
+                <div class="col-xl-3 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Pengeluaran Hari Ini</p>
+                                <h4 class="mb-0">Rp{{ number_format($pengeluaranHariIni, 0, ',', '.') }}</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">payments</i>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
+                            @if (!is_null($persenPengeluaran))
+                                <p class="mb-0 text-sm d-flex align-items-center">
+                                    @php
+                                        $ikon = $persenPengeluaran >= 0 ? 'arrow_upward' : 'arrow_downward';
+                                        $warna = $persenPengeluaran >= 0 ? 'text-danger' : 'text-success';
+                                    @endphp
+
+                                    <span class="{{ $warna }} font-weight-bold d-flex align-items-center">
+                                        <i class="material-icons-round me-1">{{ $ikon }}</i>
+                                        {{ round(abs($persenPengeluaran), 2) }}%
+                                    </span>
+                                    <span class="ms-2 text-muted">dari kemarin</span>
+                                </p>
+                            @else
+                                <p class="mb-0 text-sm text-muted">Belum ada data kemarin</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @else
+                {{-- Card 1: Hari, Tanggal, Jam, Button --}}
+                <div class="col-md-6 mb-4">
+    <div class="card h-100 shadow-sm border-0">
+        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h3 class="fw-bold mb-1">
+                    <i class="bi bi-clock me-2"></i>
+                    <span id="clock">{{ \Carbon\Carbon::now()->format('H:i:s') }}</span>
+                </h3>
+                <p class="mb-0 text-muted">
+                    <i class="bi bi-calendar-week me-1"></i>
+                    {{ \Carbon\Carbon::now()->translatedFormat('l, d M Y') }}
+                </p>
             </div>
+            <a href="{{ route('penjualan.create') }}" class="btn btn-primary mt-3 mt-sm-0">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Penjualan
+            </a>
+        </div>
+    </div>
+</div>
+
+
+                {{-- Card 2: Penjualan Hari Ini --}}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Penjualan Hari Ini</p>
+                                <h4 class="mb-0">Rp{{ number_format($penjualanHariIni, 0, ',', '.') }}</h4>
+                            </div>
+                            @php
+                                $iconPenjualan = $persenPenjualan >= 0 ? 'trending_up' : 'trending_down';
+                            @endphp
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">{{ $iconPenjualan }}</i>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
+                            @if ($persenPenjualan !== null)
+                                <p class="mb-0 text-sm d-flex align-items-center">
+                                    <span class="{{ $persenPenjualan >= 0 ? 'text-success' : 'text-danger' }} font-weight-bold d-flex align-items-center">
+                                        <i class="material-icons-round me-1">
+                                            {{ $persenPenjualan >= 0 ? 'arrow_upward' : 'arrow_downward' }}
+                                        </i>
+                                        {{ round($persenPenjualan, 2) }}%
+                                    </span>
+                                    <span class="ms-2 text-muted">dari kemarin</span>
+                                </p>
+                            @else
+                                <p class="mb-0 text-sm text-muted">Tidak ada data kemarin</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card 3: Total Stok --}}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-sm text-capitalize mb-0">Total Stok</p>
+                                <h4 class="mb-0">{{ $totalStok }}</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">inventory</i>
+                            </div>
+                        </div>
+                        <hr class="horizontal dark my-0">
+                        <div class="card-footer p-3">
+                            <p class="mb-0 text-sm d-flex align-items-center">
+                                <span class="text-danger font-weight-bold me-1">{{ $produkStokKosong }}</span>
+                                <span>produk stok kosong</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 
@@ -288,6 +376,15 @@
 
 @push('scripts')
 <script>
+    function updateClock() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+
     // Penjualan 7 hari terakhir
     const penjualan7Hari = @json($penjualan7Hari);
     var ctx = document.getElementById("chart-bars").getContext("2d");

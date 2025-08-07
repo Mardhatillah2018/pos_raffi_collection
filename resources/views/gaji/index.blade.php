@@ -124,11 +124,11 @@
                                             <span class="text-white fw-semibold small">Detail</span>
                                         </button>
 
-                                        <button
+                                        {{-- <button
                                             class="btn btn-warning btn-sm d-flex align-items-center px-2 py-1">
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">edit</i>
                                             <span class="text-white fw-semibold small">Edit</span>
-                                        </button>
+                                        </button> --}}
                                         <button
                                             type="button"
                                             class="btn btn-danger btn-sm d-flex align-items-center px-2 py-1"

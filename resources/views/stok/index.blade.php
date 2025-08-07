@@ -79,15 +79,28 @@
                             <td class="text-center">{{ $stok->nama_produk }}</td>
                             <td class="text-center">{{ $stok->total_stok }}</td>
                             <td class="text-center">
-                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                <div class="d-flex justify-content-between align-items-center">
                                     <a href="{{ route('stok.show', $stok->produk_id) }}"
                                         class="btn btn-info btn-sm d-flex align-items-center px-2 py-1"
                                         title="Detail">
-                                            <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
-                                            <span class="text-white fw-semibold small">Detail</span>
+                                        <i class="material-icons-round text-white me-1" style="font-size: 16px;">info</i>
+                                        <span class="text-white fw-semibold small">Detail</span>
                                     </a>
+
+                                    @if ($stok->ada_ukuran_kosong)
+                                        <span class="ms-2 text-warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Ada Stok Kosong">
+                                            <i class="bi bi-exclamation-circle-fill" style="font-size: 1.2rem; color: red;"></i>
+                                        </span>
+                                        <script>
+                                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                                            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                                                new bootstrap.Tooltip(tooltipTriggerEl)
+                                            })
+                                        </script>
+                                    @endif
                                 </div>
                             </td>
+
                         </tr>
                         @empty
                         <tr>

@@ -18,19 +18,28 @@ class PengeluaranController extends Controller
     public function index()
     {
         $kodeCabang = Auth::user()->kode_cabang;
+        $user = Auth::user();
 
-        $pengeluarans = Pengeluaran::with('kategori')
-            ->where('kode_cabang', $kodeCabang)
-            ->latest()
-            ->get();
+        if ($user->role === 'super_admin') {
+            $pengeluarans = Pengeluaran::with('kategori')
+                ->where('kode_cabang', $kodeCabang)
+                ->latest()
+                ->get();
+        } else {
+            $pengeluarans = Pengeluaran::with('kategori')
+                ->where('kode_cabang', $kodeCabang)
+                ->where('created_by', $user->id)
+                ->latest()
+                ->get();
+        }
 
-        $kategori_pengeluarans = Auth::user()->role === 'admin_cabang'
+        $kategori_pengeluarans = $user->role === 'admin_cabang'
             ? KategoriPengeluaran::whereIn('id', [1, 2, 6, 9])->get()
             : KategoriPengeluaran::all();
 
-
         return view('pengeluaran.index', compact('pengeluarans', 'kategori_pengeluarans'));
     }
+
 
 
     /**

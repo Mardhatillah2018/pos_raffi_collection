@@ -17,26 +17,49 @@ class StokController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $kodeCabang = Auth::user()->kode_cabang;
+{
+    $kodeCabang = Auth::user()->kode_cabang;
 
-        $produkStok = Stok::with('detailProduk.produk')
-            ->where('kode_cabang', $kodeCabang) // filter cabang
-            ->selectRaw('detail_produk_id, SUM(stok) as total_stok')
-            ->groupBy('detail_produk_id')
-            ->get()
-            ->groupBy(fn($item) => $item->detailProduk->produk->id)
-            ->map(function ($group) {
-                $produk = $group->first()->detailProduk->produk;
-                return (object)[
-                    'produk_id' => $produk->id,
-                    'nama_produk' => $produk->nama_produk,
-                    'total_stok' => $group->sum('total_stok'),
-                ];
-            });
+    // Ambil semua detail produk beserta relasi produk, ukuran, dan stok untuk cabang tertentu
+    $detailProduks = DetailProduk::with([
+        'produk',
+        'ukuran',
+        'stokCabang' => function ($query) use ($kodeCabang) {
+            $query->where('kode_cabang', $kodeCabang);
+        }
+    ])->get();
 
-        return view('stok.index', ['produkStok' => $produkStok]);
-    }
+    // Kelompokkan berdasarkan ID produk
+    $grouped = $detailProduks->groupBy(fn($item) => $item->produk->id);
+
+    // Proses data yang telah dikelompokkan
+    $produkStok = $grouped->map(function ($items) {
+        $produk = $items->first()->produk;
+
+        $totalStok = $items->sum(function ($item) {
+    return optional($item->stokCabang)->stok ?? 0;
+});
+
+
+$adaUkuranKosong = $items->contains(function ($item) {
+    return (optional($item->stokCabang)->stok ?? 0) == 0;
+});
+
+        return (object)[
+            'produk_id' => $produk->id,
+            'nama_produk' => $produk->nama_produk,
+            'total_stok' => $totalStok,
+            'ada_ukuran_kosong' => $adaUkuranKosong,
+        ];
+    });
+
+    return view('stok.index', [
+        'produkStok' => $produkStok
+    ]);
+}
+
+
+
 
 
     /**

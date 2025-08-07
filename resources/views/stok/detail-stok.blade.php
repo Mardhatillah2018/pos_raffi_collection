@@ -16,7 +16,9 @@
                         <th>No</th>
                         <th>Ukuran</th>
                         <th>Total Stok</th>
-                        <th>Aksi</th>
+                        @if(auth()->user()->role == 'admin_cabang')
+                            <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -28,24 +30,26 @@
                             <td class="text-center">{{ $loop->iteration }}</td>
                             <td>{{ $detail->ukuran->kode_ukuran }}</td>
                             <td>{{ $stok }}</td>
-                            <td>
-                                {{-- <button class="btn btn-success btn-sm px-2 py-1"
-                                    onclick=""
-                                    title="Tambah Stok">
-                                    <i class="material-icons-round text-white">add</i>
-                                    <span class="text-white fw-semibold small">Tambah</span>
-                                </button> --}}
+                            @if(auth()->user()->role == 'admin_cabang')
+                                <td>
+                                    {{-- <button class="btn btn-success btn-sm px-2 py-1"
+                                        onclick=""
+                                        title="Tambah Stok">
+                                        <i class="material-icons-round text-white">add</i>
+                                        <span class="text-white fw-semibold small">Tambah</span>
+                                    </button> --}}
 
-                                <button class="btn btn-danger btn-sm px-2 py-1"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalKurangiStok"
-                                    data-id="{{ $detail->id }}"
-                                    data-nama="{{ $produk->nama_produk }} - Ukuran {{ $detail->ukuran->kode_ukuran }}"
-                                    title="Kurangi Stok">
-                                    <i class="material-icons-round text-white">remove</i>
-                                    <span class="text-white fw-semibold small">Kurang</span>
-                                </button>
-                            </td>
+                                    <button class="btn btn-danger btn-sm px-2 py-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalKurangiStok"
+                                        data-id="{{ $detail->id }}"
+                                        data-nama="{{ $produk->nama_produk }} - Ukuran {{ $detail->ukuran->kode_ukuran }}"
+                                        title="Kurangi Stok">
+                                        <i class="material-icons-round text-white">remove</i>
+                                        <span class="text-white fw-semibold small">Kurang</span>
+                                    </button>
+                                </td>
+                            @endif
                         </tr>
                     @endforeach
                 </tbody>

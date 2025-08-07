@@ -149,7 +149,9 @@
           <input type="number" name="qty[]" class="form-control" required min="1" value="1">
         </td>
         <td class="text-center">
-          <button type="button" class="btn btn-sm btn-danger hapusBaris">-</button>
+            <button type="button" class="btn btn-sm btn-danger hapusBaris">
+                <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
+            </button>
         </td>
       `;
       tableCreate.appendChild(newRow);
@@ -174,7 +176,7 @@
         }
         });
     });
-    
+
      const fp = flatpickr("#tanggal_produksi", {
         dateFormat: "Y-m-d",
         allowInput: true,

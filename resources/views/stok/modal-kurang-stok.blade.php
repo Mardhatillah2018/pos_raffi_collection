@@ -10,16 +10,16 @@
       <div class="modal-body">
         <input type="hidden" name="detail_produk_id" id="kurangDetailProdukId">
         <div class="mb-3">
-          <label for="namaProduk" class="form-label">Nama Produk</label>
+          <label for="namaProduk" class="form-label" style="color: black; font-weight: semibold;">Nama Produk</label>
           <input type="text" id="kurangNamaProduk" class="form-control" readonly>
         </div>
         <div class="mb-3">
-          <label for="qty" class="form-label">Jumlah Pengurangan</label>
-          <input type="number" name="qty" class="form-control" required min="1">
+          <label for="qty" class="form-label" style="color: black; font-weight: semibold;">Jumlah Pengurangan</label>
+          <input type="number" name="qty" class="form-control" required min="1" placeholder="Masukkan Jumlah Pengurangan">
         </div>
         <div class="mb-3">
-          <label for="keterangan" class="form-label">Keterangan</label>
-          <textarea name="keterangan" class="form-control" rows="2"></textarea>
+          <label for="keterangan" class="form-label" style="color: black; font-weight: semibold;">Keterangan</label>
+          <textarea name="keterangan" class="form-control" rows="2" placeholder="Masukkan Keterangan"></textarea>
         </div>
       </div>
       <div class="modal-footer">

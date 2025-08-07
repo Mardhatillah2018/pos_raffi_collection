@@ -15,7 +15,7 @@
         <li class="nav-item mt-2">
         <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Dashboard</h6>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" title="Lihat Dashboard">
             <a class="nav-link {{ Request::is('dashboard*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/dashboard">
                 <i class="material-icons-round opacity-5 me-2">dashboard</i>
                 <span class="nav-link-text ms-1">Dashboard</span>
@@ -26,7 +26,7 @@
             <li class="nav-item mt-2">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Master Data</h6>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Cabang">
                 <a class="nav-link {{ Request::is('cabang*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/cabang">
                     <i class="material-icons-round opacity-5 me-2">store</i>
                     <span class="nav-link-text ms-1">Cabang</span>
@@ -38,13 +38,13 @@
                     <span class="nav-link-text ms-1">Kategori</span>
                 </a>
             </li> --}}
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Produk">
                 <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
                     <i class="material-icons-round opacity-5 me-2">inventory_2</i>
                     <span class="nav-link-text ms-1">Produk</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Ukuran Produk">
                 <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/ukuran-produk">
                     <i class="material-icons-round opacity-5 me-2">straighten</i>
                     <span class="nav-link-text ms-1">Ukuran Produk</span>
@@ -63,26 +63,26 @@
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Operasional</h6>
         </li>
         @if (Auth::user()->role === 'super_admin')
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Produksi">
                 <a class="nav-link {{ Request::is('produksi*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produksi">
                     <i class="material-icons-round opacity-5 me-2">content_cut</i>
                     <span class="nav-link-text ms-1">Produksi</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Pembelian">
                 <a class="nav-link {{ Request::is('pembelian*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pembelian">
                     <i class="material-icons-round opacity-5 me-2">shopping_bag</i>
                     <span class="nav-link-text ms-1">Pembelian</span>
                 </a>
             </li>
         @endif
-        <li class="nav-item">
+        <li class="nav-item" title="Lihat Stok Produk">
             <a class="nav-link {{ Request::is('stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/stok">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
                 <span class="nav-link-text ms-1">Stok</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" title="Kelola Pengurangan Stok">
             <a class="nav-link {{ Request::is('pengurangan-stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengurangan-stok">
                 <i class="material-icons-round opacity-5 me-2">style</i>
                 <span class="nav-link-text ms-1 d-flex align-items-center">
@@ -96,20 +96,20 @@
             </a>
         </li>
 
-        <li class="nav-item">
+        <li class="nav-item" title="Lihat Penjualan">
             <a class="nav-link {{ Request::is('penjualan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/penjualan">
                 <i class="material-icons-round opacity-5 me-2">point_of_sale</i>
                 <span class="nav-link-text ms-1">Penjualan</span>
             </a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" title="Kelola Pengeluaran">
             <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
                 <i class="material-icons-round opacity-5 me-2">receipt_long</i>
                 <span class="nav-link-text ms-1">Pengeluaran</span>
             </a>
         </li>
         @if (Auth::user()->role === 'super_admin')
-            <li class="nav-item">
+            <li class="nav-item" title="Lihat Keuntungan">
                 <a class="nav-link {{ Request::is('keuntungan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/keuntungan">
                     <i class="material-icons-round opacity-5 me-2">trending_up</i>
                     <span class="nav-link-text ms-1">Keuntungan</span>
@@ -122,19 +122,19 @@
             <li class="nav-item mt-2">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Kepegawaian & Akses</h6>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Karyawan">
                 <a class="nav-link {{ Request::is('karyawan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/karyawan">
                     <i class="material-icons-round opacity-5 me-2">badge</i>
                     <span class="nav-link-text ms-1">Karyawan</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola Gaji">
                 <a class="nav-link {{ Request::is('gaji*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/gaji">
                     <i class="material-icons-round opacity-5 me-2">payments</i>
                     <span class="nav-link-text ms-1">Gaji</span>
                 </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item" title="Kelola User">
                 <a class="nav-link {{ Request::is('users*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/users">
                     <i class="material-icons-round opacity-5 me-2">manage_accounts</i>
                     <span class="nav-link-text ms-1">User</span>

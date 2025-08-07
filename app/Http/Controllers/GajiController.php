@@ -36,7 +36,7 @@ class GajiController extends Controller
     {
         $user = Auth::user();
 
-        $karyawans = Karyawan::when($user->role === 'admin', function ($query) use ($user) {
+        $karyawans = Karyawan::when($user->role === 'super_admin', function ($query) use ($user) {
             $query->where('kode_cabang', $user->kode_cabang);
         })->get();
 
@@ -90,7 +90,7 @@ class GajiController extends Controller
 
     public function bayar(Request $request, Gaji $gaji)
     {
-        if (Auth::user()->role != 'super-admin') {
+        if (Auth::user()->role != 'super_admin') {
             abort(403, 'Anda tidak memiliki akses.');
         }
 
