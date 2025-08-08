@@ -155,21 +155,25 @@ class StokController extends Controller
                         return $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty);
                     }, 0);
 
-                $masuk = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
-                    ->where('jenis', 'masuk')->sum('qty');
+                $masukBulanIni = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                    ->where('jenis', 'masuk')
+                    ->sum('qty');
 
-                $keluar = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
-                    ->where('jenis', 'keluar')->sum('qty');
+                $keluarBulanIni = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                    ->where('jenis', 'keluar')
+                    ->sum('qty');
 
-                $stokAkhir = $stokAwal + $masuk - $keluar;
+                $stokAkhir = $stokAwal + $masukBulanIni - $keluarBulanIni;
+
+                $masukLaporan = $stokAwal + $masukBulanIni;
 
                 return (object)[
                     'nama_produk' => $first->detailProduk->produk->nama_produk ?? '-',
-                    'ukuran' => $first->detailProduk->ukuran->kode_ukuran ?? '-',
-                    'stok_awal' => $stokAwal,
-                    'masuk' => $masuk,
-                    'keluar' => $keluar,
-                    'stok_akhir' => $stokAkhir,
+                    'ukuran'      => $first->detailProduk->ukuran->kode_ukuran ?? '-',
+                    'stok_awal'   => $stokAwal,
+                    'masuk'       => $masukLaporan,
+                    'keluar'      => $keluarBulanIni,
+                    'stok_akhir'  => $stokAkhir,
                 ];
             })->values();
 
