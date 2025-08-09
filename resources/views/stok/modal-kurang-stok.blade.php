@@ -1,4 +1,4 @@
-<!-- Modal Kurangi Stok -->
+<!-- Modal Kurangi Stok admin cabang -->
 <div class="modal fade" id="modalKurangiStok" tabindex="-1" aria-labelledby="kurangiStokLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form method="POST" action="{{ route('pengurangan.ajukan') }}" class="modal-content">

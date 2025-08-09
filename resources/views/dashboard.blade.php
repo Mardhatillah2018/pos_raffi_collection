@@ -13,7 +13,7 @@
             @php
                 use Illuminate\Support\Facades\Auth;
                 $role = Auth::user()->role;
-                $hari = \Carbon\Carbon::now()->translatedFormat('l'); // Nama hari dalam Bahasa Indonesia
+                $hari = \Carbon\Carbon::now()->translatedFormat('l');
                 $tanggal = \Carbon\Carbon::now()->format('d-m-Y');
                 $jam = \Carbon\Carbon::now()->format('H:i');
             @endphp
@@ -132,7 +132,7 @@
                                         <span class="ms-2 text-muted">dari kemarin</span>
                                     </p>
                                 @else
-                                    <p class="mb-0 text-sm text-muted">Belum ada data kemarin</p>
+                                    <p class="mb-0 text-sm text-muted">Tidak ada data kemarin</p>
                                 @endif
                             </div>
                         </div>

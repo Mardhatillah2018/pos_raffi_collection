@@ -5,9 +5,9 @@
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">Daftar Kategori Pengeluaran</h5>
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalKategoriPengeluaran">
+            {{-- <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalKategoriPengeluaran">
                 + Tambah Kategori Pengeluaran
-            </button>
+            </button> --}}
         </div>
 
         <div class="card-body">
@@ -17,7 +17,7 @@
                         <tr>
                             <th scope="col">No</th>
                             <th scope="col">Nama Kategori Pengeluaran</th>
-                            <th scope="col">Aksi</th>
+                            {{-- <th scope="col">Aksi</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -25,7 +25,7 @@
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
                                 <td>{{ $kategoriPengeluaran->nama_kategori }}</td>
-                                <td class="align-middle text-center">
+                                {{-- <td class="align-middle text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
 
                                         <button
@@ -52,13 +52,13 @@
                                             </button>
                                         </form>
                                     </div>
-                                </td>
+                                </td> --}}
                             </tr>
                         @empty
                             <tr>
                                 <td class="text-center">-</td>
                                 <td class="text-center">-</td>
-                                <td class="text-center">-</td>
+                                {{-- <td class="text-center">-</td> --}}
                             </tr>
                         @endforelse
                     </tbody>

@@ -61,7 +61,7 @@
                                     <div class="modal fade" id="modalKonfirmasi{{ $log->id }}" tabindex="-1" aria-labelledby="modalKonfirmasiLabel{{ $log->id }}" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content border-0 shadow">
-                                            <div class="modal-header" style="background-color: #8B0000; color: white;">
+                                            <div class="modal-header" style="background-color: #b03939; color: white;">
                                                 <h5 class="modal-title" id="modalKonfirmasiLabel{{ $log->id }}" style="color: white;">
                                                     <i class="fas fa-exclamation-circle me-2"></i>Konfirmasi Pengurangan Stok
                                                 </h5>

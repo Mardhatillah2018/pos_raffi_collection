@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class PengeluaranController extends Controller
 {
@@ -119,40 +120,47 @@ class PengeluaranController extends Controller
         return redirect()->back()->with('success', 'Pengeluaran berhasil diperbarui.');
     }
 
-public function cetakPDF(Request $request)
-{
-    $kodeCabang = Auth::user()->kode_cabang;
+    public function cetakPDF(Request $request)
+    {
+        $kodeCabang = Auth::user()->kode_cabang;
 
-    $tanggalMulai = $request->tanggal_mulai;
-    $tanggalSampai = $request->tanggal_sampai;
+        $tanggalMulai = $request->tanggal_mulai;
+        $tanggalSampai = $request->tanggal_sampai;
 
-    $pengeluarans = Pengeluaran::with('kategori')
-        ->where('kode_cabang', $kodeCabang)
-        ->whereBetween('tanggal', [$tanggalMulai, $tanggalSampai])
-        ->orderBy('tanggal', 'asc')
-        ->get();
+        $pengeluarans = Pengeluaran::with('kategori')
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal', [$tanggalMulai, $tanggalSampai])
+            ->orderBy('tanggal', 'asc')
+            ->get();
 
-    $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
-    $namaCabang = $cabang ? $cabang->nama_cabang : 'Semua Cabang';
+        $cabang = Cabang::where('kode_cabang', $kodeCabang)->first();
+        $namaCabang = $cabang ? $cabang->nama_cabang : 'Semua Cabang';
 
-    $pdf = PDF::loadView('pengeluaran.laporan-pengeluaran', [
-        'pengeluarans' => $pengeluarans,
-        'namaCabang' => $namaCabang,
-        'tanggalCetak' => now(),
-        'periode' => [
-            'mulai' => $tanggalMulai,
-            'sampai' => $tanggalSampai,
-        ]
-    ])->setPaper('A4', 'portrait');
+        $ringkasanKategori = Pengeluaran::select('kategori_id', DB::raw('SUM(total_pengeluaran) as total_per_kategori'))
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal', [$tanggalMulai, $tanggalSampai])
+            ->groupBy('kategori_id')
+            ->with('kategori')
+            ->get();
 
-    $mulaiFormatted = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
-    $sampaiFormatted = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
+        $pdf = PDF::loadView('pengeluaran.laporan-pengeluaran', [
+            'pengeluarans' => $pengeluarans,
+            'ringkasanKategori' => $ringkasanKategori,
+            'namaCabang' => $namaCabang,
+            'tanggalCetak' => now(),
+            'periode' => [
+                'mulai' => $tanggalMulai,
+                'sampai' => $tanggalSampai,
+            ]
+        ])->setPaper('A4', 'portrait');
 
-    $namaFile = "Laporan Pengeluaran Periode {$mulaiFormatted} - {$sampaiFormatted}.pdf";
+        $mulaiFormatted = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
+        $sampaiFormatted = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
 
-    return $pdf->stream($namaFile);
-}
+        $namaFile = "Laporan Pengeluaran Periode {$mulaiFormatted} - {$sampaiFormatted}.pdf";
 
+        return $pdf->stream($namaFile);
+    }
 
 
     /**

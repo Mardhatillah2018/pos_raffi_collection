@@ -88,6 +88,7 @@ class GajiController extends Controller
         return redirect()->route('gaji.index')->with('success', 'Gaji berhasil ditambahkan.');
     }
 
+    //kalau statusnya masih pending
     public function bayar(Request $request, Gaji $gaji)
     {
         if (Auth::user()->role != 'super_admin') {
@@ -146,7 +147,6 @@ class GajiController extends Controller
             'namaCabang' => $cabang->nama_cabang,
         ])->setPaper('A4', 'portrait');
 
-        // Nama file: Laporan Gaji Karyawan Periode - Agustus 2025.pdf
         return $pdf->stream('Laporan Gaji Karyawan Periode - ' . $bulanTahun . '.pdf');
     }
 

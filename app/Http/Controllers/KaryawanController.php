@@ -13,17 +13,16 @@ class KaryawanController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-    $user = Auth::user();
-    $cabangs = Cabang::all();
+    {
+        $user = Auth::user();
+        $cabangs = Cabang::all();
 
-    $karyawans = Karyawan::with('cabang')
-        ->where('kode_cabang', $user->kode_cabang)
-        ->get();
+        $karyawans = Karyawan::with('cabang')
+            ->where('kode_cabang', $user->kode_cabang)
+            ->get();
 
-    return view('karyawan.index', compact('karyawans', 'cabangs'));
-}
-
+        return view('karyawan.index', compact('karyawans', 'cabangs'));
+    }
 
     /**
      * Show the form for creating a new resource.

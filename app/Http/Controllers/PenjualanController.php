@@ -37,34 +37,34 @@ class PenjualanController extends Controller
      */
 
     public function create()
-{
-    $kodeCabang = Auth::user()->kode_cabang;
+    {
+        $kodeCabang = Auth::user()->kode_cabang;
 
-    $detailProduks = DetailProduk::with(['produk', 'ukuran', 'stokCabang'])
-        ->whereHas('stokCabang', function ($query) {
-            $query->where('stok', '>', 0);
-        })
-        ->get();
+        $detailProduks = DetailProduk::with(['produk', 'ukuran', 'stokCabang'])
+            ->whereHas('stokCabang', function ($query) {
+                $query->where('stok', '>', 0);
+            })
+            ->get();
 
-    $cabangs = Cabang::all();
+        $cabangs = Cabang::all();
 
-    // Ambil no_faktur terakhir untuk hari ini dan cabang ini
-    $lastFaktur = Penjualan::where('kode_cabang', $kodeCabang)
-        ->whereDate('created_at', now()->toDateString())
-        ->orderByDesc('id')
-        ->first();
+        // Ambil no_faktur terakhir untuk hari ini dan cabang ini
+        $lastFaktur = Penjualan::where('kode_cabang', $kodeCabang)
+            ->whereDate('created_at', now()->toDateString())
+            ->orderByDesc('id')
+            ->first();
 
-    if ($lastFaktur) {
-        $lastNumber = (int) substr($lastFaktur->no_faktur, -4);
-        $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
-    } else {
-        $newNumber = '0001';
+        if ($lastFaktur) {
+            $lastNumber = (int) substr($lastFaktur->no_faktur, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        $noFaktur = $kodeCabang . '-' . now()->format('Ymd') . '-' . $newNumber;
+
+        return view('penjualan.create', compact('detailProduks', 'kodeCabang', 'cabangs', 'noFaktur'));
     }
-
-    $noFaktur = $kodeCabang . '-' . now()->format('Ymd') . '-' . $newNumber;
-
-    return view('penjualan.create', compact('detailProduks', 'kodeCabang', 'cabangs', 'noFaktur'));
-}
 
 
     public function review(Request $request)
@@ -209,36 +209,54 @@ class PenjualanController extends Controller
     }
 
     public function cetakPDF(Request $request)
-    {
-        $tanggalMulai = $request->tanggal_mulai;
-        $tanggalSampai = $request->tanggal_sampai;
+{
+    $tanggalMulai = $request->tanggal_mulai;
+    $tanggalSampai = $request->tanggal_sampai;
+    $kodeCabang = Auth::user()->kode_cabang;
 
-        $kodeCabang = Auth::user()->kode_cabang;
+    $detailPenjualans = DB::table('detail_penjualans')
+    ->select(
+        'penjualans.tanggal_penjualan',
+        'penjualans.no_faktur',
+        'produks.nama_produk',
+        'ukuran_produks.nama_ukuran',
+        'detail_penjualans.qty',
+        DB::raw('detail_penjualans.qty * detail_penjualans.harga_satuan as total_harga'),
+        DB::raw('detail_penjualans.qty * detail_produks.harga_modal as total_modal'),
+        DB::raw('(detail_penjualans.qty * detail_penjualans.harga_satuan) - (detail_penjualans.qty * detail_produks.harga_modal) as laba')
+    )
+    ->join('penjualans', 'detail_penjualans.penjualan_id', '=', 'penjualans.id')
+    ->join('detail_produks', 'detail_penjualans.detail_produk_id', '=', 'detail_produks.id')
+    ->join('produks', 'detail_produks.produk_id', '=', 'produks.id')
+    ->join('ukuran_produks', 'detail_produks.ukuran_id', '=', 'ukuran_produks.id')
+    ->where('penjualans.kode_cabang', $kodeCabang)
+    ->whereDate('penjualans.tanggal_penjualan', '>=', $tanggalMulai)
+    ->whereDate('penjualans.tanggal_penjualan', '<=', $tanggalSampai)
+    ->orderBy('penjualans.tanggal_penjualan')
+    ->orderBy('penjualans.no_faktur')
+    ->orderBy('produks.nama_produk')
+    ->orderBy('ukuran_produks.nama_ukuran')
+    ->get();
 
-        $penjualans = Penjualan::where('kode_cabang', $kodeCabang)
-            ->whereDate('tanggal_penjualan', '>=', $tanggalMulai)
-            ->whereDate('tanggal_penjualan', '<=', $tanggalSampai)
-            ->orderBy('tanggal_penjualan', 'asc')
-            ->get();
 
-        $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
+    $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
 
-        $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
-            'penjualans' => $penjualans,
-            'namaCabang' => $namaCabang,
-            'periode' => [
-                'mulai' => $tanggalMulai,
-                'sampai' => $tanggalSampai,
-            ],
-            'tanggalCetak' => now()->toDateString(),
-        ])->setPaper('A4', 'portrait');
+    $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
+        'detailPenjualans' => $detailPenjualans,
+        'namaCabang' => $namaCabang,
+        'periode' => [
+            'mulai' => $tanggalMulai,
+            'sampai' => $tanggalSampai,
+        ],
+        'tanggalCetak' => now()->toDateString(),
+    ])->setPaper('A4', 'landscape'); // landscape karena tabel lebar
 
-        $mulaiFormat = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
-        $sampaiFormat = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
-        $namaFile = "Laporan Penjualan Periode {$mulaiFormat} - {$sampaiFormat}.pdf";
+    $mulaiFormat = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
+    $sampaiFormat = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
+    $namaFile = "Laporan Penjualan Periode {$mulaiFormat} - {$sampaiFormat}.pdf";
 
-        return $pdf->stream($namaFile);
-    }
+    return $pdf->stream($namaFile);
+}
 
 
     /**

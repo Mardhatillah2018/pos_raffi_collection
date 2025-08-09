@@ -182,19 +182,19 @@
                 aria-expanded="{{ Request::is('laba-rugi*') || Request::is('mutasi-stok*') ? 'true' : 'false' }}"
                 aria-controls="laporanDropdown">
                     <i class="material-icons-round opacity-5 me-2">assessment</i>
-                    <span class="nav-link-text ms-1">Laporan</span>
+                    <span class="nav-link-text ms-1"> Cetak Laporan</span>
                 </a>
 
                 <div class="collapse {{ Request::is('laba-rugi*') || Request::is('mutasi-stok*') ? 'show' : '' }}" id="laporanDropdown">
                     <ul class="nav flex-column sub-menu ms-4">
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::is('laba-rugi*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/laba-rugi">
-                                Laporan Laba Rugi
+                            <a class="nav-link {{ Request::is('mutasi-stok*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/mutasi-stok">
+                                Mutasi Stok
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::is('mutasi-stok*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/mutasi-stok">
-                                Laporan Mutasi Stok
+                            <a class="nav-link {{ Request::is('laba-rugi*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/laba-rugi">
+                                Laba Rugi
                             </a>
                         </li>
                     </ul>

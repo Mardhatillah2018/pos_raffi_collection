@@ -33,49 +33,57 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 5%;">No</th>
-                <th style="width: 15%;">No Faktur</th>
-                <th style="width: 15%;">Tanggal</th>
-                <th style="width: 15%;">Total Qty</th>
-                <th style="width: 25%;">Total Harga</th>
-                <th style="width: 25%;">Dibuat Oleh</th>
+                <th>Tanggal</th>
+                <th>No Faktur</th>
+                <th>Produk</th>
+                <th>Ukuran</th>
+                <th>Qty</th>
+                <th>Total Harga</th>
+                @if (Auth::user()->role === 'super_admin')
+                    <th>Modal</th>
+                    <th>Laba</th>
+                @endif
             </tr>
         </thead>
         <tbody>
-            @forelse($penjualans as $index => $penjualan)
+            @forelse ($detailPenjualans as $item)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $penjualan->no_faktur }}</td>
-                    <td>{{ \Carbon\Carbon::parse($penjualan->tanggal_penjualan)->format('d-m-Y') }}</td>
-                    <td>{{ $penjualan->detailPenjualans->sum('qty') }}</td>
-                    <td class="text-end">Rp {{ number_format($penjualan->total_harga, 0, ',', '.') }}</td>
-                    <td>{{ $penjualan->user->nama ?? '-' }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y') }}</td>
+                    <td>{{ $item->no_faktur }}</td>
+                    <td>{{ $item->nama_produk }}</td>
+                    <td>{{ $item->nama_ukuran }}</td>
+                    <td>{{ $item->qty }}</td>
+                    <td>Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
+                    @if (Auth::user()->role === 'super_admin')
+                        <td>Rp {{ number_format($item->total_modal, 0, ',', '.') }}</td>
+                        <td>Rp {{ number_format($item->laba, 0, ',', '.') }}</td>
+                    @endif
                 </tr>
             @empty
+                @php
+                    $colspan = Auth::user()->role === 'super_admin' ? 8 : 6;
+                @endphp
                 <tr>
-                    <td colspan="6" class="no-data">Tidak ada data penjualan untuk periode ini.</td>
+                    <td colspan="{{ $colspan }}" style="text-align:center;">Tidak ada data penjualan</td>
                 </tr>
             @endforelse
-
-            @if(count($penjualans) > 0)
-                {{-- Hitung total seluruh qty dan total harga --}}
-                @php
-                    $totalQty = $penjualans->sum(function($p) {
-                        return $p->detailPenjualans->sum('qty');
-                    });
-                    $totalHarga = $penjualans->sum('total_harga');
-                @endphp
-
-                <tr>
-                    <td colspan="3" class="text-end"><strong>Total</strong></td>
-                    <td><strong>{{ $totalQty }}</strong></td>
-                    <td class="text-end"><strong>Rp {{ number_format($totalHarga, 0, ',', '.') }}</strong></td>
-                    <td></td>
-                </tr>
-            @endif
         </tbody>
 
+        @if ($detailPenjualans->count() > 0)
+        <tfoot>
+            <tr style="font-weight:bold; background-color:#f9f9f9;">
+                <td colspan="4" style="text-align:right;">Total</td>
+                <td>{{ $detailPenjualans->sum('qty') }}</td>
+                <td>Rp {{ number_format($detailPenjualans->sum('total_harga'), 0, ',', '.') }}</td>
+                @if (Auth::user()->role === 'super_admin')
+                    <td>Rp {{ number_format($detailPenjualans->sum('total_modal'), 0, ',', '.') }}</td>
+                    <td>Rp {{ number_format($detailPenjualans->sum('laba'), 0, ',', '.') }}</td>
+                @endif
+            </tr>
+        </tfoot>
+        @endif
     </table>
 
 </body>
 </html>
+

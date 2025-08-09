@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-dark text-white fw-bold">
-            Laporan Keuntungan Per Hari - {{ $namaBulan }}
+            Laporan Laba Rugi Per Hari - {{ $namaBulan }}
         </div>
         <div class="card-body">
             <a href="{{ route('laba-rugi.index') }}" class="btn btn-secondary mb-3">← Kembali</a>

@@ -106,6 +106,21 @@
     </tbody>
 </table>
 
+
+@php
+    $totalModal = $dataMutasi->sum(function($item) {
+        return $item->harga_modal * $item->stok_akhir;
+    });
+    $totalJual = $dataMutasi->sum(function($item) {
+        return $item->harga_jual * $item->stok_akhir;
+    });
+@endphp
+
+<div style="margin-top: 15px; text-align: right; font-weight: bold; font-size: 14px;">
+    Total Nilai Modal: Rp {{ number_format($totalModal, 0, ',', '.') }} <br>
+    Total Nilai Jual: Rp {{ number_format($totalJual, 0, ',', '.') }}
+</div>
+
     @else
         <div class="no-data">Tidak ada data mutasi stok untuk periode ini.</div>
     @endif

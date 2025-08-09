@@ -70,8 +70,13 @@
             <table>
                 <tr>
                     <td><strong>Laba Bersih</strong></td>
-                    <td class="text-end"><strong>Rp {{ number_format($data['laba_bersih'], 0, ',', '.') }}</strong></td>
+                    <td class="text-end">
+                        <strong style="color: {{ $data['laba_bersih'] < 0 ? 'red' : 'black' }}">
+                            Rp {{ number_format($data['laba_bersih'], 0, ',', '.') }}
+                        </strong>
+                    </td>
                 </tr>
+
             </table>
             <hr>
         @endforeach

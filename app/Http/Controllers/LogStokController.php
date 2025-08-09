@@ -6,6 +6,7 @@ use App\Models\LogStok;
 use App\Models\Stok;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LogStokController extends Controller
 {
@@ -25,7 +26,7 @@ class LogStokController extends Controller
             ->where('jenis', 'keluar')
             ->where('sumber', 'pengurangan')
             ->where('kode_cabang', $kodeCabang) // filter berdasarkan cabang
-            ->orderBy('tanggal', 'desc') 
+            ->orderBy('tanggal', 'desc')
             ->get();
 
         return view('stok.pengurangan-stok', compact('logStoks'));
@@ -57,7 +58,8 @@ class LogStokController extends Controller
 
     public function ubahStatus(Request $request, $id)
     {
-        $log = LogStok::findOrFail($id);
+        // Ambil data log stok sekaligus relasi detail produk, produk dan ukuran
+        $log = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')->findOrFail($id);
         $statusBaru = $request->input('status');
 
         if (!in_array($statusBaru, ['disetujui', 'ditolak'])) {
@@ -68,7 +70,7 @@ class LogStokController extends Controller
             ]);
         }
 
-        // Hanya bisa ubah status jika masih 'pending'
+        // Hanya bisa ubah status jika masih 'menunggu'
         if ($log->status != 'menunggu') {
             return redirect()->back()->with('status_pengurangan', [
                 'tipe' => 'warning',
@@ -77,8 +79,8 @@ class LogStokController extends Controller
             ]);
         }
 
-        // Jika disetujui → kurangi stok
         if ($statusBaru === 'disetujui') {
+            // Kurangi stok di tabel stok
             $stok = Stok::where('detail_produk_id', $log->detail_produk_id)
                         ->where('kode_cabang', $log->kode_cabang)
                         ->first();
@@ -86,10 +88,33 @@ class LogStokController extends Controller
             if ($stok) {
                 $stok->stok -= $log->qty;
                 $stok->save();
+
+                // Ambil nama produk dan ukuran dari relasi
+                $namaProduk = $log->detailProduk->produk->nama ?? 'Produk tidak diketahui';
+                $ukuran = $log->detailProduk->ukuran->nama ?? 'Ukuran tidak diketahui';
+
+                // Ambil harga modal dari detail produk
+                $hargaModalSatuan = $log->detailProduk->harga_modal ?? 0;
+
+                $totalKerugian = $log->qty * $hargaModalSatuan;
+
+                $keterangan = "Kerugian stok rusak: {$log->qty} pcs produk {$namaProduk} ukuran {$ukuran}";
+
+                DB::table('pengeluarans')->insert([
+                    'tanggal' => now()->toDateString(),
+                    'kode_cabang' => $log->kode_cabang,
+                    'created_by' => Auth::id(),
+                    'kategori_id' => 10, // kategori Kerugian Stok
+                    'total_pengeluaran' => $totalKerugian,
+                    'keterangan' => $keterangan,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
         }
 
-        // Simpan perubahan status
+
+        // Update status log stok
         $log->status = $statusBaru;
         $log->save();
 
