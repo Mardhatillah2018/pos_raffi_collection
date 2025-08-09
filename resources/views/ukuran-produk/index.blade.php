@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-header bg-gradient-dark fw-bold">
-            <h6 class="mb-0" style="color: white">Daftar Cabang</h6>
+            <h6 class="mb-0" style="color: white">Daftar Ukuran</h6>
         </div>
 
         <div class="card-body">

@@ -7,6 +7,7 @@ use App\Http\Controllers\GajiController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriPengeluaranController;
 use App\Http\Controllers\KeuntunganController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogStokController;
 use App\Http\Controllers\PembelianController;
@@ -65,8 +66,20 @@ Route::middleware(['auth'])->group(function () {
         Route::put('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
         Route::delete('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
 
-        Route::get('/keuntungan/cetak', [KeuntunganController::class, 'cetakPDF'])->name('keuntungan.cetak');
-        Route::resource('keuntungan', KeuntunganController::class)->names('keuntungan');
+        Route::get('/laba-rugi/cetak', [LaporanController::class, 'cetakLabaRugi'])->name('laba-rugi.cetak');
+        Route::get('/laba-rugi', [LaporanController::class, 'indexLabaRugi'])->name('laba-rugi.index');
+        Route::get('/laba-rugi/{id}', [LaporanController::class, 'showLabaRugi'])->name('laba-rugi.show');
+
+        Route::get('/mutasi-stok/cetak', [LaporanController::class, 'cetakMutasiStok'])->name('mutasi-stok.cetak');
+        Route::get('/mutasi-stok', [LaporanController::class, 'indexMutasiStok'])->name('mutasi-stok.index');
+        Route::get('/mutasi-stok/show/{bulan}/{tahun}', [LaporanController::class, 'showMutasiStok'])->name('mutasi-stok.show');
+
+
+        // Route::get('/buku-besar/cetak', [LaporanController::class, 'cetakBukuBesar'])->name('buku-besar.cetak');
+        // Route::get('/buku-besar', [LaporanController::class, 'indexBukuBesar'])->name('buku-besar.index');
+
+        // Route::get('/keuntungan/cetak', [KeuntunganController::class, 'cetakPDF'])->name('keuntungan.cetak');
+        // Route::resource('keuntungan', KeuntunganController::class)->names('keuntungan');
 
         Route::resource('karyawan', KaryawanController::class)->names('karyawan');
         Route::get('/gaji/cetak', [GajiController::class, 'cetakPDF'])->name('gaji.cetak');

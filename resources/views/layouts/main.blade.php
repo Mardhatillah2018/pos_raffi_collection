@@ -33,6 +33,7 @@
 
     <!-- Flatpickr CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
 
 </head>
 <body class="g-sidenav-show  bg-gray-100">

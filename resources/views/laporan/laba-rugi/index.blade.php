@@ -9,19 +9,19 @@
 
         <div class="card-body">
             <div class="px-3 py-2 mb-0">
-                <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetakKeuntungan">
+                <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetakLabaRugi">
                     <i class="bi bi-printer me-1" style="color: #a20f0f; font-size: 0.9rem;"></i>
                     Laporan Laba Rugi
                 </button>
             </div>
             <!-- Modal Pilih Rentang Waktu -->
-            <div class="modal fade" id="modalCetakKeuntungan" tabindex="-1" aria-labelledby="modalCetakKeuntunganLabel" aria-hidden="true">
+            <div class="modal fade" id="modalCetakLabaRugi" tabindex="-1" aria-labelledby="modalCetakLabaRugiLabel" aria-hidden="true">
                 <div class="modal-dialog modal-md modal-dialog-centered">
                     <div class="modal-content p-3">
-                    <form action="{{ route('keuntungan.cetak') }}" method="GET" target="_blank">
+                    <form action="{{ route('laba-rugi.cetak') }}" method="GET" target="_blank">
                         <input type="hidden" name="filter" id="filterType" value="bulan">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="modalCetakKeuntunganLabel">Cetak Laporan Keuntungan</h5>
+                                <h5 class="modal-title" id="modalCetakLabaRugiLabel">Cetak Laporan Laba Rugi</h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
                             </div>
                             <div class="modal-body">
@@ -97,7 +97,7 @@
                                 <td>Rp {{ number_format($item['pengeluaran'], 0, ',', '.') }}</td>
                                 <td>Rp {{ number_format($item['laba_bersih'], 0, ',', '.') }}</td>
                                 <td>
-                                    <a href="{{ route('keuntungan.show', $item['raw_bulan']) }}"
+                                    <a href="{{ route('laba-rugi.show', $item['raw_bulan']) }}"
                                     class="btn btn-info btn-sm d-flex align-items-center px-2 py-1"
                                     title="Detail"
                                     style="line-height: 1;">

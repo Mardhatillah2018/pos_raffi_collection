@@ -29166,5 +29166,7 @@ table {
         background-color: #c82333 !important;
     }
 
+.collapse {
+    overflow: visible !important;
+}
 
-    

@@ -13,7 +13,7 @@
 
 <style>
     .sidenav-header.scrolled {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         border-bottom: 1px solid #dee2e6;
         background-color: #f8f9fa;
         transition: all 0.3s ease;
@@ -33,6 +33,14 @@
         });
     </script>
 @endpush
+<style>
+    .sub-menu .nav-link::before {
+    content: "•";
+    margin-right: 8px;
+    font-size: 1rem;
+    color: #6c757d;
+}
+</style>
 
     <hr class="horizontal dark mt-0 mb-2">
     <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
@@ -64,17 +72,31 @@
                 </a>
             </li> --}}
             <li class="nav-item" title="Kelola Produk">
-                <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/produk">
+                <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') || Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}"
+                data-bs-toggle="collapse"
+                href="#produkDropdown"
+                aria-expanded="{{ Request::is('produk') || Request::is('produk/*') || Request::is('ukuran-produk*') ? 'true' : 'false' }}"
+                aria-controls="produkDropdown">
                     <i class="material-icons-round opacity-5 me-2">inventory_2</i>
                     <span class="nav-link-text ms-1">Produk</span>
                 </a>
+
+                <div class="collapse {{ Request::is('produk') || Request::is('produk/*') || Request::is('ukuran-produk*') ? 'show' : '' }}" id="produkDropdown">
+                    <ul class="nav flex-column sub-menu ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('produk') || Request::is('produk/*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/produk">
+                                Kelola Produk
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/ukuran-produk">
+                                Ukuran Produk
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
-            <li class="nav-item" title="Kelola Ukuran Produk">
-                <a class="nav-link {{ Request::is('ukuran-produk*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/ukuran-produk">
-                    <i class="material-icons-round opacity-5 me-2">straighten</i>
-                    <span class="nav-link-text ms-1">Ukuran Produk</span>
-                </a>
-            </li>
+
             {{-- <li class="nav-item">
                 <a class="nav-link text-dark" href="../pages/varian.html">
                     <i class="material-icons-round opacity-5 me-2">style</i>
@@ -101,24 +123,36 @@
                 </a>
             </li>
         @endif
-        <li class="nav-item" title="Lihat Stok Produk">
-            <a class="nav-link {{ Request::is('stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/stok">
+        <li class="nav-item" title="Kelola Stok">
+            <a class="nav-link {{ Request::is('stok*') || Request::is('pengurangan-stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}"
+            data-bs-toggle="collapse"
+            href="#stokDropdown"
+            aria-expanded="{{ Request::is('stok*') || Request::is('pengurangan-stok*') ? 'true' : 'false' }}"
+            aria-controls="stokDropdown">
                 <i class="material-icons-round opacity-5 me-2">inventory</i>
                 <span class="nav-link-text ms-1">Stok</span>
+
             </a>
-        </li>
-        <li class="nav-item" title="Kelola Pengurangan Stok">
-            <a class="nav-link {{ Request::is('pengurangan-stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengurangan-stok">
-                <i class="material-icons-round opacity-5 me-2">style</i>
-                <span class="nav-link-text ms-1 d-flex align-items-center">
-                    Pengurangan Stok
-                    @if ($jumlahPendingPengurangan > 0)
-                        <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.75rem;">
-                            {{ $jumlahPendingPengurangan }}
-                        </span>
-                    @endif
-                </span>
-            </a>
+
+            <div class="collapse {{ Request::is('stok*') || Request::is('pengurangan-stok*') ? 'show' : '' }}" id="stokDropdown">
+                <ul class="nav flex-column sub-menu ms-4">
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('stok*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/stok">
+                            Lihat Stok
+                        </a>
+                    </li>
+                    <li class="nav-item d-flex align-items-center">
+                        <a class="nav-link {{ Request::is('pengurangan-stok*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/pengurangan-stok">
+                            Pengurangan Stok
+                            @if ($jumlahPendingPengurangan > 0)
+                                <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.75rem;">
+                                    {{ $jumlahPendingPengurangan }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
 
         <li class="nav-item" title="Lihat Penjualan">
@@ -134,12 +168,45 @@
             </a>
         </li>
         @if (Auth::user()->role === 'super_admin')
-            <li class="nav-item" title="Lihat Keuntungan">
+            {{-- <li class="nav-item" title="Lihat Keuntungan">
                 <a class="nav-link {{ Request::is('keuntungan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/keuntungan">
                     <i class="material-icons-round opacity-5 me-2">trending_up</i>
                     <span class="nav-link-text ms-1">Keuntungan</span>
                 </a>
+            </li> --}}
+
+            <li class="nav-item" title="Laporan">
+                <a class="nav-link {{ Request::is('laba-rugi*') || Request::is('mutasi-stok*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}"
+                data-bs-toggle="collapse"
+                href="#laporanDropdown"
+                aria-expanded="{{ Request::is('laba-rugi*') || Request::is('mutasi-stok*') ? 'true' : 'false' }}"
+                aria-controls="laporanDropdown">
+                    <i class="material-icons-round opacity-5 me-2">assessment</i>
+                    <span class="nav-link-text ms-1">Laporan</span>
+                </a>
+
+                <div class="collapse {{ Request::is('laba-rugi*') || Request::is('mutasi-stok*') ? 'show' : '' }}" id="laporanDropdown">
+                    <ul class="nav flex-column sub-menu ms-4">
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('laba-rugi*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/laba-rugi">
+                                Laporan Laba Rugi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ Request::is('mutasi-stok*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="/mutasi-stok">
+                                Laporan Mutasi Stok
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
+
+            {{-- <li class="nav-item" title="Lihat Laporan Buku Besar">
+                <a class="nav-link {{ Request::is('buku-besar*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/buku-besar">
+                    <i class="material-icons-round opacity-5 me-2">assessment</i>
+                    <span class="nav-link-text ms-1">Laporan Buku Besar</span>
+                </a>
+            </li> --}}
         @endif
 
         @if (Auth::user()->role === 'super_admin')
