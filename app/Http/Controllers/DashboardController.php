@@ -110,8 +110,10 @@ class DashboardController extends Controller
             ->where('kode_cabang', $kodeCabang)
             ->where('status', 'disetujui')
             ->orderByDesc('tanggal')
-            ->limit(4)
-            ->get();
+            ->orderByDesc('created_at')
+            ->get()
+            ->take(4);
+
 
 
         return view('dashboard', compact(

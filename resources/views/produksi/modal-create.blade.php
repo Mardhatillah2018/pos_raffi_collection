@@ -79,105 +79,104 @@
   </div>
 </div>
 <script>
-  window.detailProduks = @json($detailProduks);
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const tableCreate = document.querySelector('#tableCreateProduksi tbody');
-    const tambahBtnCreate = document.querySelector('#tambahBarisCreate');
+    // kirim semua produk
+    window.detailProduks = @json($detailProduks);
+        document.addEventListener('DOMContentLoaded', function () {
+        const tableCreate = document.querySelector('#tableCreateProduksi tbody');
+        const tambahBtnCreate = document.querySelector('#tambahBarisCreate');
 
-    // Inisialisasi Select2 (gunakan dropdownParent agar tidak tertutup modal)
-    function initSelect2(el) {
-      $(el).select2({
-        dropdownParent: $('#modalProduksi'),
-        width: '100%'
-      });
-    }
-
-    // Fungsi untuk refresh opsi select agar produk tidak bisa dipilih lebih dari satu kali
-    function refreshSelectOptions() {
-      const allSelects = document.querySelectorAll('.select-produk');
-      const selectedValues = Array.from(allSelects)
-        .map(sel => sel.value)
-        .filter(val => val !== '');
-
-      allSelects.forEach(select => {
-        const currentValue = select.value;
-
-        // Kosongkan select
-        select.innerHTML = '';
-        const placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = '-- Pilih Produk --';
-        select.appendChild(placeholder);
-
-        // Tambahkan ulang opsi yang belum dipilih di select lain
-        window.detailProduks.forEach(produk => {
-          const id = produk.id.toString();
-          const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.kode_ukuran ?? 'Ukuran Kosong');
-          const isUsed = selectedValues.includes(id) && id !== currentValue;
-
-          if (!isUsed) {
-            const opt = document.createElement('option');
-            opt.value = id;
-            opt.textContent = nama;
-            if (id === currentValue) opt.selected = true;
-            select.appendChild(opt);
-          }
+        function initSelect2(el) {
+        $(el).select2({
+            dropdownParent: $('#modalProduksi'),
+            width: '100%'
         });
-
-        $(select).trigger('change.select2');
-      });
-    }
-
-    // Inisialisasi select yang sudah ada
-    document.querySelectorAll('.select-produk').forEach(select => {
-      initSelect2(select);
-    });
-    refreshSelectOptions();
-
-    // Tambah baris baru
-    tambahBtnCreate.addEventListener('click', function () {
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td>
-          <select name="detail_produk_id[]" class="form-select select-produk" required>
-            <option value="">-- Pilih Produk --</option>
-          </select>
-        </td>
-        <td>
-          <input type="number" name="qty[]" class="form-control" required min="1" value="1">
-        </td>
-        <td class="text-center">
-            <button type="button" class="btn btn-sm btn-danger hapusBaris">
-                <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
-            </button>
-        </td>
-      `;
-      tableCreate.appendChild(newRow);
-
-      const newSelect = newRow.querySelector('.select-produk');
-      initSelect2(newSelect);
-      refreshSelectOptions();
-    });
-
-    // Hapus baris
-    tableCreate.addEventListener('click', function (e) {
-      if (e.target.classList.contains('hapusBaris')) {
-        e.target.closest('tr').remove();
-        refreshSelectOptions();
-      }
-    });
-
-    // Saat produk berubah, perbarui semua select lainnya
-    tableCreate.addEventListener('change', function (e) {
-        if (e.target.classList.contains('select-produk')) {
-            refreshSelectOptions();
         }
+
+        // produk ga bisa dipilih lebih dari 1 kali
+        function refreshSelectOptions() {
+            const allSelects = document.querySelectorAll('.select-produk');
+            const selectedValues = Array.from(allSelects)
+                .map(sel => sel.value)
+                .filter(val => val !== '');
+
+            allSelects.forEach(select => {
+                const currentValue = select.value;
+
+                // Kosongkan select
+                select.innerHTML = '';
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = '-- Pilih Produk --';
+                select.appendChild(placeholder);
+
+                // Tambahkan opsi produk yang belum dipilih
+                window.detailProduks.forEach(produk => {
+                const id = produk.id.toString();
+                const nama = (produk.produk?.nama_produk ?? 'Nama Kosong') + ' - ' + (produk.ukuran?.kode_ukuran ?? 'Ukuran Kosong');
+                const isUsed = selectedValues.includes(id) && id !== currentValue;
+
+                if (!isUsed) {
+                    const opt = document.createElement('option');
+                    opt.value = id;
+                    opt.textContent = nama;
+                    if (id === currentValue) opt.selected = true;
+                    select.appendChild(opt);
+                }
+                });
+
+                $(select).trigger('change.select2');
+            });
+        }
+
+        // Inisialisasi select yang sudah ada
+        document.querySelectorAll('.select-produk').forEach(select => {
+            initSelect2(select);
+            });
+        refreshSelectOptions();
+
+        // Tambah baris baru
+        tambahBtnCreate.addEventListener('click', function () {
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>
+                <select name="detail_produk_id[]" class="form-select select-produk" required>
+                    <option value="">-- Pilih Produk --</option>
+                </select>
+                </td>
+                <td>
+                <input type="number" name="qty[]" class="form-control" required min="1" value="1">
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-danger hapusBaris">
+                        <span class="material-icons-round text-white" style="font-size: 18px;">delete</span>
+                    </button>
+                </td>
+            `;
+            tableCreate.appendChild(newRow);
+
+            const newSelect = newRow.querySelector('.select-produk');
+            initSelect2(newSelect);
+            refreshSelectOptions();
+        });
+
+        // Hapus baris
+        tableCreate.addEventListener('click', function (e) {
+            if (e.target.classList.contains('hapusBaris')) {
+                e.target.closest('tr').remove();
+                refreshSelectOptions();
+            }
+        });
+
+        // saat produk berubah, perbarui semua select lainnya
+        tableCreate.addEventListener('change', function (e) {
+                if (e.target.classList.contains('select-produk')) {
+                    refreshSelectOptions();
+                }
         });
     });
 
-     const fp = flatpickr("#tanggal_produksi", {
+    // pilih tanggal
+    const fp = flatpickr("#tanggal_produksi", {
         dateFormat: "Y-m-d",
         allowInput: true,
         defaultDate: "today"
@@ -186,6 +185,72 @@
     document.getElementById('btn-tanggal-produk').addEventListener('click', function () {
         fp.open();
     });
+
+    // review
+    document.addEventListener('DOMContentLoaded', function () {
+        const formProduksi = document.querySelector('#modalProduksi form');
+
+        formProduksi.addEventListener('submit', function (e) {
+            e.preventDefault(); // jangan submit langsung
+
+            const tanggal = document.querySelector('#tanggal_produksi').value;
+            const totalBiaya = document.querySelector('input[name="total_biaya"]').value;
+            const keterangan = document.querySelector('input[name="keterangan"]').value || '-';
+
+            let produkRows = '';
+            document.querySelectorAll('#tableCreateProduksi tbody tr').forEach(row => {
+                const produk = row.querySelector('.select-produk option:checked').textContent;
+                const qty = row.querySelector('input[name="qty[]"]').value;
+                produkRows += `
+                    <tr>
+                        <td>${produk}</td>
+                        <td class="text-center">${qty}</td>
+                    </tr>
+                `;
+            });
+
+            Swal.fire({
+                title: 'Konfirmasi Simpan Data Produksi',
+                html: `
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Tanggal</th>
+                            <td>${tanggal}</td>
+                        </tr>
+                        <tr>
+                            <th>Total Biaya</th>
+                            <td>Rp ${parseFloat(totalBiaya).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <th>Keterangan</th>
+                            <td>${keterangan}</td>
+                        </tr>
+                    </table>
+                    <strong>Produk:</strong>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Produk</th>
+                                <th class="text-center">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${produkRows}
+                        </tbody>
+                    </table>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Simpan',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    formProduksi.submit();
+                }
+            });
+        });
+    });
+
 </script>
 
 

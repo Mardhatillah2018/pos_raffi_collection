@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <form action="/login" method="POST">
+            <form action="/" method="POST">
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>

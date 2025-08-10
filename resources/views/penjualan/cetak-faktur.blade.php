@@ -80,7 +80,7 @@
         </div>
 
         <div class="info">
-            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i') }}</p>
+            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i:s') }}</p>
             <p><strong>Kasir:</strong> {{ $penjualan->user->nama ?? '-' }}</p>
             <p><strong>No. Faktur:</strong> {{ $penjualan->no_faktur }}</p>
         </div>
@@ -118,6 +118,7 @@
 
         <div class="footer">
             <p>-- Terimakasih --</p>
+            <p>Barang yang sudah dibayar tidak dapat dikembalikan</p>
         </div>
     </div>
 </body>

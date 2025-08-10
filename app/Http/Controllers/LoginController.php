@@ -15,32 +15,32 @@ class LoginController extends Controller
 
     // Proses login
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => ['required', 'email'],
-        'password' => ['required'],
-    ]);
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        if ($user->role === 'super_admin') {
-            User::where('id', $user->id)->update(['kode_cabang' => null]);
-            $request->session()->forget('kode_cabang_superadmin');
+            if ($user->role === 'super_admin') {
+                User::where('id', $user->id)->update(['kode_cabang' => null]);
+                $request->session()->forget('kode_cabang_superadmin');
 
-            return redirect()->route('pilih-cabang');
+                return redirect()->route('pilih-cabang');
+            }
+
+            return redirect()->intended('/dashboard');
         }
 
-        return redirect()->intended('/dashboard');
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->withInput();
+
     }
-
-    return back()->withErrors([
-        'email' => 'Email atau password salah.',
-    ])->withInput();
-
-}
 
 
     public function showPilihCabangForm()
@@ -83,6 +83,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return redirect('/');
     }
 }

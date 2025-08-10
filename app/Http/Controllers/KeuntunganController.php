@@ -160,7 +160,7 @@ class KeuntunganController extends Controller
 
         return view('keuntungan.detail-perhari', compact('rekapPerHari', 'namaBulan'));
     }
-
+    
    public function cetakPDF(Request $request)
     {
         $user = Auth::user();

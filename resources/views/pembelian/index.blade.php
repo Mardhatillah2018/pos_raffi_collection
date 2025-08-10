@@ -45,7 +45,7 @@
                                                 <span class="text-white fw-semibold small">Detail</span>
                                         </a>
 
-                                        <button
+                                        {{-- <button
                                             class="btn btn-warning btn-sm d-flex align-items-center gap-1 px-2 py-1"
                                             title="Edit"
                                             data-bs-toggle="modal"
@@ -59,7 +59,7 @@
                                             onclick="openDeletePembelianModal({{ $pembelian->id }})">
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">delete</i>
                                             <span class="text-white fw-semibold small">Hapus</span>
-                                        </button>
+                                        </button> --}}
                                     </div>
                                 </td>
                             </tr>

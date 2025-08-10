@@ -8,6 +8,7 @@
       </div>
       <div class="modal-body">
         <p>Apakah Anda yakin ingin menghapus data pembelian ini?</p>
+        <span style="color: red; font-size: 0.8rem;">*Jika menghapus data pembelian ini, semua data terkait akan hilang.</span>
       </div>
       <div class="modal-footer">
         <form id="deletePembelianForm" method="POST">
