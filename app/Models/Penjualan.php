@@ -9,7 +9,7 @@ class Penjualan extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'no_faktur',
+        'no_struk',
         'tanggal_penjualan',
         'total_harga',
         'kode_cabang',

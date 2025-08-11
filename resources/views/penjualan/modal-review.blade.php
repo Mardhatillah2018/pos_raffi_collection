@@ -4,17 +4,17 @@
     <div class="modal-content">
       <form action="{{ route('penjualan.konfirmasi') }}" method="POST">
         @csrf
-        <input type="hidden" name="no_faktur" value="{{ $no_faktur }}">
+        <input type="hidden" name="no_struk" value="{{ $no_struk }}">
         <input type="hidden" name="tanggal_penjualan" value="{{ $tanggal_penjualan }}">
         <input type="hidden" name="total_harga" value="{{ $total_harga }}">
 
         <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title" id="modalReviewLabel"><i class="bi bi-receipt-cutoff me-2"></i>Review Penjualan</h5>
+          <h5 class="modal-title" id="modalReviewLabel" style="color: white"><i class="bi bi-receipt-cutoff me-2" style="color: white"></i>Review Penjualan</h5>
           <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
         <div class="modal-body">
-          <p><strong>No Faktur:</strong> {{ $no_faktur }}</p>
+          <p><strong>No Struk:</strong> {{ $no_struk }}</p>
           <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($tanggal_penjualan)->format('d-m-Y') }}</p>
 
           <table class="table table-bordered">

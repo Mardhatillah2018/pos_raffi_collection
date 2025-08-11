@@ -34,7 +34,7 @@
         <thead>
             <tr>
                 <th>Tanggal</th>
-                <th>No Faktur</th>
+                <th>No Struk</th>
                 <th>Produk</th>
                 <th>Ukuran</th>
                 <th>Qty</th>
@@ -49,7 +49,7 @@
             @forelse ($detailPenjualans as $item)
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d-m-Y') }}</td>
-                    <td>{{ $item->no_faktur }}</td>
+                    <td>{{ $item->no_struk }}</td>
                     <td>{{ $item->nama_produk }}</td>
                     <td>{{ $item->nama_ukuran }}</td>
                     <td>{{ $item->qty }}</td>

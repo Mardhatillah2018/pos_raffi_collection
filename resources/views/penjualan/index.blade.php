@@ -58,7 +58,7 @@
                     <thead class="table-light text-center">
                         <tr>
                             <th>No</th>
-                            <th>No Faktur</th>
+                            <th>No Struk</th>
                             <th>Tanggal</th>
                             <th>Total Harga</th>
                             <th>Total Qty</th>
@@ -70,7 +70,7 @@
                         @forelse ($penjualans as $index => $penjualan)
                             <tr>
                                 <td class="text-center">{{ $index + 1 }}</td>
-                                <td class="text-center">{{ $penjualan->no_faktur }}</td>
+                                <td class="text-center">{{ $penjualan->no_struk }}</td>
                                 <td class="text-center">{{ $penjualan->tanggal_penjualan }}</td>
                                 <td class="text-end">Rp {{ number_format($penjualan->total_harga, 0, ',', '.') }}</td>
                                 <td class="text-center">{{ $penjualan->detailPenjualans->sum('qty') }}</td>
@@ -86,11 +86,11 @@
                                         </a>
 
 
-                                        <a href="{{ route('penjualan.cetakFaktur', $penjualan->id) }}"
+                                        <a href="{{ route('penjualan.cetakStruk', $penjualan->id) }}"
                                             class="btn btn-secondary btn-sm d-flex align-items-center px-2 py-1"
-                                            title="Cetak Faktur" target="_blank">
+                                            title="Cetak Struk" target="_blank">
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">print</i>
-                                            <span class="text-white fw-semibold small">Faktur</span>
+                                            <span class="text-white fw-semibold small">Struk</span>
                                         </a>
 
                                         {{-- <form action="#" method="POST"
@@ -156,7 +156,7 @@
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            window.open('{{ route('penjualan.cetakFaktur', session('penjualan_id')) }}', '_blank');
+            window.open('{{ route('penjualan.cetakStruk', session('penjualan_id')) }}', '_blank');
         }
     });
     @endif

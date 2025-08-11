@@ -16,11 +16,12 @@
             <div class="card-body">
                 <div class="row mb-4">
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">No Faktur</label>
-                        <input type="text" name="no_faktur" class="form-control" value="{{ $reviewData['no_faktur'] ?? $noFaktur }}" readonly>
+                        <label class="form-label" style="color: black; font-weight: semibold;">No Struk</label>
+                        <div class="form-control bg-light border-0">{{ $reviewData['no_struk'] ?? $noStruk }}</div>
+                        <input type="hidden" name="no_struk" value="{{ $reviewData['no_struk'] ?? $noStruk }}">
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label fw-semibold">Tanggal Penjualan</label>
+                        <label class="form-label" style="color: black; font-weight: semibold;">Tanggal Penjualan</label>
                         <div class="form-control bg-light border-0">{{ date('d-m-Y') }}</div>
                         <input type="hidden" name="tanggal_penjualan" value="{{ $reviewData['tanggal_penjualan'] ?? date('Y-m-d') }}">
                     </div>
@@ -109,7 +110,7 @@
 
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <label for="keterangan" class="form-label fw-semibold">Keterangan (Opsional)</label>
+                        <label for="keterangan" class="form-label" style="color: black; font-weight: semibold;">Keterangan (Opsional)</label>
                         <textarea name="keterangan" rows="2" class="form-control" placeholder="Masukkan keterangan penjualan jika ada"></textarea>
                     </div>
                 </div>

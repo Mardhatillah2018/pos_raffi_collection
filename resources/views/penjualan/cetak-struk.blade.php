@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Faktur Penjualan</title>
+    <title>Struk Penjualan</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,7 +12,7 @@
             width: 100%;
         }
 
-        .faktur-wrapper {
+        .struk-wrapper {
             width: 100%;
             padding: 0px;
         }
@@ -71,7 +71,7 @@
     </style>
 </head>
 <body>
-    <div class="faktur-wrapper">
+    <div class="struk-wrapper">
         <div class="header">
             <p>Selamat Datang</p>
             <h2>Raffi Collection</h2>
@@ -82,7 +82,7 @@
         <div class="info">
             <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->created_at)->format('d/m/Y H:i:s') }}</p>
             <p><strong>Kasir:</strong> {{ $penjualan->user->nama ?? '-' }}</p>
-            <p><strong>No. Faktur:</strong> {{ $penjualan->no_faktur }}</p>
+            <p><strong>No. Struk:</strong> {{ $penjualan->no_struk }}</p>
         </div>
 
         <table>

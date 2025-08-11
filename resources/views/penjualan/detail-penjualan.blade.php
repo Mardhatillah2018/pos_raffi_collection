@@ -7,7 +7,7 @@
             <i class="bi bi-receipt me-2"></i>Detail Penjualan
         </div>
         <div class="card-body">
-            <p><strong>No Faktur:</strong> {{ $penjualan->no_faktur }}</p>
+            <p><strong>No Struk:</strong> {{ $penjualan->no_struk }}</p>
             <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->tanggal_penjualan)->format('d-m-Y') }}</p>
 
             <table class="table table-bordered">

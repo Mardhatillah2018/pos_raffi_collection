@@ -48,29 +48,29 @@ class PenjualanController extends Controller
 
         $cabangs = Cabang::all();
 
-        // Ambil no_faktur terakhir untuk hari ini dan cabang ini
-        $lastFaktur = Penjualan::where('kode_cabang', $kodeCabang)
+        // Ambil no_struk terakhir untuk hari ini dan cabang ini
+        $lastStruk = Penjualan::where('kode_cabang', $kodeCabang)
             ->whereDate('created_at', now()->toDateString())
             ->orderByDesc('id')
             ->first();
 
-        if ($lastFaktur) {
-            $lastNumber = (int) substr($lastFaktur->no_faktur, -4);
+        if ($lastStruk) {
+            $lastNumber = (int) substr($lastStruk->no_struk, -4);
             $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '0001';
         }
 
-        $noFaktur = $kodeCabang . '-' . now()->format('Ymd') . '-' . $newNumber;
+        $noStruk = $kodeCabang . '-' . now()->format('Ymd') . '-' . $newNumber;
 
-        return view('penjualan.create', compact('detailProduks', 'kodeCabang', 'cabangs', 'noFaktur'));
+        return view('penjualan.create', compact('detailProduks', 'kodeCabang', 'cabangs', 'noStruk'));
     }
 
 
     public function review(Request $request)
     {
         $validated = $request->validate([
-            'no_faktur' => 'required|string',
+            'no_struk' => 'required|string',
             'tanggal_penjualan' => 'required|date',
             'detail_produk_id.*' => 'required|exists:detail_produks,id',
             'qty.*' => 'required|integer|min:1',
@@ -96,7 +96,7 @@ class PenjualanController extends Controller
         }
 
         return redirect()->route('penjualan.create')->with('reviewData', [
-            'no_faktur' => $request->no_faktur,
+            'no_struk' => $request->no_struk,
             'tanggal_penjualan' => $request->tanggal_penjualan,
             'total_harga' => $request->total_harga,
             'produkDetails' => $produkDetails,
@@ -114,17 +114,17 @@ class PenjualanController extends Controller
             'qty.*' => 'required|integer|min:1',
             'harga_satuan.*' => 'required|numeric|min:0',
             'total_harga' => 'required|numeric|min:0',
-            'no_faktur' => 'required|string',
+            'no_struk' => 'required|string',
         ]);
 
         DB::beginTransaction();
 
         try {
-            $noFaktur = $request->no_faktur;
+            $noStruk = $request->no_struk;
 
             // Simpan data penjualan utama
             $penjualan = Penjualan::create([
-                'no_faktur' => $noFaktur,
+                'no_struk' => $noStruk,
                 'tanggal_penjualan' => $request->tanggal_penjualan,
                 'total_harga' => $request->total_harga,
                 'kode_cabang' => Auth::user()->kode_cabang,
@@ -164,7 +164,7 @@ class PenjualanController extends Controller
                     'jenis' => 'keluar',
                     'status' => 'disetujui',
                     'sumber' => 'penjualan',
-                    'keterangan' => 'Penjualan No. Faktur ' . $noFaktur,
+                    'keterangan' => 'Penjualan No. Struk ' . $noStruk,
                     'created_by' => Auth::id(),
                 ]);
             }
@@ -182,7 +182,7 @@ class PenjualanController extends Controller
         }
     }
 
-    public function cetakFaktur($id)
+    public function cetakStruk($id)
     {
         $penjualan = Penjualan::with([
             'detailPenjualans.detailProduk.produk',
@@ -190,10 +190,10 @@ class PenjualanController extends Controller
             'cabang'
         ])->findOrFail($id);
 
-        $pdf = Pdf::loadView('penjualan.cetak-faktur', compact('penjualan'))
+        $pdf = Pdf::loadView('penjualan.cetak-struk', compact('penjualan'))
                 ->setPaper([0, 0, 226.77, 566.93]);
 
-        return $pdf->stream('faktur-penjualan-' . $penjualan->no_faktur . '.pdf');
+        return $pdf->stream('struk-penjualan-' . $penjualan->no_struk . '.pdf');
     }
 
 
@@ -217,7 +217,7 @@ class PenjualanController extends Controller
     $detailPenjualans = DB::table('detail_penjualans')
     ->select(
         'penjualans.tanggal_penjualan',
-        'penjualans.no_faktur',
+        'penjualans.no_struk',
         'produks.nama_produk',
         'ukuran_produks.nama_ukuran',
         'detail_penjualans.qty',
@@ -233,7 +233,7 @@ class PenjualanController extends Controller
     ->whereDate('penjualans.tanggal_penjualan', '>=', $tanggalMulai)
     ->whereDate('penjualans.tanggal_penjualan', '<=', $tanggalSampai)
     ->orderBy('penjualans.tanggal_penjualan')
-    ->orderBy('penjualans.no_faktur')
+    ->orderBy('penjualans.no_struk')
     ->orderBy('produks.nama_produk')
     ->orderBy('ukuran_produks.nama_ukuran')
     ->get();

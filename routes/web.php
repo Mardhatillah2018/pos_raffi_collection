@@ -98,7 +98,7 @@ Route::middleware(['auth'])->group(function () {
         // Route::resource('penjualan', PenjualanController::class)->names('penjualan');
         Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
         Route::get('/penjualan/{id}/detail', [PenjualanController::class, 'show'])->name('penjualan.detail');
-        Route::get('/penjualan/{id}/cetak-faktur', [PenjualanController::class, 'cetakFaktur'])->name('penjualan.cetakFaktur');
+        Route::get('/penjualan/{id}/cetak-struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.cetakStruk');
         Route::get('/penjualan/cetak-laporan', [PenjualanController::class, 'cetakPDF'])->name('penjualan.cetakLaporan');
 
         Route::get('pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
