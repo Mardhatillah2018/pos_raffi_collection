@@ -10,57 +10,31 @@
         <div class="card-body">
             @if (Auth::user()->role === 'super_admin')
                 <div class="px-3 py-2 mb-0">
-                    <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;" data-bs-toggle="modal" data-bs-target="#modalCetakStok">
+                    <button class="btn btn-sm" style="background-color: white; border: 1px solid #a20f0f; color: #a20f0f;"
+                        data-bs-toggle="modal" data-bs-target="#modalCetakStok">
                         <i class="bi bi-printer me-1" style="color: #a20f0f; font-size: 0.9rem;"></i>
                         Laporan Stok
                     </button>
+
                 </div>
                 {{-- modal cetak --}}
-                <div class="modal fade" id="modalCetakStok" tabindex="-1" aria-labelledby="modalCetakStokLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content p-3">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="modalCetakStokLabel">Pilih Jenis Laporan</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="d-grid gap-3">
-                                    <!-- Section: Cetak Stok Hari Ini -->
-                                    <div>
-                                        <button id="btnShowCetakStok" class="btn btn-outline-dark w-100" type="button" onclick="showCetakStok()">
-                                            <i class="bi bi-printer me-1"></i> Laporan Stok Hari Ini
-                                        </button>
+                {{-- modal cetak stok --}}
+<div class="modal fade" id="modalCetakStok" tabindex="-1" aria-labelledby="modalCetakStokLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCetakStokLabel">Cetak Laporan Stok</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body text-center">
+                <a href="{{ route('stok.cetak') }}" target="_blank" class="btn btn-dark">
+                    <i class="bi bi-printer me-1"></i> Cetak Laporan Hari Ini
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                        <div id="cetakStokWrapper" class="text-center mt-2" style="display: none;">
-                                            <a href="{{ route('stok.cetak') }}" target="_blank" class="btn btn-dark">
-                                                <i class="bi bi-printer me-1"></i> Cetak Sekarang
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <button id="btnShowMutasi" class="btn btn-outline-dark w-100" type="button" onclick="showFormMutasi()">
-                                            <i class="bi bi-calendar-range me-1"></i> Laporan Mutasi Bulanan
-                                        </button>
-                                        <!-- Form cetak mutasi bulanan -->
-                                        <form id="formMutasi" action="{{ route('stok.cetak.mutasi') }}" method="GET" target="_blank" style="display: none;" class="mt-3">
-                                            <div class="mb-3">
-                                                <label for="periode" class="form-label">Periode</label>
-                                                <input type="month" class="form-control" id="periode" name="periode" required>
-                                                {{-- format: 2025-08 --}}
-                                            </div>
-                                            <div class="text-end">
-                                                <button type="submit" class="btn btn-primary">
-                                                    <i class="bi bi-printer me-1"></i> Cetak Mutasi
-                                                </button>
-                                            </div>
-                                        </form>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             @endif
             <div class="table-responsive">
                 <table id="datatable" class="table table-hover align-items-center mb-0">
@@ -117,17 +91,4 @@
     </div>
 </div>
 @endsection
-@push('scripts')
-<script>
-    function showCetakStok() {
-        document.getElementById('cetakStokWrapper').style.display = 'block';
-        document.getElementById('formMutasi').style.display = 'none';
-    }
-
-    function showFormMutasi() {
-        document.getElementById('formMutasi').style.display = 'block';
-        document.getElementById('cetakStokWrapper').style.display = 'none';
-    }
-</script>
-@endpush
 

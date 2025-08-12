@@ -104,6 +104,7 @@ class StokController extends Controller
         return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList'));
     }
 
+
     public function cetakPDF()
     {
         $user = Auth::user();
@@ -126,13 +127,15 @@ class StokController extends Controller
 
         $namaCabang = $user->cabang->nama_cabang ?? $kodeCabang;
 
+        $tanggalCetak = Carbon::now()->locale('id')->translatedFormat('d F Y'); // contoh: 20 Agustus 2025
+
         $pdf = PDF::loadView('stok.laporan-stok', [
             'produkStok' => $stokList,
             'namaCabang' => $namaCabang,
-            'tanggalCetak' => now()
+            'tanggalCetak' => Carbon::now()
         ]);
 
-        return $pdf->stream('laporan-stok.pdf');
+        return $pdf->stream("Laporan Stok {$tanggalCetak}.pdf");
     }
 
     public function cetakMutasiPDF(Request $request)
