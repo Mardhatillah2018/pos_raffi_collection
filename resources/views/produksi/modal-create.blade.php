@@ -176,14 +176,17 @@
     });
 
     // pilih tanggal
-    const fp = flatpickr("#tanggal_produksi", {
-        dateFormat: "Y-m-d",
-        allowInput: true,
-        defaultDate: "today"
-    });
+    document.addEventListener("DOMContentLoaded", function () {
+        const fp = flatpickr("#tanggal_produksi", {
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            defaultDate: "today",
+            maxDate: "today"
+        });
 
-    document.getElementById('btn-tanggal-produk').addEventListener('click', function () {
-        fp.open();
+        document.getElementById('btn-tanggal-produk').addEventListener('click', function () {
+            fp.open();
+        });
     });
 
     // review

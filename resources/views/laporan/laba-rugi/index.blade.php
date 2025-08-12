@@ -165,11 +165,13 @@
 
     // Flatpickr
     const toPicker = flatpickr("#to", {
-        dateFormat: "Y-m-d"
+        dateFormat: "Y-m-d",
+        maxDate: "today",
     });
 
     const fromPicker = flatpickr("#from", {
         dateFormat: "Y-m-d",
+        maxDate: "today",
         onChange: function(selectedDates) {
             if (selectedDates.length > 0) {
                 let minToDate = new Date(selectedDates[0]);

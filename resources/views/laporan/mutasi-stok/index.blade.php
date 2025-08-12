@@ -142,12 +142,21 @@
             bulanInputMutasi.required = true;
             fromInputMutasi.required = false;
             toInputMutasi.required = false;
+
+            // kosongkan input tanggal
+            fromInputMutasi.value = '';
+            toInputMutasi.value = '';
+
             activeTabMutasi = 'bulan';
             filterTypeMutasiInput.value = 'bulan';
         } else {
             bulanInputMutasi.required = false;
             fromInputMutasi.required = true;
             toInputMutasi.required = true;
+
+            // kosongkan input bulan
+            bulanInputMutasi.value = '';
+
             activeTabMutasi = 'tanggal';
             filterTypeMutasiInput.value = 'tanggal';
         }
@@ -160,18 +169,27 @@
     bulanTabBtnMutasi.addEventListener('click', () => setRequiredMutasi('bulan'));
     tanggalTabBtnMutasi.addEventListener('click', () => setRequiredMutasi('tanggal'));
 
-    // Flatpickr (jika pakai)
-    const toPickerMutasi = flatpickr("#toMutasi", { dateFormat: "Y-m-d" });
-    const fromPickerMutasi = flatpickr("#fromMutasi", {
-        dateFormat: "Y-m-d",
-        onChange: function(selectedDates) {
-            if (selectedDates.length > 0) {
-                let minToDate = new Date(selectedDates[0]);
-                minToDate.setDate(minToDate.getDate() + 1);
-                toPickerMutasi.set('minDate', minToDate);
-            }
-        }
-    });
+    // Flatpickr
+    const modalCetakMutasi = document.getElementById('modalCetakMutasi');
 
+    modalCetakMutasi.addEventListener('shown.bs.modal', function () {
+        const toPickerMutasi = flatpickr("#toMutasi", {
+            dateFormat: "Y-m-d",
+            maxDate: "today"
+        });
+
+        const fromPickerMutasi = flatpickr("#fromMutasi", {
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            onChange: function (selectedDates) {
+                if (selectedDates.length > 0) {
+                    let minToDate = new Date(selectedDates[0]);
+                    minToDate.setDate(minToDate.getDate() + 1);
+                    toPickerMutasi.set('minDate', minToDate);
+                }
+            }
+        });
+    });
 </script>
+
 @endpush

@@ -26,8 +26,7 @@ class GajiController extends Controller
             ->get();
 
         return view('gaji.index', compact('gajis'));
-}
-
+    }
 
     /**
      * Show the form for creating a new resource.

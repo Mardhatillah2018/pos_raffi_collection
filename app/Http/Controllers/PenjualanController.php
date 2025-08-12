@@ -209,55 +209,54 @@ class PenjualanController extends Controller
     }
 
     public function cetakPDF(Request $request)
-{
-    $tanggalMulai = $request->tanggal_mulai;
-    $tanggalSampai = $request->tanggal_sampai;
-    $kodeCabang = Auth::user()->kode_cabang;
+    {
+        $tanggalMulai = $request->tanggal_mulai;
+        $tanggalSampai = $request->tanggal_sampai;
+        $kodeCabang = Auth::user()->kode_cabang;
 
-    $detailPenjualans = DB::table('detail_penjualans')
-    ->select(
-        'penjualans.tanggal_penjualan',
-        'penjualans.no_struk',
-        'produks.nama_produk',
-        'ukuran_produks.nama_ukuran',
-        'detail_penjualans.qty',
-        DB::raw('detail_penjualans.qty * detail_penjualans.harga_satuan as total_harga'),
-        DB::raw('detail_penjualans.qty * detail_produks.harga_modal as total_modal'),
-        DB::raw('(detail_penjualans.qty * detail_penjualans.harga_satuan) - (detail_penjualans.qty * detail_produks.harga_modal) as laba')
-    )
-    ->join('penjualans', 'detail_penjualans.penjualan_id', '=', 'penjualans.id')
-    ->join('detail_produks', 'detail_penjualans.detail_produk_id', '=', 'detail_produks.id')
-    ->join('produks', 'detail_produks.produk_id', '=', 'produks.id')
-    ->join('ukuran_produks', 'detail_produks.ukuran_id', '=', 'ukuran_produks.id')
-    ->where('penjualans.kode_cabang', $kodeCabang)
-    ->whereDate('penjualans.tanggal_penjualan', '>=', $tanggalMulai)
-    ->whereDate('penjualans.tanggal_penjualan', '<=', $tanggalSampai)
-    ->orderBy('penjualans.tanggal_penjualan')
-    ->orderBy('penjualans.no_struk')
-    ->orderBy('produks.nama_produk')
-    ->orderBy('ukuran_produks.nama_ukuran')
-    ->get();
+        $detailPenjualans = DB::table('detail_penjualans')
+        ->select(
+            'penjualans.tanggal_penjualan',
+            'penjualans.no_struk',
+            'produks.nama_produk',
+            'ukuran_produks.nama_ukuran',
+            'detail_penjualans.qty',
+            DB::raw('detail_penjualans.qty * detail_penjualans.harga_satuan as total_harga'),
+            DB::raw('detail_penjualans.qty * detail_produks.harga_modal as total_modal'),
+            DB::raw('(detail_penjualans.qty * detail_penjualans.harga_satuan) - (detail_penjualans.qty * detail_produks.harga_modal) as laba')
+        )
+        ->join('penjualans', 'detail_penjualans.penjualan_id', '=', 'penjualans.id')
+        ->join('detail_produks', 'detail_penjualans.detail_produk_id', '=', 'detail_produks.id')
+        ->join('produks', 'detail_produks.produk_id', '=', 'produks.id')
+        ->join('ukuran_produks', 'detail_produks.ukuran_id', '=', 'ukuran_produks.id')
+        ->where('penjualans.kode_cabang', $kodeCabang)
+        ->whereDate('penjualans.tanggal_penjualan', '>=', $tanggalMulai)
+        ->whereDate('penjualans.tanggal_penjualan', '<=', $tanggalSampai)
+        ->orderBy('penjualans.tanggal_penjualan')
+        ->orderBy('penjualans.no_struk')
+        ->orderBy('produks.nama_produk')
+        ->orderBy('ukuran_produks.nama_ukuran')
+        ->get();
 
 
-    $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
+        $namaCabang = Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang') ?? '-';
 
-    $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
-        'detailPenjualans' => $detailPenjualans,
-        'namaCabang' => $namaCabang,
-        'periode' => [
-            'mulai' => $tanggalMulai,
-            'sampai' => $tanggalSampai,
-        ],
-        'tanggalCetak' => now()->toDateString(),
-    ])->setPaper('A4', 'landscape'); // landscape karena tabel lebar
+        $pdf = Pdf::loadView('penjualan.laporan-penjualan', [
+            'detailPenjualans' => $detailPenjualans,
+            'namaCabang' => $namaCabang,
+            'periode' => [
+                'mulai' => $tanggalMulai,
+                'sampai' => $tanggalSampai,
+            ],
+            'tanggalCetak' => now()->toDateString(),
+        ])->setPaper('A4', 'landscape'); // landscape karena tabel lebar
 
-    $mulaiFormat = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
-    $sampaiFormat = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
-    $namaFile = "Laporan Penjualan Periode {$mulaiFormat} - {$sampaiFormat}.pdf";
+        $mulaiFormat = Carbon::parse($tanggalMulai)->translatedFormat('d F Y');
+        $sampaiFormat = Carbon::parse($tanggalSampai)->translatedFormat('d F Y');
+        $namaFile = "Laporan Penjualan Periode {$mulaiFormat} - {$sampaiFormat}.pdf";
 
-    return $pdf->stream($namaFile);
-}
-
+        return $pdf->stream($namaFile);
+    }
 
     /**
      * Show the form for editing the specified resource.

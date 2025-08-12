@@ -94,7 +94,7 @@ class DashboardController extends Controller
         $penjualanTerakhir = Penjualan::with('detailPenjualans')
             ->where('kode_cabang', $kodeCabang)
             ->latest('created_at')
-            ->take(5)
+            ->take(7)
             ->get()
             ->map(function ($penjualan) {
                 return [

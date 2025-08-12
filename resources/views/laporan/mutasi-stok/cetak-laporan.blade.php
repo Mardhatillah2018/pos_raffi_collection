@@ -66,13 +66,20 @@
         <h4 style="margin-bottom: 6px">{{ $namaCabang }}</h4>
         <div style="border-bottom: 2px solid #000; width: 100%; margin: 0 auto 10px;"></div>
         <div class="tanggal-cetak">
-            Tanggal Cetak: {{ \Carbon\Carbon::parse($tanggalCetak)->format('d M Y') }}
+            {{-- Tanggal Cetak: {{ \Carbon\Carbon::parse($tanggalCetak)->format('d M Y') }} --}}
+            Tanggal Cetak: {{ $tanggalCetak }}
         </div>
     </header>
 
     <div class="periode">
-        <strong>Periode:</strong> {{ \Carbon\Carbon::createFromDate(null, (int)$bulan)->locale('id')->monthName }} {{ $tahun }}
+        <strong>Periode:</strong>
+        @if($filterType === 'bulan')
+            {{ $periodeLabel }}
+        @elseif($filterType === 'tanggal')
+            {{ $periodeLabel }}
+        @endif
     </div>
+
 
     @if(count($dataMutasi) > 0)
     <table>

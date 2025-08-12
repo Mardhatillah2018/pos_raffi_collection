@@ -65,6 +65,7 @@
   document.addEventListener("DOMContentLoaded", function () {
         flatpickr(".flatpickr", {
             dateFormat: "Y-m-d",
+            defaultDate: "today",
             maxDate: "today"
         });
     });

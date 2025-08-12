@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\LogStok;
 use App\Models\Pengeluaran;
 use App\Models\Penjualan;
@@ -141,106 +142,110 @@ class LaporanController extends Controller
     }
 
     public function cetakLabaRugi(Request $request)
-{
-    $user = Auth::user();
-    $kodeCabang = $user->kode_cabang;
+    {
+        $user = Auth::user();
+        $kodeCabang = $user->kode_cabang;
 
-    // Tangkap input filter tanggal atau bulan
-    $filter = $request->filter;
-    $bulan = $request->bulan;
-    $from = $request->from;
-    $to = $request->to;
+        // Tangkap input filter tanggal atau bulan
+        $filter = $request->filter;
+        $bulan = $request->bulan;
+        $from = $request->from;
+        $to = $request->to;
 
-    if ($filter === 'bulan' && $bulan) {
-        $startDate = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
-        $endDate = Carbon::createFromFormat('Y-m', $bulan)->endOfMonth();
-        $periodeLabel = Carbon::createFromFormat('Y-m', $bulan)->isoFormat('MMMM Y');
-    } elseif ($filter === 'tanggal' && $from && $to) {
-        $startDate = Carbon::parse($from)->startOfDay();
-        $endDate = Carbon::parse($to)->endOfDay();
-        $periodeLabel = 'Periode: ' . Carbon::parse($from)->format('d/m/Y') . ' - ' . Carbon::parse($to)->format('d/m/Y');
-    } else {
-        return back()->with('error', 'Pilih bulan atau rentang tanggal.');
-    }
+        Carbon::setLocale('id');
 
-    // Ambil data penjualan dengan relasi detail penjualan dan produk
-    $penjualans = Penjualan::with(['detailPenjualans.detailProduk'])
-        ->where('kode_cabang', $kodeCabang)
-        ->whereBetween('tanggal_penjualan', [$startDate, $endDate])
-        ->get();
-
-    // Ambil pengeluaran dan kategori pengeluaran
-    $pengeluarans = Pengeluaran::with('kategori')
-        ->where('kode_cabang', $kodeCabang)
-        ->whereBetween('tanggal', [$startDate, $endDate])
-        ->get();
-
-    $totalPenjualan = 0;
-    $totalModal = 0;
-
-    foreach ($penjualans as $penjualan) {
-        foreach ($penjualan->detailPenjualans as $detail) {
-            $hargaModal = $detail->detailProduk->harga_modal ?? 0;
-            $qty = $detail->qty;
-            $totalPenjualan += $detail->subtotal;
-            $totalModal += ($hargaModal * $qty);
+        if ($filter === 'bulan' && $bulan) {
+            $startDate = Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
+            $endDate = Carbon::createFromFormat('Y-m', $bulan)->endOfMonth();
+            $periodeLabel = Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y');
+        } elseif ($filter === 'tanggal' && $from && $to) {
+            $startDate = Carbon::parse($from)->startOfDay();
+            $endDate = Carbon::parse($to)->endOfDay();
+            $periodeLabel = Carbon::parse($from)->translatedFormat('d F Y') . ' - ' . Carbon::parse($to)->translatedFormat('d F Y');
+        } else {
+            return back()->with('error', 'Pilih bulan atau rentang tanggal.');
         }
-    }
 
-    $labaKotor = $totalPenjualan - $totalModal;
+        // Ambil data penjualan dengan relasi detail penjualan dan produk
+        $penjualans = Penjualan::with(['detailPenjualans.detailProduk'])
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal_penjualan', [$startDate, $endDate])
+            ->get();
 
-    // Ambil kategori pengeluaran yang bukan modal produk
-    $kategoriBeban = \App\Models\KategoriPengeluaran::where('is_modal_produk', 0)->get();
+        // Ambil pengeluaran dan kategori pengeluaran
+        $pengeluarans = Pengeluaran::with('kategori')
+            ->where('kode_cabang', $kodeCabang)
+            ->whereBetween('tanggal', [$startDate, $endDate])
+            ->get();
 
-    $beban = [];
-    $totalBeban = 0;
+        $totalPenjualan = 0;
+        $totalModal = 0;
 
-    foreach ($kategoriBeban as $kategori) {
-        $jumlah = $pengeluarans
-            ->where('kategori_id', $kategori->id)
-            ->sum('total_pengeluaran');
+        foreach ($penjualans as $penjualan) {
+            foreach ($penjualan->detailPenjualans as $detail) {
+                $hargaModal = $detail->detailProduk->harga_modal ?? 0;
+                $qty = $detail->qty;
+                $totalPenjualan += $detail->subtotal;
+                $totalModal += ($hargaModal * $qty);
+            }
+        }
 
-        if ($jumlah > 0) {
-            $beban[] = [
-                'kategori' => $kategori->nama_kategori,
-                'jumlah' => $jumlah,
+        $labaKotor = $totalPenjualan - $totalModal;
+
+        // Ambil kategori pengeluaran yang bukan modal produk
+        $kategoriBeban = \App\Models\KategoriPengeluaran::where('is_modal_produk', 0)->get();
+
+        $beban = [];
+        $totalBeban = 0;
+
+        foreach ($kategoriBeban as $kategori) {
+            $jumlah = $pengeluarans
+                ->where('kategori_id', $kategori->id)
+                ->sum('total_pengeluaran');
+
+            if ($jumlah > 0) {
+                $beban[] = [
+                    'kategori' => $kategori->nama_kategori,
+                    'jumlah' => $jumlah,
+                ];
+                $totalBeban += $jumlah;
+            }
+        }
+
+        $rekap = [];
+
+        if ($totalPenjualan > 0 || $totalModal > 0 || $totalBeban > 0) {
+            $rekap[] = [
+                'bulan' => $periodeLabel,
+                'total_penjualan' => $totalPenjualan,
+                'total_modal' => $totalModal,
+                'laba_kotor' => $labaKotor,
+                'beban' => $beban,
+                'total_beban' => $totalBeban,
+                'laba_bersih' => $labaKotor - $totalBeban,
             ];
-            $totalBeban += $jumlah;
         }
+
+        // Nama file untuk pdf
+        if ($filter === 'bulan') {
+            $namaFile = 'Laporan Laba Rugi - ' . Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y');
+        } else {
+            $startFormat = Carbon::parse($from)->translatedFormat('d F Y');
+            $endFormat = Carbon::parse($to)->translatedFormat('d F Y');
+            $namaFile = 'Laporan Laba Rugi - ' . $startFormat . ' - ' . $endFormat;
+        }
+
+
+        $tanggalCetakFormatted = now()->translatedFormat('d F Y');
+
+        $pdf = Pdf::loadView('laporan.laba-rugi.cetak-laporan', [
+            'rekap' => $rekap,
+            'namaCabang' => Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang'),
+            'tanggalCetak' => $tanggalCetakFormatted,
+        ])->setPaper('A4', 'portrait');
+
+        return $pdf->stream($namaFile);
     }
-
-    $rekap = [];
-
-    if ($totalPenjualan > 0 || $totalModal > 0 || $totalBeban > 0) {
-        $rekap[] = [
-            'bulan' => $periodeLabel,
-            'total_penjualan' => $totalPenjualan,
-            'total_modal' => $totalModal,
-            'laba_kotor' => $labaKotor,
-            'beban' => $beban,
-            'total_beban' => $totalBeban,
-            'laba_bersih' => $labaKotor - $totalBeban,
-        ];
-    }
-
-    // Nama file untuk pdf
-    if ($filter === 'bulan') {
-        $namaFile = 'Laporan Laba Rugi - ' . Carbon::createFromFormat('Y-m', $bulan)->format('F Y');
-    } else {
-        $startFormat = Carbon::parse($from)->format('d F Y');
-        $endFormat = Carbon::parse($to)->format('d F Y');
-        $namaFile = 'Laporan Laba Rugi - ' . $startFormat . ' - ' . $endFormat;
-    }
-    $namaFile = str_replace([' ', ':'], ['-', '-'], $namaFile) . '.pdf';
-
-    $pdf = Pdf::loadView('laporan.laba-rugi.cetak-laporan', [
-        'rekap' => $rekap,
-        'namaCabang' => \App\Models\Cabang::where('kode_cabang', $kodeCabang)->value('nama_cabang'),
-        'tanggalCetak' => now()->format('d-m-Y'),
-    ])->setPaper('A4', 'portrait');
-
-    return $pdf->stream($namaFile);
-}
 
 
     public function indexMutasiStok()
@@ -367,40 +372,72 @@ class LaporanController extends Controller
         $user = Auth::user();
         $kodeCabang = $user->kode_cabang;
 
-        $periode = $request->input('bulan');
-        if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
-            abort(400, 'Format periode tidak valid');
+        $filterType = $request->input('filter');
+
+        $from = null;
+        $to = null;
+
+        Carbon::setLocale('id');
+
+        if ($filterType === 'bulan') {
+            $periode = $request->input('bulan');
+            if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
+                abort(400, 'Format periode tidak valid');
+            }
+
+            [$tahun, $bulan] = explode('-', $periode);
+            $tanggalAwal = Carbon::create($tahun, $bulan, 1)->startOfDay();
+            $tanggalAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
+
+            // format tanggal
+            $periodeLabel = Carbon::createFromDate($tahun, $bulan, 1)
+                ->translatedFormat('F Y');
+
+        } elseif ($filterType === 'tanggal') {
+            $from = $request->input('from');
+            $to = $request->input('to');
+
+            if (!$from || !$to) {
+                abort(400, 'Tanggal awal dan akhir wajib diisi');
+            }
+
+            $tanggalAwal = Carbon::parse($from)->startOfDay();
+            $tanggalAkhir = Carbon::parse($to)->endOfDay();
+
+            $tahun = $tanggalAwal->year;
+            $bulan = $tanggalAwal->month;
+
+            // format tanggal
+            $periodeLabel = Carbon::parse($from)->translatedFormat('d F Y') .
+                ' s/d ' .
+                Carbon::parse($to)->translatedFormat('d F Y');
+        } else {
+             $periodeLabel = '';
+            abort(400, 'Tipe filter tidak valid');
         }
-
-        [$tahun, $bulan] = explode('-', $periode);
-
-        $tanggalAwalBulan = Carbon::create($tahun, $bulan, 1)->startOfDay();
-        $tanggalAkhirBulan = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
 
         $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
             ->where('kode_cabang', $kodeCabang)
             ->where('status', 'disetujui')
-            ->whereDate('tanggal', '<=', $tanggalAkhirBulan)
+            ->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
             ->get()
             ->groupBy('detail_produk_id')
-            ->map(function ($logs) use ($tanggalAwalBulan, $tanggalAkhirBulan) {
+            ->map(function ($logs) use ($tanggalAwal, $tanggalAkhir) {
                 $first = $logs->first();
                 $detail = $first->detailProduk;
 
-                $stokAwal = $logs->where('tanggal', '<', $tanggalAwalBulan)
-                    ->reduce(function ($total, $log) {
-                        return $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty);
-                    }, 0);
+                $stokAwal = $logs->where('tanggal', '<', $tanggalAwal)
+                    ->reduce(fn($total, $log) => $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty), 0);
 
-                $masukBulanIni = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                $masuk = $logs->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
                     ->where('jenis', 'masuk')
                     ->sum('qty');
 
-                $keluarBulanIni = $logs->whereBetween('tanggal', [$tanggalAwalBulan, $tanggalAkhirBulan])
+                $keluar = $logs->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
                     ->where('jenis', 'keluar')
                     ->sum('qty');
 
-                $stokAkhir = $stokAwal + $masukBulanIni - $keluarBulanIni;
+                $stokAkhir = $stokAwal + $masuk - $keluar;
 
                 return (object)[
                     'nama_produk' => $detail->produk->nama_produk ?? '-',
@@ -408,22 +445,40 @@ class LaporanController extends Controller
                     'harga_modal' => $detail->harga_modal ?? 0,
                     'harga_jual'  => $detail->harga_jual ?? 0,
                     'stok_awal'   => $stokAwal,
-                    'masuk'       => $masukBulanIni,
-                    'keluar'      => $keluarBulanIni,
+                    'masuk'       => $masuk,
+                    'keluar'      => $keluar,
                     'stok_akhir'  => $stokAkhir,
                 ];
             })->values();
 
-        $pdf = PDF::loadView('laporan.mutasi-stok.cetak-laporan', [
-            'dataMutasi' => $logStoks,
-            'namaCabang' => $user->cabang->nama_cabang ?? $kodeCabang,
-            'bulan' => $bulan,
-            'tahun' => $tahun,
-            'tanggalCetak' => now()
-        ])->setPaper('a4', 'landscape'); // 🔹 Landscape
+            $tanggalCetakFormatted = now()->translatedFormat('d F Y');
 
-        return $pdf->stream("mutasi-stok-$bulan-$tahun.pdf");
+
+        $pdf = PDF::loadView('laporan.mutasi-stok.cetak-laporan', [
+            'dataMutasi'   => $logStoks,
+            'namaCabang'   => $user->cabang->nama_cabang ?? $kodeCabang,
+            'periodeLabel' => $periodeLabel,
+            // 'bulan'        => $bulan ?? null,
+            // 'tahun'        => $tahun ?? null,
+            // 'from'         => $from,
+            // 'to'           => $to,
+            'filterType'   => $filterType,
+            'tanggalCetak' => $tanggalCetakFormatted
+        ])->setPaper('a4', 'landscape');
+
+        if ($filterType === 'bulan') {
+            $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y');
+            $fileName = "Laporan Mutasi Stok-$namaBulan.pdf";
+        } else {
+            $fromFormatted = Carbon::parse($from)->translatedFormat('d F Y');
+            $toFormatted = Carbon::parse($to)->translatedFormat('d F Y');
+            $fileName = "Laporan Mutasi Stok-$fromFormatted-$toFormatted.pdf";
+        }
+
+        return $pdf->stream($fileName);
     }
+
+
 
     // public function indexBukuBesar(Request $request)
     // {
