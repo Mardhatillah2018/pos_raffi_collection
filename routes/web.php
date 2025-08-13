@@ -41,6 +41,7 @@ Route::middleware(['auth'])->group(function () {
     // SUPER ADMIN SAJA
     Route::middleware('role:super_admin')->group(function () {
         Route::resource('users', UserController::class)->names('user');
+        Route::get('/check-email', [UserController::class, 'checkEmail'])->name('check.email');
         Route::resource('cabang', CabangController::class)->names('cabang');
         Route::post('check-kode-cabang', [CabangController::class, 'checkKodeCabang'])->name('cabang.checkKode');
 

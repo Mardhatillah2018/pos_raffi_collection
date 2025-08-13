@@ -85,6 +85,14 @@ class UserController extends Controller
         return redirect()->route('user.index')->with('success', 'Data user berhasil diperbarui.');
     }
 
+    public function checkEmail(Request $request)
+    {
+        $email = $request->query('email');
+
+        $exists = \App\Models\User::where('email', $email)->exists();
+
+        return response()->json(['exists' => $exists]);
+    }
 
     public function destroy($id)
     {

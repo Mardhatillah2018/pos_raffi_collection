@@ -51,10 +51,12 @@
                                         <div class="mb-3">
                                             <label class="form-label" style="color: black; font-weight: semibold;">Dari Tanggal</label>
                                             <input type="text" id="fromMutasi" name="from" class="form-control" placeholder="dari tanggal ...">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label" style="color: black; font-weight: semibold;">Sampai Tanggal</label>
                                             <input type="text" id="toMutasi" name="to" class="form-control" placeholder="sampai tanggal ...">
+                                            <div class="invalid-feedback"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -134,6 +136,7 @@
 
     const bulanTabBtnMutasi = document.getElementById('bulan-mutasi-tab');
     const tanggalTabBtnMutasi = document.getElementById('tanggal-mutasi-tab');
+    const formCetakMutasi = document.querySelector('#modalCetakMutasi form');
 
     let activeTabMutasi = 'bulan'; // default
 
@@ -143,22 +146,20 @@
             fromInputMutasi.required = false;
             toInputMutasi.required = false;
 
-            // kosongkan input tanggal
             fromInputMutasi.value = '';
             toInputMutasi.value = '';
 
-            activeTabMutasi = 'bulan';
             filterTypeMutasiInput.value = 'bulan';
+            activeTabMutasi = 'bulan';
         } else {
             bulanInputMutasi.required = false;
             fromInputMutasi.required = true;
             toInputMutasi.required = true;
 
-            // kosongkan input bulan
             bulanInputMutasi.value = '';
 
-            activeTabMutasi = 'tanggal';
             filterTypeMutasiInput.value = 'tanggal';
+            activeTabMutasi = 'tanggal';
         }
     }
 
@@ -171,7 +172,6 @@
 
     // Flatpickr
     const modalCetakMutasi = document.getElementById('modalCetakMutasi');
-
     modalCetakMutasi.addEventListener('shown.bs.modal', function () {
         const toPickerMutasi = flatpickr("#toMutasi", {
             dateFormat: "Y-m-d",
@@ -190,6 +190,33 @@
             }
         });
     });
-</script>
 
+    // Validasi submit
+    formCetakMutasi.addEventListener('submit', function(e) {
+        if (activeTabMutasi === 'tanggal') {
+            let valid = true;
+
+            if (!fromInputMutasi.value) {
+                fromInputMutasi.classList.add('is-invalid');
+                fromInputMutasi.nextElementSibling.textContent = 'Tanggal awal wajib diisi';
+                valid = false;
+            } else {
+                fromInputMutasi.classList.remove('is-invalid');
+            }
+
+            if (!toInputMutasi.value) {
+                toInputMutasi.classList.add('is-invalid');
+                toInputMutasi.nextElementSibling.textContent = 'Tanggal akhir wajib diisi';
+                valid = false;
+            } else {
+                toInputMutasi.classList.remove('is-invalid');
+            }
+
+            if (!valid) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    });
+</script>
 @endpush

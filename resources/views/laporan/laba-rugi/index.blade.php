@@ -129,16 +129,17 @@
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('#modalCetakLabaRugi form');
     const bulanInput = document.querySelector('input[name="bulan"]');
     const fromInput = document.querySelector('input[name="from"]');
     const toInput = document.querySelector('input[name="to"]');
     const filterTypeInput = document.getElementById('filterType');
-    const form = document.querySelector('#modalCetakKeuntungan form');
 
     const bulanTabBtn = document.getElementById('bulan-tab');
     const tanggalTabBtn = document.getElementById('tanggal-tab');
 
-    let activeTab = 'bulan'; // default
+    let activeTab = 'bulan';
 
     function setRequired(tab) {
         if (tab === 'bulan') {
@@ -147,49 +148,91 @@
             toInput.required = false;
             activeTab = 'bulan';
             filterTypeInput.value = 'bulan';
+            clearInvalid(fromInput);
+            clearInvalid(toInput);
         } else {
             bulanInput.required = false;
             fromInput.required = true;
             toInput.required = true;
             activeTab = 'tanggal';
             filterTypeInput.value = 'tanggal';
+            clearInvalid(bulanInput);
         }
     }
 
-    // Default saat modal dibuka
+    function setInvalid(el, msg) {
+        el.classList.add('is-invalid');
+        let fb = el.nextElementSibling;
+        if (!fb || !fb.classList.contains('invalid-feedback')) {
+            fb = document.createElement('div');
+            fb.classList.add('invalid-feedback');
+            el.parentNode.appendChild(fb);
+        }
+        fb.textContent = msg;
+    }
+
+    function clearInvalid(el) {
+        el.classList.remove('is-invalid');
+        const fb = el.nextElementSibling;
+        if (fb && fb.classList.contains('invalid-feedback')) {
+            fb.textContent = '';
+        }
+    }
+
+    function validateInput() {
+        let ok = true;
+        clearInvalid(fromInput);
+        clearInvalid(toInput);
+
+        if (activeTab === 'tanggal') {
+            if (!fromInput.value) { setInvalid(fromInput, 'Tanggal mulai wajib diisi'); ok = false; }
+            if (!toInput.value) { setInvalid(toInput, 'Tanggal sampai wajib diisi'); ok = false; }
+            if (fromInput.value && toInput.value && toInput.value < fromInput.value) {
+                setInvalid(toInput, 'Tanggal sampai tidak boleh sebelum tanggal mulai'); ok = false;
+            }
+        }
+        return ok;
+    }
+
+    // Default
     setRequired('bulan');
 
-    // Event saat tab diklik
+    // Event tab
     bulanTabBtn.addEventListener('click', () => setRequired('bulan'));
     tanggalTabBtn.addEventListener('click', () => setRequired('tanggal'));
 
     // Flatpickr
-    const toPicker = flatpickr("#to", {
-        dateFormat: "Y-m-d",
-        maxDate: "today",
-    });
-
+    const toPicker = flatpickr("#to", { dateFormat: "Y-m-d", maxDate: "today" });
     const fromPicker = flatpickr("#from", {
         dateFormat: "Y-m-d",
         maxDate: "today",
         onChange: function(selectedDates) {
             if (selectedDates.length > 0) {
                 let minToDate = new Date(selectedDates[0]);
-                minToDate.setDate(minToDate.getDate() + 1);
                 toPicker.set('minDate', minToDate);
             }
+            validateInput();
         }
     });
 
-    // Saat submit, kosongkan input yang tidak dipakai
-    form.addEventListener('submit', function () {
-        if (activeTab === 'bulan') {
-            fromInput.value = '';
-            toInput.value = '';
-        } else {
-            bulanInput.value = '';
-        }
+    // Validasi realtime saat pilih tanggal
+    fromInput.addEventListener('change', validateInput);
+    toInput.addEventListener('change', validateInput);
+
+    // Validasi saat submit
+    form.addEventListener('submit', function(e) {
+        if (!validateInput()) e.preventDefault();
+        if (activeTab === 'bulan') { fromInput.value = ''; toInput.value = ''; }
+        else { bulanInput.value = ''; }
     });
+
+    // Reset validasi saat modal ditutup
+    const modal = document.getElementById('modalCetakLabaRugi');
+    modal.addEventListener('hidden.bs.modal', function () {
+        clearInvalid(fromInput);
+        clearInvalid(toInput);
+        clearInvalid(bulanInput);
+    });
+});
 </script>
 @endpush
-

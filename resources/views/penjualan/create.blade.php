@@ -170,54 +170,56 @@
         return ids;
     }
 
+    // pilih produk
     function updateProdukOptions() {
-    const selectedIds = getSelectedProdukIds();
+        const selectedIds = getSelectedProdukIds();
 
-    $('.produk-select').each(function () {
-        const currentSelect = $(this);
-        const currentValue = currentSelect.val();
+        $('.produk-select').each(function () {
+            const currentSelect = $(this);
+            const currentValue = currentSelect.val();
 
-        // Simpan placeholder
-        const placeholder = currentSelect.find('option[value=""]').first().clone();
+            // Simpan placeholder
+            const placeholder = currentSelect.find('option[value=""]').first().clone();
 
-        // Hapus semua option
-        currentSelect.empty();
-        currentSelect.append(placeholder);
+            // Hapus semua option
+            currentSelect.empty();
+            currentSelect.append(placeholder);
 
-        // Tambahkan kembali produk yang belum dipilih
-        @foreach ($detailProduks as $dp)
-            (function(){
-                const id = "{{ $dp->id }}";
-                const nama = "{{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}";
-                const harga = "{{ $dp->harga_jual }}";
-                const stok = "{{ $dp->stokCabang->stok ?? 0 }}";
-                const stokText = stok < 1 ? ' (Stok Habis)' : '';
+            // Tambahkan kembali produk yang belum dipilih
+            @foreach ($detailProduks as $dp)
+                (function(){
+                    const id = "{{ $dp->id }}";
+                    const nama = "{{ $dp->produk->nama_produk }} - {{ $dp->ukuran->kode_ukuran }}";
+                    const harga = "{{ $dp->harga_jual }}";
+                    const stok = "{{ $dp->stokCabang->stok ?? 0 }}";
+                    const stokText = stok < 1 ? ' (Stok Habis)' : '';
 
-                // Tampilkan jika belum dipilih, atau sedang aktif di select ini
-                if (!selectedIds.includes(id) || id === currentValue) {
-                    const opt = $('<option>')
-                        .val(id)
-                        .text(nama + stokText)
-                        .attr('data-harga', harga)
-                        .attr('data-stok', stok);
+                    // Tampilkan jika belum dipilih, atau sedang aktif di select ini
+                    if (!selectedIds.includes(id) || id === currentValue) {
+                        const opt = $('<option>')
+                            .val(id)
+                            .text(nama + stokText)
+                            .attr('data-harga', harga)
+                            .attr('data-stok', stok);
 
-                    if (stok < 1) {
-                        opt.prop('disabled', true).addClass('text-danger');
+                        if (stok < 1) {
+                            opt.prop('disabled', true).addClass('text-danger');
+                        }
+
+                        if (id === currentValue) {
+                            opt.prop('selected', true);
+                        }
+
+                        currentSelect.append(opt);
                     }
+                })();
+            @endforeach
 
-                    if (id === currentValue) {
-                        opt.prop('selected', true);
-                    }
+            currentSelect.trigger('change.select2');
+        });
+    }
 
-                    currentSelect.append(opt);
-                }
-            })();
-        @endforeach
-
-        currentSelect.trigger('change.select2');
-    });
-}
-
+    // input qty
     $(document).on('input', '.qty, .harga', function () {
         const row = $(this).closest('tr');
         const qtyInput = row.find('.qty');

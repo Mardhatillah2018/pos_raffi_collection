@@ -37,10 +37,12 @@
                                 <div class="mb-3">
                                     <label for="tanggal_mulai" class="form-label" style="color: black; font-weight: semibold;">Dari Tanggal</label>
                                     <input type="text" name="tanggal_mulai" id="tanggal_mulai" class="form-control flatpickr" placeholder="dari tanggal ..." required>
+                                    <div class="invalid-feedback"></div>
                                 </div>
                                 <div class="mb-3">
                                     <label for="tanggal_sampai" class="form-label" style="color: black; font-weight: semibold;">Sampai Tanggal</label>
                                     <input type="text" name="tanggal_sampai" id="tanggal_sampai" class="form-control flatpickr" placeholder="sampai tanggal ..." required>
+                                    <div class="invalid-feedback"></div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -161,26 +163,69 @@
     });
     @endif
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const tanggalMulaiInput = document.getElementById("tanggal_mulai");
-        const tanggalSampaiInput = document.getElementById("tanggal_sampai");
+    document.addEventListener('DOMContentLoaded', function () {
+        const form   = document.querySelector('#modalCetak form');
+        const start  = document.getElementById('tanggal_mulai');
+        const end    = document.getElementById('tanggal_sampai');
 
-        const sampaiPicker = flatpickr(tanggalSampaiInput, {
-            dateFormat: "Y-m-d",
-            maxDate: "today"
+        const fpStart = flatpickr(start, {
+            dateFormat: 'Y-m-d',
+            maxDate: "today",
+            onChange: function (_, dateStr) {
+                end._flatpickr.set('minDate', dateStr || null);
+                validate();
+            }
         });
 
-        flatpickr(tanggalMulaiInput, {
-            dateFormat: "Y-m-d",
+        const fpEnd = flatpickr(end, {
+            dateFormat: 'Y-m-d',
             maxDate: "today",
-            onChange: function (selectedDates) {
-                if (selectedDates.length > 0) {
-                    // Set minDate ke tanggal mulai (boleh sama)
-                    sampaiPicker.set('minDate', selectedDates[0]);
-                }
+            onChange: function (_, dateStr) {
+                start._flatpickr.set('maxDate', dateStr || null);
+                validate();
+            }
+        });
+
+        function setInvalid(el, msg) {
+            el.classList.add('is-invalid');
+            const fb = el.nextElementSibling;
+            if (fb && fb.classList.contains('invalid-feedback')) {
+                fb.textContent = msg || 'Wajib diisi.';
+                fb.style.display = 'block';
+            }
+        }
+
+        function clearInvalid(el) {
+            el.classList.remove('is-invalid');
+            const fb = el.nextElementSibling;
+            if (fb && fb.classList.contains('invalid-feedback')) {
+                fb.textContent = '';
+                fb.style.display = 'none';
+            }
+        }
+
+        function validate() {
+            let ok = true;
+            clearInvalid(start);
+            clearInvalid(end);
+
+            if (!start.value) { setInvalid(start, 'Pilih tanggal mulai.'); ok = false; }
+            if (!end.value)   { setInvalid(end,   'Pilih tanggal sampai.'); ok = false; }
+
+            if (ok && end.value < start.value) {
+                setInvalid(end, 'Tanggal sampai tidak boleh sebelum tanggal mulai.');
+                ok = false;
+            }
+            return ok;
+        }
+
+        form.addEventListener('submit', function (e) {
+            if (!validate()) {
+                e.preventDefault();
             }
         });
     });
+
 
 </script>
 @endpush

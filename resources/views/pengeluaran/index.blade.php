@@ -40,10 +40,12 @@
                         <div class="mb-3">
                             <label for="tanggal_mulai" class="form-label" style="color: black; font-weight: semibold;">Tanggal Mulai</label>
                             <input type="text" class="form-control" id="tanggal_mulai" name="tanggal_mulai" placeholder="dari tanggal ..." required>
+                            <div class="invalid-feedback"></div>
                         </div>
                         <div class="mb-3">
                             <label for="tanggal_sampai" class="form-label" style="color: black; font-weight: semibold;">Tanggal Sampai</label>
                             <input type="text" class="form-control" id="tanggal_sampai" name="tanggal_sampai" placeholder="sampai tanggal ..." required>
+                            <div class="invalid-feedback"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -165,27 +167,76 @@
         });
     @endif
 
-    const today = new Date();
+    document.addEventListener('DOMContentLoaded', function () {
+        const form  = document.querySelector('#modalCetak form');
+        const start = document.getElementById('tanggal_mulai');
+        const end   = document.getElementById('tanggal_sampai');
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const tanggalMulaiInput = document.getElementById("tanggal_mulai");
-        const tanggalSampaiInput = document.getElementById("tanggal_sampai");
-
-        const sampaiPicker = flatpickr(tanggalSampaiInput, {
-            dateFormat: "Y-m-d",
-            maxDate: "today"
+        // Flatpickr tanggal mulai
+        const fpStart = flatpickr(start, {
+            dateFormat: 'Y-m-d',
+            maxDate: "today",
+            onChange: function (_, dateStr) {
+                // Set minDate di tanggal sampai sesuai tanggal mulai
+                end._flatpickr.set('minDate', dateStr || null);
+                validate();
+            }
         });
 
-        flatpickr(tanggalMulaiInput, {
-            dateFormat: "Y-m-d",
+        // Flatpickr tanggal sampai
+        const fpEnd = flatpickr(end, {
+            dateFormat: 'Y-m-d',
             maxDate: "today",
-            onChange: function (selectedDates) {
-                if (selectedDates.length > 0) {
-                    // Set minDate ke tanggal mulai (boleh sama)
-                    sampaiPicker.set('minDate', selectedDates[0]);
-                }
+            onChange: function (_, dateStr) {
+                // Set maxDate di tanggal mulai sesuai tanggal sampai
+                start._flatpickr.set('maxDate', dateStr || null);
+                validate();
+            }
+        });
+
+        // Fungsi set invalid
+        function setInvalid(el, msg) {
+            el.classList.add('is-invalid');
+            const fb = el.nextElementSibling;
+            if (fb && fb.classList.contains('invalid-feedback')) {
+                fb.textContent = msg || 'Wajib diisi.';
+                fb.style.display = 'block';
+            }
+        }
+
+        // Fungsi clear invalid
+        function clearInvalid(el) {
+            el.classList.remove('is-invalid');
+            const fb = el.nextElementSibling;
+            if (fb && fb.classList.contains('invalid-feedback')) {
+                fb.textContent = '';
+                fb.style.display = 'none';
+            }
+        }
+
+        // Validasi form
+        function validate() {
+            let ok = true;
+            clearInvalid(start);
+            clearInvalid(end);
+
+            if (!start.value) { setInvalid(start, 'Pilih tanggal mulai.'); ok = false; }
+            if (!end.value)   { setInvalid(end,   'Pilih tanggal sampai.'); ok = false; }
+
+            if (ok && end.value < start.value) {
+                setInvalid(end, 'Tanggal sampai tidak boleh sebelum tanggal mulai.');
+                ok = false;
+            }
+            return ok;
+        }
+
+        // Submit form
+        form.addEventListener('submit', function (e) {
+            if (!validate()) {
+                e.preventDefault();
             }
         });
     });
+
 </script>
 @endpush

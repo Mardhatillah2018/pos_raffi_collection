@@ -18,4 +18,18 @@ class Produk extends Model
         return $this->hasMany(DetailProduk::class, 'produk_id');
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($produk) {
+            if ($produk->isForceDeleting()) {
+                // Force delete detail juga
+                $produk->detailProduks()->forceDelete();
+            } else {
+                // Soft delete detail
+                $produk->detailProduks()->delete();
+            }
+        });
+    }
 }

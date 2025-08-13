@@ -19,7 +19,7 @@ class RoleMiddleware
         $user = Auth::user();
 
         if (!$user || !in_array($user->role, $roles)) {
-            abort(403, 'Akses ditolak');
+            abort(403);
         }
 
         return $next($request);

@@ -368,115 +368,108 @@ class LaporanController extends Controller
     }
 
     public function cetakMutasiStok(Request $request)
-    {
-        $user = Auth::user();
-        $kodeCabang = $user->kode_cabang;
+{
+    $user = Auth::user();
+    $kodeCabang = $user->kode_cabang;
+    $filterType = $request->input('filter');
 
-        $filterType = $request->input('filter');
+    Carbon::setLocale('id');
 
-        $from = null;
-        $to = null;
-
-        Carbon::setLocale('id');
-
-        if ($filterType === 'bulan') {
-            $periode = $request->input('bulan');
-            if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
-                abort(400, 'Format periode tidak valid');
-            }
-
-            [$tahun, $bulan] = explode('-', $periode);
-            $tanggalAwal = Carbon::create($tahun, $bulan, 1)->startOfDay();
-            $tanggalAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
-
-            // format tanggal
-            $periodeLabel = Carbon::createFromDate($tahun, $bulan, 1)
-                ->translatedFormat('F Y');
-
-        } elseif ($filterType === 'tanggal') {
-            $from = $request->input('from');
-            $to = $request->input('to');
-
-            if (!$from || !$to) {
-                abort(400, 'Tanggal awal dan akhir wajib diisi');
-            }
-
-            $tanggalAwal = Carbon::parse($from)->startOfDay();
-            $tanggalAkhir = Carbon::parse($to)->endOfDay();
-
-            $tahun = $tanggalAwal->year;
-            $bulan = $tanggalAwal->month;
-
-            // format tanggal
-            $periodeLabel = Carbon::parse($from)->translatedFormat('d F Y') .
-                ' s/d ' .
-                Carbon::parse($to)->translatedFormat('d F Y');
-        } else {
-             $periodeLabel = '';
-            abort(400, 'Tipe filter tidak valid');
+    // Tentukan periode
+    if ($filterType === 'bulan') {
+        $periode = $request->input('bulan');
+        if (!$periode || !preg_match('/^\d{4}-\d{2}$/', $periode)) {
+            abort(400, 'Format periode tidak valid');
         }
 
-        $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
-            ->where('kode_cabang', $kodeCabang)
-            ->where('status', 'disetujui')
-            ->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
-            ->get()
-            ->groupBy('detail_produk_id')
-            ->map(function ($logs) use ($tanggalAwal, $tanggalAkhir) {
-                $first = $logs->first();
-                $detail = $first->detailProduk;
+        [$tahun, $bulan] = explode('-', $periode);
+        $tanggalAwal = Carbon::create($tahun, $bulan, 1)->startOfDay();
+        $tanggalAkhir = Carbon::create($tahun, $bulan, 1)->endOfMonth()->endOfDay();
 
-                $stokAwal = $logs->where('tanggal', '<', $tanggalAwal)
-                    ->reduce(fn($total, $log) => $total + ($log->jenis === 'masuk' ? $log->qty : -$log->qty), 0);
+        $periodeLabel = Carbon::createFromDate($tahun, $bulan, 1)
+            ->translatedFormat('F Y');
 
-                $masuk = $logs->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
-                    ->where('jenis', 'masuk')
-                    ->sum('qty');
+    } elseif ($filterType === 'tanggal') {
+        $from = $request->input('from');
+        $to = $request->input('to');
 
-                $keluar = $logs->whereBetween('tanggal', [$tanggalAwal, $tanggalAkhir])
-                    ->where('jenis', 'keluar')
-                    ->sum('qty');
-
-                $stokAkhir = $stokAwal + $masuk - $keluar;
-
-                return (object)[
-                    'nama_produk' => $detail->produk->nama_produk ?? '-',
-                    'ukuran'      => $detail->ukuran->kode_ukuran ?? '-',
-                    'harga_modal' => $detail->harga_modal ?? 0,
-                    'harga_jual'  => $detail->harga_jual ?? 0,
-                    'stok_awal'   => $stokAwal,
-                    'masuk'       => $masuk,
-                    'keluar'      => $keluar,
-                    'stok_akhir'  => $stokAkhir,
-                ];
-            })->values();
-
-            $tanggalCetakFormatted = now()->translatedFormat('d F Y');
-
-
-        $pdf = PDF::loadView('laporan.mutasi-stok.cetak-laporan', [
-            'dataMutasi'   => $logStoks,
-            'namaCabang'   => $user->cabang->nama_cabang ?? $kodeCabang,
-            'periodeLabel' => $periodeLabel,
-            // 'bulan'        => $bulan ?? null,
-            // 'tahun'        => $tahun ?? null,
-            // 'from'         => $from,
-            // 'to'           => $to,
-            'filterType'   => $filterType,
-            'tanggalCetak' => $tanggalCetakFormatted
-        ])->setPaper('a4', 'landscape');
-
-        if ($filterType === 'bulan') {
-            $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y');
-            $fileName = "Laporan Mutasi Stok-$namaBulan.pdf";
-        } else {
-            $fromFormatted = Carbon::parse($from)->translatedFormat('d F Y');
-            $toFormatted = Carbon::parse($to)->translatedFormat('d F Y');
-            $fileName = "Laporan Mutasi Stok-$fromFormatted-$toFormatted.pdf";
+        if (!$from || !$to) {
+            abort(400, 'Tanggal awal dan akhir wajib diisi');
         }
 
-        return $pdf->stream($fileName);
+        $tanggalAwal = Carbon::parse($from)->startOfDay();
+        $tanggalAkhir = Carbon::parse($to)->endOfDay();
+
+        $tahun = $tanggalAwal->year;
+        $bulan = $tanggalAwal->month;
+
+        $periodeLabel = Carbon::parse($from)->translatedFormat('d F Y') .
+                        ' s/d ' .
+                        Carbon::parse($to)->translatedFormat('d F Y');
+    } else {
+        abort(400, 'Tipe filter tidak valid');
     }
+
+    // Ambil semua log persetujuan tanpa filter tanggal untuk stok awal
+    $logStoks = LogStok::with('detailProduk.produk', 'detailProduk.ukuran')
+        ->where('kode_cabang', $kodeCabang)
+        ->where('status', 'disetujui')
+        ->orderBy('tanggal')
+        ->get()
+        ->map(fn($log) => tap($log, fn(&$l) => $l->tanggal = Carbon::parse($l->tanggal)))
+        ->groupBy('detail_produk_id');
+
+    // Hitung stok awal, masuk, keluar, akhir
+    $dataMutasi = $logStoks->map(function ($logs) use ($tanggalAwal, $tanggalAkhir) {
+        $first = $logs->first();
+        $detail = $first->detailProduk;
+
+        $stokAwal = $logs->filter(fn($log) => $log->tanggal->lt($tanggalAwal))
+            ->sum(fn($log) => $log->jenis === 'masuk' ? $log->qty : -$log->qty);
+
+        $masuk = $logs->filter(fn($log) => $log->tanggal->between($tanggalAwal, $tanggalAkhir) && $log->jenis === 'masuk')
+            ->sum('qty');
+
+        $keluar = $logs->filter(fn($log) => $log->tanggal->between($tanggalAwal, $tanggalAkhir) && $log->jenis === 'keluar')
+            ->sum('qty');
+
+        $stokAkhir = $stokAwal + $masuk - $keluar;
+
+        return (object)[
+            'nama_produk' => $detail->produk->nama_produk ?? '-',
+            'ukuran'      => $detail->ukuran->kode_ukuran ?? '-',
+            'harga_modal' => $detail->harga_modal ?? 0,
+            'harga_jual'  => $detail->harga_jual ?? 0,
+            'stok_awal'   => $stokAwal,
+            'masuk'       => $masuk,
+            'keluar'      => $keluar,
+            'stok_akhir'  => $stokAkhir,
+        ];
+    })->values();
+
+    $tanggalCetakFormatted = now()->translatedFormat('d F Y');
+
+    $pdf = PDF::loadView('laporan.mutasi-stok.cetak-laporan', [
+        'dataMutasi'   => $dataMutasi,
+        'namaCabang'   => $user->cabang->nama_cabang ?? $kodeCabang,
+        'periodeLabel' => $periodeLabel,
+        'filterType'   => $filterType,
+        'tanggalCetak' => $tanggalCetakFormatted
+    ])->setPaper('a4', 'landscape');
+
+    // Nama file PDF
+    if ($filterType === 'bulan') {
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)->translatedFormat('F Y');
+        $fileName = "Laporan Mutasi Stok-$namaBulan.pdf";
+    } else {
+        $fromFormatted = Carbon::parse($from)->translatedFormat('d F Y');
+        $toFormatted = Carbon::parse($to)->translatedFormat('d F Y');
+        $fileName = "Laporan Mutasi Stok-$fromFormatted-$toFormatted.pdf";
+    }
+
+    return $pdf->stream($fileName);
+}
+
 
 
 
