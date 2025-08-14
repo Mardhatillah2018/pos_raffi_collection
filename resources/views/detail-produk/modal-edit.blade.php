@@ -45,19 +45,28 @@
 @endforeach
 
 <script>
-    function openEditDetailModal(detail) {
-    const modalId = '#modalEditDetailProduk' + detail.id;
-    const modal = new bootstrap.Modal(document.querySelector(modalId));
-    modal.show();
-    }
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     $('.select2').each(function () {
-      const modal = $(this).closest('.modal');
-      $(this).select2({
-        dropdownParent: modal,
-        placeholder: "-- Pilih Ukuran --",
-        width: '100%'
-      });
+        const modal = $(this).closest('.modal');
+        $(this).select2({
+            dropdownParent: modal,
+            placeholder: "-- Pilih Ukuran --",
+            width: '100%'
+        });
     });
-  });
+
+    @foreach ($produk->detailProduks as $detail)
+        const hargaModal{{ $detail->id }} = document.getElementById('harga_modal{{ $detail->id }}');
+        const hargaJual{{ $detail->id }} = document.getElementById('harga_jual{{ $detail->id }}');
+
+        hargaModal{{ $detail->id }}.addEventListener('input', function () {
+            const modalValue = parseFloat(this.value) || 0;
+            const hargaJual = Math.ceil(modalValue * 1.5 / 1000) * 1000; 
+            hargaJual{{ $detail->id }}.value = hargaJual;
+        });
+    @endforeach
+});
 </script>
+
+
+

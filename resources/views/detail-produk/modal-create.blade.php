@@ -29,9 +29,10 @@
             </div>
 
             <div class="col-md-6">
-              <label for="harga_jual" class="form-label" style="color: black; font-weight: bold;">Harga Jual</label>
-              <input type="number" name="harga_jual" id="harga_jual" class="form-control" min="0" placeholder="Masukkan Harga Jual" required>
+                <label for="harga_jual" class="form-label" style="color: black; font-weight: bold;">Harga Jual</label>
+                <input type="number" name="harga_jual" id="harga_jual" class="form-control bg-light" min="0" placeholder="Harga Jual" readonly>
             </div>
+
           </div>
         </div>
 
@@ -45,12 +46,23 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     $('.select2').select2({
-      dropdownParent: $('#modalTambahDetailProduk'),
-      placeholder: "-- Pilih Ukuran --",
-      width: '100%'
+        dropdownParent: $('#modalTambahDetailProduk'),
+        placeholder: "-- Pilih Ukuran --",
+        width: '100%'
     });
-  });
+
+    const hargaModalInput = document.getElementById('harga_modal');
+    const hargaJualInput = document.getElementById('harga_jual');
+
+    hargaModalInput.addEventListener('input', function () {
+        const modalValue = parseFloat(this.value) || 0;
+        const hargaJual = Math.ceil(modalValue * 1.5 / 1000) * 1000; // bulat ke atas 1000
+        hargaJualInput.value = hargaJual;
+    });
+});
 </script>
+
+
 
