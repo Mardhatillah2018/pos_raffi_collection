@@ -25,4 +25,9 @@ class LogStok extends Model
         return $this->belongsTo(DetailProduk::class);
     }
 
+    public function ukuranProduk()
+    {
+        return $this->belongsTo(UkuranProduk::class);
+    }
+
 }

@@ -42,14 +42,14 @@
                                 <td>{{ $user->kode_cabang ?? '-' }}</td>
                                 <td class="align-middle text-center">
                                     <div class="d-flex justify-content-center align-items-center gap-2">
-                                        {{-- <button
+                                        <button
                                             class="btn btn-warning btn-sm d-flex align-items-center px-2 py-1"
                                             title="Edit"
                                             style="line-height: 1;"
                                             onclick='openEditModal(@json($user))'>
                                             <i class="material-icons-round text-white me-1" style="font-size: 16px;">edit</i>
                                             <span class="text-white fw-semibold small">Edit</span>
-                                        </button> --}}
+                                        </button>
 
                                         <form action="#" method="POST" class="m-0 p-0 d-inline-block"
                                             onsubmit="return confirm('Yakin ingin menghapus user ini?')">

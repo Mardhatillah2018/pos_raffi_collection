@@ -90,15 +90,15 @@ class LogStokController extends Controller
                 $stok->save();
 
                 // Ambil nama produk dan ukuran dari relasi
-                $namaProduk = $log->detailProduk->produk->nama ?? 'Produk tidak diketahui';
-                $ukuran = $log->detailProduk->ukuran->nama ?? 'Ukuran tidak diketahui';
+                $namaProduk = $log->detailProduk->produk->nama_produk ?? 'Produk tidak diketahui';
+                $ukuran = $log->detailProduk->ukuran->nama_ukuran ?? 'Ukuran tidak diketahui';
 
                 // Ambil harga modal dari detail produk
                 $hargaModalSatuan = $log->detailProduk->harga_modal ?? 0;
 
                 $totalKerugian = $log->qty * $hargaModalSatuan;
 
-                $keterangan = "Kerugian stok rusak: {$log->qty} pcs produk {$namaProduk} ukuran {$ukuran}";
+                $keterangan = "Kerugian stok rusak: {$log->qty} pcs {$namaProduk} Ukuran: {$ukuran}";
 
                 DB::table('pengeluarans')->insert([
                     'tanggal' => now()->toDateString(),
