@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\DetailProduk;
 use App\Models\LogStok;
 use App\Models\Produk;
@@ -101,9 +102,11 @@ class StokController extends Controller
             ->where('kode_cabang', $kodeCabang)
             ->get();
 
-        return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList'));
-    }
+        // ✅ ambil daftar cabang (kecuali cabang user login biar ga transfer ke cabang sendiri)
+        $cabangs = Cabang::where('kode_cabang', '!=', $kodeCabang)->get();
 
+        return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList', 'cabangs'));
+    }
 
     public function cetakPDF()
     {

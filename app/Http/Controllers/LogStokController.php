@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\LogStok;
 use App\Models\Stok;
 use Illuminate\Http\Request;
@@ -34,22 +35,40 @@ class LogStokController extends Controller
 
     public function ajukanPengurangan(Request $request)
     {
+        // Validasi input
         $request->validate([
             'detail_produk_id' => 'required|exists:detail_produks,id',
             'qty' => 'required|numeric|min:1',
-            'keterangan' => 'nullable|string',
+            'alasan' => 'required|in:rusak,transfer',
+            'cabang_tujuan' => 'required_if:alasan,transfer|exists:cabangs,kode_cabang',
         ]);
 
+        // Ambil alasan dan normalisasi
+        $alasan = strtolower(trim($request->alasan));
+
+        // Tentukan keterangan berdasarkan alasan
+        if ($alasan === 'rusak') {
+            $keterangan = 'Barang rusak';
+        } elseif ($alasan === 'transfer') {
+            $cabangTujuan = Cabang::where('kode_cabang', $request->cabang_tujuan)->first();
+            $keterangan = 'Transfer barang ke cabang '
+                        . ($cabangTujuan->nama_cabang ?? '')
+                        . ' [' . ($cabangTujuan->kode_cabang ?? '') . ']';
+        } else {
+            $keterangan = 'Alasan tidak diketahui';
+        }
+
+        // Buat log stok pengurangan
         LogStok::create([
             'tanggal' => now(),
             'detail_produk_id' => $request->detail_produk_id,
-            'kode_cabang' => Auth::user()->kode_cabang,
+            'kode_cabang' => Auth::user()->kode_cabang, // cabang asal
             'qty' => $request->qty,
             'jenis' => 'keluar',
-            'created_by' => Auth::user()->id,
+            'created_by' => Auth::id(),
             'status' => 'menunggu',
             'sumber' => 'pengurangan',
-            'keterangan' => $request->keterangan,
+            'keterangan' => $keterangan,
         ]);
 
         return redirect()->route('pengurangan.index')
@@ -80,36 +99,75 @@ class LogStokController extends Controller
         }
 
         if ($statusBaru === 'disetujui') {
-            // Kurangi stok di tabel stok
-            $stok = Stok::where('detail_produk_id', $log->detail_produk_id)
-                        ->where('kode_cabang', $log->kode_cabang)
-                        ->first();
+            if ($log->jenis === 'keluar') {
 
-            if ($stok) {
-                $stok->stok -= $log->qty;
-                $stok->save();
+            if (str_contains($log->keterangan, 'Barang rusak')) {
+                $stok = Stok::where('detail_produk_id', $log->detail_produk_id)
+                            ->where('kode_cabang', $log->kode_cabang)
+                            ->first();
 
-                // Ambil nama produk dan ukuran dari relasi
-                $namaProduk = $log->detailProduk->produk->nama_produk ?? 'Produk tidak diketahui';
-                $ukuran = $log->detailProduk->ukuran->nama_ukuran ?? 'Ukuran tidak diketahui';
+                    if ($stok) {
+                        $stok->stok -= $log->qty;
+                        $stok->save();
 
-                // Ambil harga modal dari detail produk
-                $hargaModalSatuan = $log->detailProduk->harga_modal ?? 0;
+                        // catat kerugian ke tabel pengeluaran
+                        $namaProduk = $log->detailProduk->produk->nama_produk ?? 'Produk tidak diketahui';
+                        $ukuran = $log->detailProduk->ukuran->nama_ukuran ?? 'Ukuran tidak diketahui';
+                        $hargaModalSatuan = $log->detailProduk->harga_modal ?? 0;
+                        $totalKerugian = $log->qty * $hargaModalSatuan;
 
-                $totalKerugian = $log->qty * $hargaModalSatuan;
+                        $keteranganPengeluaran = "Kerugian stok rusak: {$log->qty} pcs {$namaProduk} Ukuran: {$ukuran}";
 
-                $keterangan = "Kerugian stok rusak: {$log->qty} pcs {$namaProduk} Ukuran: {$ukuran}";
+                        DB::table('pengeluarans')->insert([
+                            'tanggal' => now()->toDateString(),
+                            'kode_cabang' => $log->kode_cabang,
+                            'created_by' => Auth::id(),
+                            'kategori_id' => 10, // kategori Kerugian Stok
+                            'total_pengeluaran' => $totalKerugian,
+                            'keterangan' => $keteranganPengeluaran,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } elseif (str_contains($log->keterangan, 'Transfer barang ke cabang')) {
+                    // === Transfer: kurangi stok asal + tambah stok tujuan ===
+                    $stokAsal = Stok::where('detail_produk_id', $log->detail_produk_id)
+                                    ->where('kode_cabang', $log->kode_cabang)
+                                    ->first();
+                    if ($stokAsal) {
+                        $stokAsal->stok -= $log->qty;
+                        $stokAsal->save();
+                    }
 
-                DB::table('pengeluarans')->insert([
-                    'tanggal' => now()->toDateString(),
-                    'kode_cabang' => $log->kode_cabang,
-                    'created_by' => Auth::id(),
-                    'kategori_id' => 10, // kategori Kerugian Stok
-                    'total_pengeluaran' => $totalKerugian,
-                    'keterangan' => $keterangan,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                    if (preg_match('/\[(.*?)\]/', $log->keterangan, $match)) {
+                        $cabangTujuan = $match[1]; // contoh hasil: CB002
+                    } else {
+                        $cabangTujuan = null;
+}
+
+                    if ($cabangTujuan) {
+                        $stokTujuan = Stok::firstOrCreate(
+                            ['detail_produk_id' => $log->detail_produk_id, 'kode_cabang' => $cabangTujuan],
+                            ['stok' => 0]
+                        );
+
+                        $stokTujuan->stok += $log->qty;
+                        $stokTujuan->save();
+
+                        // Buat log masuk di cabang tujuan
+                        LogStok::create([
+                            'tanggal' => now(),
+                            'detail_produk_id' => $log->detail_produk_id,
+                            'kode_cabang' => $cabangTujuan,
+                            'qty' => $log->qty,
+                            'jenis' => 'masuk',
+                            'created_by' => Auth::id(),
+                            'status' => 'disetujui',
+                            'sumber' => 'penambahan',
+                            'keterangan' => "Transfer barang masuk dari cabang {$log->kode_cabang}",
+                        ]);
+                    }
+                }
             }
         }
 
