@@ -115,7 +115,6 @@ class DashboardController extends Controller
             ->take(6);
 
 
-
         return view('dashboard', compact(
             'penjualanHariIni',
             'penjualanKemarin',

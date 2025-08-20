@@ -36,6 +36,8 @@
             <div class="text-end mt-3">
                 <h5>Total: <strong class="text-success">Rp {{ number_format($penjualan->total_harga, 0, ',', '.') }}</strong></h5>
             </div>
+
+            <p><strong>Keterangan:</strong> {{ $penjualan->keterangan }}</p>
         </div>
 
         <div class="card-footer text-end">
