@@ -310,7 +310,7 @@
                                         <td>
                                             <div class="d-flex px-2 py-1">
                                                 <div class="d-flex flex-column justify-content-center">
-                                                    <h6 class="mb-0 text-sm text-dark">{{ $p['no_faktur'] }}</h6>
+                                                    <h6 class="mb-0 text-sm text-dark">{{ $p['no_struk'] }}</h6>
                                                     <p class="text-xs text-secondary mb-0">
                                                         {{ \Carbon\Carbon::parse($p['created_at'])->translatedFormat('d M Y H:i') }}
                                                     </p>

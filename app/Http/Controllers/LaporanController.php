@@ -103,11 +103,16 @@ class LaporanController extends Controller
             ->get()
             ->groupBy('tanggal');
 
-        // rekap per hari
+        // 🔑 Gabungkan semua tanggal (dari penjualan & pengeluaran)
+        $allDates = collect(array_keys($penjualans->toArray()))
+            ->merge(array_keys($pengeluarans->toArray()))
+            ->unique()
+            ->sort();
+
         $rekapPerHari = [];
 
-        // hitung total penjualan, modal, qty
-        foreach ($penjualans as $tanggal => $penjualanList) {
+        foreach ($allDates as $tanggal) {
+            $penjualanList = $penjualans[$tanggal] ?? collect();
             $totalPenjualan = 0;
             $totalModal = 0;
             $totalQty = 0;
@@ -127,9 +132,8 @@ class LaporanController extends Controller
 
             // pengeluaran selain modal produk
             $pengeluaranHariItu = $pengeluarans[$tanggal] ?? collect();
-            $totalPengeluaran = $pengeluaranHariItu->filter(function ($p) {
-                return !$p->kategori->is_modal_produk;
-            })->sum('total_pengeluaran');
+            $totalPengeluaran = $pengeluaranHariItu->filter(fn($p) => !$p->kategori->is_modal_produk)
+                ->sum('total_pengeluaran');
 
             $labaBersih = $labaKotor - $totalPengeluaran;
 
@@ -147,6 +151,7 @@ class LaporanController extends Controller
 
         return view('laporan.laba-rugi.detail-perhari', compact('rekapPerHari', 'namaBulan'));
     }
+
 
     public function cetakLabaRugi(Request $request)
     {
@@ -375,7 +380,7 @@ class LaporanController extends Controller
                 'keluar' => $stokKeluar,
                 'stok_akhir' => $stokAkhir,
             ];
-        })->values();
+        })->sortBy(['nama_produk', 'ukuran'])->values();
 
         return view('laporan.mutasi-stok.detail-perproduk', compact('namaCabang', 'tanggalCetak', 'bulan', 'tahun', 'dataMutasi'));
     }
@@ -458,7 +463,7 @@ class LaporanController extends Controller
                 'keluar'      => $keluar,
                 'stok_akhir'  => $stokAkhir,
             ];
-        })->values();
+        })->sortBy(['nama_produk', 'ukuran'])->values();
 
         $tanggalCetakFormatted = now()->translatedFormat('d F Y');
 

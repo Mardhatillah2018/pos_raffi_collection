@@ -99,7 +99,7 @@ class DashboardController extends Controller
             ->map(function ($penjualan) {
                 return [
                     'created_at' => $penjualan->created_at->format('d M Y H:i'),
-                    'no_faktur' => $penjualan->no_faktur,
+                    'no_struk' => $penjualan->no_struk,
                     'qty_total' => $penjualan->detailPenjualans->sum('qty'),
                     'total_harga' => $penjualan->total_harga
                 ];
@@ -112,7 +112,7 @@ class DashboardController extends Controller
             ->orderByDesc('tanggal')
             ->orderByDesc('created_at')
             ->get()
-            ->take(4);
+            ->take(6);
 
 
 
