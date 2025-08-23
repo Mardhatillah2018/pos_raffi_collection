@@ -154,8 +154,10 @@ class PenjualanController extends Controller
                     'subtotal' => $subtotal,
                 ]);
 
-                // Kurangi stok
+                // Kurangi stok (stok - qty)
                 $stok->decrement('stok', $qty);
+
+                // simpan log stok
                 LogStok::create([
                     'detail_produk_id' => $detail_produk_id,
                     'kode_cabang' => Auth::user()->kode_cabang,

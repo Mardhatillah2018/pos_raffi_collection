@@ -103,7 +103,7 @@ class LaporanController extends Controller
             ->get()
             ->groupBy('tanggal');
 
-        // 🔑 Gabungkan semua tanggal (dari penjualan & pengeluaran)
+        //  Gabungkan semua tanggal (dari penjualan & pengeluaran)
         $allDates = collect(array_keys($penjualans->toArray()))
             ->merge(array_keys($pengeluarans->toArray()))
             ->unique()
@@ -117,6 +117,7 @@ class LaporanController extends Controller
             $totalModal = 0;
             $totalQty = 0;
 
+            // hitung per produk
             foreach ($penjualanList as $penjualan) {
                 foreach ($penjualan->detailPenjualans as $detail) {
                     $qty = $detail->qty;
@@ -208,8 +209,9 @@ class LaporanController extends Controller
         // Ambil kategori pengeluaran yang bukan modal produk
         $kategoriBeban = KategoriPengeluaran::where('is_modal_produk', 0)->get();
 
+        // variable utk menampung hasil
         $beban = [];
-        $totalBeban = 0;
+        $totalBeban = 0; //total pengeluaran
 
         // pengeluaran per kategori
         foreach ($kategoriBeban as $kategori) {
@@ -355,9 +357,9 @@ class LaporanController extends Controller
             $detail = $first->detailProduk;
 
             $stokAwal = $logs->filter(function ($log) use ($tanggalAwalBulan) {
-                return $log->tanggal->lt($tanggalAwalBulan);
+                return $log->tanggal->lt($tanggalAwalBulan); //lt -> less than / sblum periode awal bulan
             })->sum(function ($log) {
-                return $log->jenis === 'masuk' ? $log->qty : -$log->qty;
+                return $log->jenis === 'masuk' ? $log->qty : -$log->qty; //kalau masuk +ke qty
             });
 
             $stokMasuk = $logs->filter(function ($log) use ($tanggalAwalBulan, $tanggalAkhirBulan) {

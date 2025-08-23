@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cabang;
+use App\Models\DetailProduk;
 use App\Models\LogStok;
 use App\Models\Stok;
 use Illuminate\Http\Request;
@@ -35,13 +36,26 @@ class LogStokController extends Controller
 
     public function ajukanPengurangan(Request $request)
     {
-        // Validasi input
+        // Validasi input dasar
         $request->validate([
             'detail_produk_id' => 'required|exists:detail_produks,id',
             'qty' => 'required|numeric|min:1',
             'alasan' => 'required|in:rusak,transfer',
             'cabang_tujuan' => 'required_if:alasan,transfer|exists:cabangs,kode_cabang',
         ]);
+
+        $kodeCabang = Auth::user()->kode_cabang;
+
+        // Cek stok tersedia di cabang user
+        $detail = DetailProduk::with(['stokCabang' => function($q) use ($kodeCabang) {
+            $q->where('kode_cabang', $kodeCabang);
+        }])->findOrFail($request->detail_produk_id);
+
+        $stokTersedia = $detail->stokCabang->stok ?? 0;
+
+        if ($request->qty > $stokTersedia) {
+            return back()->with('stok_error', "Stok tidak mencukupi. Stok tersedia hanya {$stokTersedia}.");
+        }
 
         // Ambil alasan dan normalisasi
         $alasan = strtolower(trim($request->alasan));
@@ -52,8 +66,8 @@ class LogStokController extends Controller
         } elseif ($alasan === 'transfer') {
             $cabangTujuan = Cabang::where('kode_cabang', $request->cabang_tujuan)->first();
             $keterangan = 'Transfer barang ke cabang '
-                        . ($cabangTujuan->nama_cabang ?? '')
-                        . ' [' . ($cabangTujuan->kode_cabang ?? '') . ']';
+                . ($cabangTujuan->nama_cabang ?? '')
+                . ' [' . ($cabangTujuan->kode_cabang ?? '') . ']';
         } else {
             $keterangan = 'Alasan tidak diketahui';
         }
@@ -62,7 +76,7 @@ class LogStokController extends Controller
         LogStok::create([
             'tanggal' => now(),
             'detail_produk_id' => $request->detail_produk_id,
-            'kode_cabang' => Auth::user()->kode_cabang, // cabang asal
+            'kode_cabang' => $kodeCabang, // cabang asal
             'qty' => $request->qty,
             'jenis' => 'keluar',
             'created_by' => Auth::id(),

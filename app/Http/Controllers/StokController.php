@@ -31,11 +31,8 @@ class StokController extends Controller
 
         // produk dan detail produk yang tidak dihapus
         $detailProduks = $detailProduks->filter(function($detail) {
-
             $detailNotDeleted = $detail->deleted_at === null;
-
             $produkNotDeleted = $detail->produk && $detail->produk->deleted_at === null;
-
             return $detailNotDeleted && $produkNotDeleted;
         });
 
@@ -102,7 +99,7 @@ class StokController extends Controller
             ->where('kode_cabang', $kodeCabang)
             ->get();
 
-        // ✅ ambil daftar cabang (kecuali cabang user login biar ga transfer ke cabang sendiri)
+        // ambil daftar cabang (kecuali cabang user login biar ga transfer ke cabang sendiri)
         $cabangs = Cabang::where('kode_cabang', '!=', $kodeCabang)->get();
 
         return view('stok.detail-stok', compact('produk', 'detailProduks', 'stokList', 'cabangs'));
