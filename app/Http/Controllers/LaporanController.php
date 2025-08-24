@@ -133,19 +133,23 @@ class LaporanController extends Controller
 
             // pengeluaran selain modal produk
             $pengeluaranHariItu = $pengeluarans[$tanggal] ?? collect();
-            $totalPengeluaran = $pengeluaranHariItu->filter(fn($p) => !$p->kategori->is_modal_produk)
+            $totalPengeluaran = $pengeluaranHariItu
+                ->filter(fn($p) => !$p->kategori->is_modal_produk)
                 ->sum('total_pengeluaran');
 
             $labaBersih = $labaKotor - $totalPengeluaran;
 
-            $rekapPerHari[] = [
-                'tanggal' => Carbon::parse($tanggal)->translatedFormat('d F Y'),
-                'total_produk' => $totalQty,
-                'total_penjualan' => $totalPenjualan,
-                'laba_kotor' => $labaKotor,
-                'pengeluaran' => $totalPengeluaran,
-                'laba_bersih' => $labaBersih,
-            ];
+            // Hanya masukkan jika ada penjualan atau pengeluaran non-modal
+            if ($totalPenjualan > 0 || $totalPengeluaran > 0) {
+                $rekapPerHari[] = [
+                    'tanggal' => Carbon::parse($tanggal)->translatedFormat('d F Y'),
+                    'total_produk' => $totalQty,
+                    'total_penjualan' => $totalPenjualan,
+                    'laba_kotor' => $labaKotor,
+                    'pengeluaran' => $totalPengeluaran,
+                    'laba_bersih' => $labaBersih,
+                ];
+            }
         }
 
         $namaBulan = Carbon::createFromFormat('Y-m', $bulan)->translatedFormat('F Y');
