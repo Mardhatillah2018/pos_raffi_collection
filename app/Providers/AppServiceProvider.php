@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\LogStok;
+use App\Models\Pengeluaran;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -30,13 +31,22 @@ class AppServiceProvider extends ServiceProvider
             if (Auth::check()) {
                 $kodeCabang = Auth::user()->kode_cabang;
 
+                // pending pengurangan stok (tetap)
                 $jumlahPendingPengurangan = LogStok::where('jenis', 'keluar')
                     ->where('status', 'menunggu')
                     ->where('sumber', 'pengurangan')
                     ->where('kode_cabang', $kodeCabang)
                     ->count();
 
-                $view->with('jumlahPendingPengurangan', $jumlahPendingPengurangan);
+                // pending pengeluaran (baru)
+                $jumlahPendingPengeluaran = Pengeluaran::where('status', 'pending')
+                    ->where('kode_cabang', $kodeCabang)
+                    ->count();
+
+                $view->with([
+                    'jumlahPendingPengurangan' => $jumlahPendingPengurangan,
+                    'jumlahPendingPengeluaran' => $jumlahPendingPengeluaran,
+                ]);
             }
         });
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cabang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CabangController extends Controller
 {
@@ -12,7 +13,8 @@ class CabangController extends Controller
      */
     public function index()
     {
-        $cabangs = Cabang::all();
+        $user = Auth::user();
+        $cabangs = Cabang::where('kode_cabang', '!=', $user->kode_cabang)->get();
         return view('cabang.index', compact('cabangs'));
     }
 

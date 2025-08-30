@@ -15,10 +15,16 @@ class Pengeluaran extends Model
         'kategori_id',
         'total_pengeluaran',
         'keterangan',
+        'status'
     ];
 
     public function kategori()
     {
         return $this->belongsTo(KategoriPengeluaran::class, 'kategori_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

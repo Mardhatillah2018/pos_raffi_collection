@@ -70,16 +70,70 @@ class PengeluaranController extends Controller
 
         $user = Auth::user();
 
+        // Status berdasarkan role
+        $status = $user->role === 'super_admin' ? 'approved' : 'pending';
+
         Pengeluaran::create([
-            'kategori_id' => $request->kategori_pengeluaran_id,
-            'tanggal' => $request->tanggal,
+            'kategori_id'       => $request->kategori_pengeluaran_id,
+            'tanggal'           => $request->tanggal,
             'total_pengeluaran' => $request->total_pengeluaran,
-            'keterangan' => $request->keterangan,
-            'kode_cabang' => $user->kode_cabang,
-            'created_by' => $user->id,
+            'keterangan'        => $request->keterangan,
+            'kode_cabang'       => $user->kode_cabang,
+            'created_by'        => $user->id,
+            'status'            => $status,
         ]);
 
         return redirect()->back()->with('success', 'Pengeluaran berhasil ditambahkan.');
+    }
+
+    public function pengajuan()
+    {
+        $user = Auth::user();
+
+        if ($user->role === 'admin_cabang') {
+            $pengeluarans = Pengeluaran::with('user')
+                ->where('kode_cabang', $user->kode_cabang)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } elseif ($user->role === 'super_admin') {
+            $pengeluarans = Pengeluaran::with('user')
+                ->where('kode_cabang', $user->kode_cabang) // filter cabang super admin
+                ->whereHas('user', function ($query) {
+                    $query->where('role', 'admin_cabang'); // pastikan dibuat oleh admin_cabang
+                })
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $pengeluarans = collect();
+        }
+
+        return view('pengeluaran.pengajuan-pengeluaran', compact('pengeluarans'));
+    }
+
+    public function ubahStatus(Request $request, $id)
+    {
+        // validasi status
+        $validated = $request->validate([
+            'status' => 'required|in:approved,rejected',
+        ]);
+
+        // hanya super admin yang bisa akses
+        if (Auth::user()->role !== 'super_admin') {
+            return back()->with('error', 'Anda tidak memiliki akses.');
+        }
+
+        $pengeluaran = Pengeluaran::findOrFail($id);
+
+        // update status
+        $pengeluaran->update([
+            'status' => $validated['status'],
+        ]);
+
+        return back()->with('status_pengeluaran', [
+            'tipe'  => $validated['status'] === 'approved' ? 'success' : 'error',
+            'judul' => 'Status Diperbarui',
+            'pesan' => "Pengeluaran berhasil " . ($validated['status'] === 'approved' ? 'disetujui.' : 'ditolak.'),
+        ]);
     }
 
     /**

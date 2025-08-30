@@ -162,11 +162,40 @@
             </a>
         </li>
         <li class="nav-item" title="Kelola Pengeluaran">
-            <a class="nav-link {{ Request::is('pengeluaran*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/pengeluaran">
+            <a class="nav-link
+                {{ Request::is('pengeluaran') || Request::is('pengeluaran/*') || Request::is('pengajuan-pengeluaran')
+                    ? 'active bg-gradient-dark text-white' : 'text-dark' }}"
+                data-bs-toggle="collapse"
+                href="#pengeluaranDropdown"
+                aria-expanded="{{ Request::is('pengeluaran') || Request::is('pengeluaran/*') || Request::is('pengajuan-pengeluaran') ? 'true' : 'false' }}"
+                aria-controls="pengeluaranDropdown">
                 <i class="material-icons-round opacity-5 me-2">receipt_long</i>
                 <span class="nav-link-text ms-1">Pengeluaran</span>
             </a>
+
+            <div class="collapse {{ Request::is('pengeluaran') || Request::is('pengeluaran/*') || Request::is('pengajuan-pengeluaran') ? 'show' : '' }}" id="pengeluaranDropdown">
+                <ul class="nav flex-column sub-menu ms-4">
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('pengeluaran') || Request::is('pengeluaran/*') ? 'active text-primary fw-bold' : 'text-dark' }}"
+                            href="{{ url('/pengeluaran') }}">
+                            Daftar Pengeluaran
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ Request::is('pengajuan-pengeluaran') ? 'active text-primary fw-bold' : 'text-dark' }}"
+                            href="{{ route('pengeluaran.pengajuan') }}">
+                            Pengajuan
+                            @if ($jumlahPendingPengeluaran > 0)
+                                <span class="badge rounded-pill bg-danger ms-2" style="font-size: 0.75rem;">
+                                    {{ $jumlahPendingPengeluaran }}
+                                </span>
+                            @endif
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </li>
+
         @if (Auth::user()->role === 'super_admin')
             {{-- <li class="nav-item" title="Lihat Keuntungan">
                 <a class="nav-link {{ Request::is('keuntungan*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/keuntungan">

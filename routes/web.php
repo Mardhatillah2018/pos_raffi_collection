@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::resource('kategori-pengeluaran', KategoriPengeluaranController::class)->names('kategori-pengeluaran');
         Route::get('/laporan-pengeluaran/cetak', [PengeluaranController::class, 'cetakPDF'])->name('pengeluaran.cetak');
+        Route::put('/pengeluaran/{id}/ubah-status', [PengeluaranController::class, 'ubahStatus'])->name('pengeluaran.ubah-status');
         Route::get('pengeluaran/{pengeluaran}/edit', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
         Route::put('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
         Route::delete('pengeluaran/{pengeluaran}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
@@ -105,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
         Route::get('pengeluaran/create', [PengeluaranController::class, 'create'])->name('pengeluaran.create');
         Route::post('pengeluaran', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
+        Route::get('/pengajuan-pengeluaran', [PengeluaranController::class, 'pengajuan'])->name('pengeluaran.pengajuan');
     });
 
     // ADMIN CABANG SAJA
