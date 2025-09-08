@@ -238,6 +238,14 @@
             </li> --}}
         @endif
 
+        <li class="nav-item" title="Lihat Kas Harian">
+            <a class="nav-link {{ Request::is('kas-harian*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="/kas-harian">
+                <i class="material-icons-round opacity-5 me-2">attach_money</i>
+
+                <span class="nav-link-text ms-1">Kas Harian</span>
+            </a>
+        </li>
+
         @if (Auth::user()->role === 'super_admin')
         <!-- Kepegawaian & Akses -->
             <li class="nav-item mt-2">

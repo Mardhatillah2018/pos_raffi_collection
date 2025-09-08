@@ -32,9 +32,9 @@
                                 <td>{{ $p->kategori->nama_kategori ?? '-' }}</td>
                                 <td class="text-end">Rp {{ number_format($p->total_pengeluaran, 0, ',', '.') }}</td>
                                 <td style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
-    title="{{ $p->keterangan }}">
-    {{ Str::limit($p->keterangan, 30, '...') }}
-</td>
+                                    title="{{ $p->keterangan }}">
+                                    {{ Str::limit($p->keterangan, 30, '...') }}
+                                </td>
 
                                 <td>{{ $p->user->nama }}</td>
                                 <td class="text-center">

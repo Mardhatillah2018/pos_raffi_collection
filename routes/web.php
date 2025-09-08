@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DetailProdukController;
 use App\Http\Controllers\GajiController;
 use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KasHarianController;
 use App\Http\Controllers\KategoriPengeluaranController;
 use App\Http\Controllers\KeuntunganController;
 use App\Http\Controllers\LaporanController;
@@ -83,6 +84,8 @@ Route::middleware(['auth'])->group(function () {
         // Route::get('/keuntungan/cetak', [KeuntunganController::class, 'cetakPDF'])->name('keuntungan.cetak');
         // Route::resource('keuntungan', KeuntunganController::class)->names('keuntungan');
 
+        Route::put('/kas-harian/{id}/proses', [KasHarianController::class, 'proses'])->name('kas-harian.proses');
+
         Route::resource('karyawan', KaryawanController::class)->names('karyawan');
         Route::get('/gaji/cetak', [GajiController::class, 'cetakPDF'])->name('gaji.cetak');
         Route::resource('gaji', GajiController::class)->names('gaji');
@@ -107,6 +110,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('pengeluaran/create', [PengeluaranController::class, 'create'])->name('pengeluaran.create');
         Route::post('pengeluaran', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
         Route::get('/pengajuan-pengeluaran', [PengeluaranController::class, 'pengajuan'])->name('pengeluaran.pengajuan');
+
+        Route::resource('kas-harian', KasHarianController::class);
     });
 
     // ADMIN CABANG SAJA

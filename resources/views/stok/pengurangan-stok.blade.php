@@ -50,10 +50,14 @@
                                                 data-bs-target="#modalKonfirmasi{{ $log->id }}"
                                                 title="Proses Pengurangan"
                                             >
-                                                <i class="fas fa-cogs me-1"></i> Proses
+                                                <i class="fas fa-cogs me-1"></i>
+                                                <span class="fw-semibold small">Proses</span>
                                             </span>
                                         @else
-                                            <span class="badge bg-secondary"><i class="fas fa-cogs me-1"></i> Proses</span>
+                                            <button class="btn btn-secondary btn-sm px-2 py-1" disabled>
+                                                <i class="fas fa-cogs me-1"></i>
+                                                <span class="fw-semibold small">Proses</span>
+                                            </button>
                                         @endif
                                     </td>
 
