@@ -20,4 +20,9 @@ class KasHarian extends Model
         'created_by',
         'keterangan'
     ];
+
+    public function cabang()
+    {
+        return $this->belongsTo(Cabang::class, 'kode_cabang', 'kode_cabang');
+    }
 }

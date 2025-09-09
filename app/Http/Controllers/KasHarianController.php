@@ -7,6 +7,7 @@ use App\Models\Pengeluaran;
 use App\Models\Penjualan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KasHarianController extends Controller
 {
@@ -94,6 +95,35 @@ class KasHarianController extends Controller
 
         return redirect()->back()->with('success', 'Kas Harian berhasil diproses.');
     }
+
+    public function cetakPDF(Request $request)
+{
+    $request->validate([
+        'tanggal_mulai' => 'required|date',
+        'tanggal_sampai' => 'required|date|after_or_equal:tanggal_mulai',
+    ]);
+
+    $user = Auth::user();
+
+    // Ambil data cabang dari relasi
+    $cabang = $user->cabang ? $user->cabang->nama_cabang : 'Tidak ada cabang';
+
+    $kasHarians = KasHarian::where('kode_cabang', $user->kode_cabang)
+        ->whereBetween('tanggal', [$request->tanggal_mulai, $request->tanggal_sampai])
+        ->where('status', 'approved')
+        ->orderBy('tanggal', 'asc')
+        ->get();
+
+    $pdf = PDF::loadView('kas-harian.laporan-kas-harian', [
+        'kasHarians' => $kasHarians,
+        'tanggal_mulai' => $request->tanggal_mulai,
+        'tanggal_sampai' => $request->tanggal_sampai,
+        'cabang' => $cabang,
+    ])->setPaper('a4', 'portrait');
+
+    return $pdf->stream('Laporan_Kas_Harian.pdf');
+}
+
 
     /**
      * Update the specified resource in storage.

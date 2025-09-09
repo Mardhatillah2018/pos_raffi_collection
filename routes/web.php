@@ -85,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
         // Route::resource('keuntungan', KeuntunganController::class)->names('keuntungan');
 
         Route::put('/kas-harian/{id}/proses', [KasHarianController::class, 'proses'])->name('kas-harian.proses');
+        Route::get('/kas-harian/laporan', [KasHarianController::class, 'cetakPDF'])->name('kas-harian.cetakPDF');
 
         Route::resource('karyawan', KaryawanController::class)->names('karyawan');
         Route::get('/gaji/cetak', [GajiController::class, 'cetakPDF'])->name('gaji.cetak');

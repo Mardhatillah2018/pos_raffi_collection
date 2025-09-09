@@ -13,12 +13,12 @@
                     <!-- Kolom Kiri -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="tanggal" class="form-label">Tanggal</label>
+                            <label for="tanggal" class="form-label" style="color: black; font-weight: semibold;">Tanggal</label>
                             <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ date('Y-m-d') }}" readonly>
                         </div>
 
                         <div class="mb-3">
-                            <label for="saldo_awal" class="form-label">Saldo Awal</label>
+                            <label for="saldo_awal" class="form-label" style="color: black; font-weight: semibold;">Saldo Awal</label>
                             <input type="number" name="saldo_awal" id="saldo_awal"
                                 class="form-control" min="0"
                                 value="{{ $saldoAwal }}" readonly>
@@ -26,14 +26,14 @@
 
 
                         <div class="mb-3">
-                            <label for="total_penjualan" class="form-label">Total Penjualan</label>
+                            <label for="total_penjualan" class="form-label" style="color: black; font-weight: semibold;">Total Penjualan</label>
                             <input type="number" name="total_penjualan" id="total_penjualan"
                                 class="form-control" min="0"
                                 value="{{ $totalPenjualan }}" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="total_pengeluaran" class="form-label">Total Pengeluaran</label>
+                            <label for="total_pengeluaran" class="form-label" style="color: black; font-weight: semibold;">Total Pengeluaran</label>
                             <input type="number" name="total_pengeluaran" id="total_pengeluaran"
                                 class="form-control" min="0"
                                 value="{{ $totalPengeluaran }}" required>
@@ -43,17 +43,17 @@
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
                         <div class="mb-3">
-                            <label for="setor" class="form-label">Setoran</label>
+                            <label for="setor" class="form-label" style="color: black; font-weight: semibold;">Setoran</label>
                             <input type="number" name="setor" id="setor" class="form-control" min="0" placeholder="0" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="saldo_akhir" class="form-label">Saldo Akhir</label>
+                            <label for="saldo_akhir" class="form-label" style="color: black; font-weight: semibold;">Saldo Akhir</label>
                             <input type="number" name="saldo_akhir" id="saldo_akhir" class="form-control" min="0" value="0" required>
                         </div>
 
                         <div class="mb-3">
-                            <label for="keterangan" class="form-label">Keterangan</label>
+                            <label for="keterangan" class="form-label" style="color: black; font-weight: semibold;">Keterangan</label>
                             <textarea name="keterangan" id="keterangan" class="form-control" rows="2" placeholder="Tambahkan catatan jika perlu..."></textarea>
                         </div>
                     </div>
